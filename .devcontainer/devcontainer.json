@@ -3,9 +3,16 @@
 {
 	"name": "Dev",
 	// Sets the run context to one level up instead of the .devcontainer folder.
-	"context": "..",
 	// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-	"dockerFile": "Dockerfile",
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "vscode",
+	"runServices": [
+		"vscode"
+	],
+	"shutdownAction": "stopCompose",
+	"workspaceFolder": "/workspace",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"files.eol": "\n",

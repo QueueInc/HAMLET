@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  vscode:
+    image: hamlet
+    build: .
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ssh:/home/vscode/.ssh
+      - ~/.ssh:/root/.ssh
+    network_mode: host
+    entrypoint: bash -c "while sleep 1000; do :; done"
+    stdin_open: true
