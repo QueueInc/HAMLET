@@ -59,6 +59,16 @@ def instantiate_pipeline(prototype, seed, config):
 # We define the function to optimize
 def objective(X, y, metric, seed, config):
     result = {"accuracy": float("-inf"), "status": "fail"}
+
+    if Buffer().check_instance_constraints(config):
+        return result
+
+    # if Buffer().check_evaluated_rewards(config):
+    #    return result
+
+    if Buffer().check_template_constraints(config):
+        return result
+
     try:
         prototype = get_prototype(config)
 

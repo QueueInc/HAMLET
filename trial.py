@@ -8,16 +8,43 @@ prolog_output = {
                     "type": "FunctionTransformer",
                 },
                 {
+                    "type": "StandardScaler",
+                    "with_mean": {"choice": [True, False]},
+                    "with_std": {"choice": [True, False]},
+                },
+                {
                     "type": "MinMaxScaler",
                 },
             ]
         },
         "FeatureEngineering": {
-            "a": {
-                "type": "StandardScaler",
-                "with_mean": {"choice": [True, False]},
-                "with_std": {"choice": [True, False]},
-            }
+            "choice": [
+                {
+                    "type": "FunctionTransformer",
+                },
+                {
+                    "type": "SelectKBest",
+                    "n_features": {"randint": (1, 10)},
+                },
+                {
+                    "type": "PCA",
+                    "n_features": {"randint": (1, 10)},
+                },
+            ]
+        },
+        "Classification": {
+            "choice": [
+                {
+                    "type": "KNeighborsClassifier",
+                    "n_neighbors": {"choice": [3, 5, 7, 9, 11, 13, 15, 17, 19]},
+                }
+            ]
+        },
+        "Prototype": {
+            "choice": [
+                "FeaturesEngineering_Normalization_Classification",
+                "Normalization_FeaturesEngineering_Classification",
+            ]
         },
     },
     "template_constraints": [
@@ -30,12 +57,12 @@ prolog_output = {
         # },
         # if
         #   DecisionTreeClassifier is instantiated with DecisionTreeClassifier
-        #   Discretization is instantiated with FunctionTransformer
-        #    "Discretization": {"type": {"eq": "FunctionTransformer"}},
+        #   Discretization is not instantiated with FunctionTransformer
         # {
+        #    "Discretization": {"type": {"neq": "FunctionTransformer"}},
         #    "Classification": {"type": {"eq": "DecisionTreeClassifier"}},
-        # if
         # },
+        # if
         #   Feature Engineering is instantiated with SelectKBest with n_features eq 1 and
         #   Normalization is not instantiated with FunctionTransformer and
         #   Prototype is instantiated with FeaturesEngineering_Normalization_Classification
@@ -48,7 +75,64 @@ prolog_output = {
             "Prototype": {"eq": "FeaturesEngineering_Normalization_Classification"},
         },
     ],
-    "instance exceptions": [{}, {}, {}],
+    "instance_constraints": [
+        {
+            "Feature Engineering": {
+                "type": "SelectKBest",
+                "n_features": 1,
+            },
+            "Normalization": {
+                "type": "StandardScaler",
+                "with_mean": True,
+                "with_std": True,
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+        },
+        {
+            "Feature Engineering": {
+                "type": "SelectKBest",
+                "n_features": 1,
+            },
+            "Normalization": {
+                "type": "StandardScaler",
+                "with_mean": True,
+                "with_std": False,
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+        },
+        {
+            "Feature Engineering": {
+                "type": "SelectKBest",
+                "n_features": 1,
+            },
+            "Normalization": {
+                "type": "StandardScaler",
+                "with_mean": False,
+                "with_std": True,
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+        },
+        {
+            "Feature Engineering": {
+                "type": "SelectKBest",
+                "n_features": 1,
+            },
+            "Normalization": {
+                "type": "StandardScaler",
+                "with_mean": False,
+                "with_std": False,
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+        },
+        {
+            "Feature Engineering": {
+                "type": "SelectKBest",
+                "n_features": 1,
+            },
+            "Normalization": {"type": "MinMaxScaler"},
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+        },
+    ],
 }
 
 
