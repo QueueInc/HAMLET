@@ -4,9 +4,8 @@ from .Loader import Loader
 class Buffer:
     _instance = None
     _loader = None
-    _configs = {}
-    _results = {}
-    _current_iteration = 0
+    _configs = []
+    _results = []
 
     def __new__(cls, path=None):
         if cls._instance is None:
@@ -14,25 +13,27 @@ class Buffer:
 
         if path:
             cls._instance._loader = Loader(path)
-
+            cls._instance._configs = (
+                cls._instance._loader.get_points_to_evaluate()
+                + cls._instance._loader.get_instance_constraints()
+            )
+            cls._instance._results = [
+                {"accuracy": result, "status": "success"}
+                for result in cls._instance._loader.get_evaluated_rewards()
+            ] + [{"accuracy": float("-inf"), "status": "fail"}] * len(
+                cls._instance._loader.get_instance_constraints()
+            )
         return cls._instance
 
     def get_space(self):
         return self._loader.get_space()
 
     def add_evaluation(self, config, result):
-        self._configs[self._current_iteration] = config
-        self._results[self._current_iteration] = result
-        self._current_iteration += 1
+        self._configs.append(config)
+        self._results.append(result)
 
     def get_evaluations(self):
-        points_to_evaluate = (
-            list(self._configs.values()) + self._loader.get_instance_constraints()
-        )
-        evaluated_rewards = [
-            result["accuracy"] for result in self._results.values()
-        ] + [float("-inf")] * len(self._loader.get_instance_constraints())
-        return points_to_evaluate, evaluated_rewards
+        return self._configs.copy(), self._results.copy()
 
     def check_template_constraints(self, config):
         for constraint in self._loader.get_template_constraints():
@@ -40,7 +41,7 @@ class Buffer:
                 return True
         return False
 
-    def check_instance_constraints(self, config):
-        if config in self._loader.get_instance_constraints():
-            return True
-        return False
+    def check_points_to_evaluate(self, config):
+        if config in self._configs:
+            return True, self._results[self._configs.index(config)]
+        return False, 0

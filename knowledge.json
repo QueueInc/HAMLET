@@ -108,6 +108,10 @@
                 "with_mean": true,
                 "with_std": true
             },
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
+            },
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
@@ -119,6 +123,10 @@
                 "type": "StandardScaler",
                 "with_mean": true,
                 "with_std": false
+            },
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
             },
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
@@ -132,6 +140,10 @@
                 "with_mean": false,
                 "with_std": true
             },
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
+            },
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
@@ -144,6 +156,10 @@
                 "with_mean": false,
                 "with_std": false
             },
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
+            },
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
@@ -154,7 +170,170 @@
             "Normalization": {
                 "type": "MinMaxScaler"
             },
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
+            },
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         }
+    ],
+    "points_to_evaluate": [
+        {
+            "Classification": {
+                "n_neighbors": 13,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification",
+            "Normalization": {
+                "type": "FunctionTransformer"
+            },
+            "FeaturesEngineering": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "Normalization": {
+                "with_mean": false,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "FeaturesEngineering": {
+                "n_components": 5,
+                "type": "PCA"
+            },
+            "Classification": {
+                "n_neighbors": 11,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification"
+        },
+        {
+            "FeaturesEngineering": {
+                "k": 7,
+                "type": "SelectKBest"
+            },
+            "Classification": {
+                "n_neighbors": 5,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification",
+            "Normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "Prototype": "Normalization_FeaturesEngineering_Classification",
+            "FeaturesEngineering": {
+                "k": 5,
+                "type": "SelectKBest"
+            },
+            "Classification": {
+                "n_neighbors": 3,
+                "type": "KNeighborsClassifier"
+            },
+            "Normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "Prototype": "FeaturesEngineering_Normalization_Classification",
+            "FeaturesEngineering": {
+                "k": 9,
+                "type": "SelectKBest"
+            },
+            "Classification": {
+                "n_neighbors": 7,
+                "type": "KNeighborsClassifier"
+            },
+            "Normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "Normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "FeaturesEngineering": {
+                "k": 3,
+                "type": "SelectKBest"
+            },
+            "Classification": {
+                "n_neighbors": 19,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification"
+        },
+        {
+            "Normalization": {
+                "with_mean": false,
+                "with_std": false,
+                "type": "StandardScaler"
+            },
+            "FeaturesEngineering": {
+                "n_components": 6,
+                "type": "PCA"
+            },
+            "Classification": {
+                "n_neighbors": 9,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification"
+        },
+        {
+            "Normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "FeaturesEngineering": {
+                "type": "FunctionTransformer"
+            },
+            "Classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 13
+            },
+            "Prototype": "FeaturesEngineering_Normalization_Classification"
+        },
+        {
+            "Classification": {
+                "n_neighbors": 11,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification",
+            "Normalization": {
+                "type": "FunctionTransformer"
+            },
+            "FeaturesEngineering": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "FeaturesEngineering": {
+                "k": 8,
+                "type": "SelectKBest"
+            },
+            "Classification": {
+                "n_neighbors": 5,
+                "type": "KNeighborsClassifier"
+            },
+            "Prototype": "Normalization_FeaturesEngineering_Classification",
+            "Normalization": {
+                "type": "FunctionTransformer"
+            }
+        }
+    ],
+    "evaluated_rewards": [
+        0.6918300653594771,
+        0.9222222222222222,
+        0.9666666666666668,
+        0.961111111111111,
+        0.9604575163398692,
+        0.9277777777777778,
+        0.6977124183006536,
+        0.9663398692810456,
+        0.7143790849673202,
+        0.7084967320261437
     ]
 }

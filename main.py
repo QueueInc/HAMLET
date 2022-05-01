@@ -30,10 +30,12 @@ def parse_args():
 def main(args):
     X, y, _ = get_dataset("wine")
 
+    # TODO: all these things in the params
     metric = "accuracy"
     seed = 42
     np.random.seed(seed)
-    batch_size = 10
+    # keep it in mind that this is incremental iterations after iterations (past points_to_evaluate and instance_constraints should be included in the count)
+    batch_size = 25
 
     buffer = Buffer(args["path"])
     space = buffer.get_space()
@@ -43,14 +45,14 @@ def main(args):
         pd.concat(
             [
                 pd.DataFrame(points_to_evaluate),
-                pd.DataFrame(evaluated_rewards, columns=["accuracy"]),
+                pd.DataFrame(
+                    [reward["accuracy"] for reward in evaluated_rewards],
+                    columns=["accuracy"],
+                ),
             ],
             axis=1,
         )
     )
-
-    # TODO:
-    # mettere su knowledge.json una nuova coppia chiave-valore per i points_to_evaluate e gli evaluated_rewards
 
     analysis = tune.run(
         evaluation_function=partial(objective, X, y, metric, seed),
@@ -59,7 +61,7 @@ def main(args):
         mode="max",
         num_samples=batch_size,
         points_to_evaluate=points_to_evaluate,
-        evaluated_rewards=evaluated_rewards,
+        # evaluated_rewards=evaluated_rewards,
         verbose=False,
     )
 
@@ -68,11 +70,25 @@ def main(args):
         pd.concat(
             [
                 pd.DataFrame(points_to_evaluate),
-                pd.DataFrame(evaluated_rewards, columns=["accuracy"]),
+                pd.DataFrame(
+                    [reward["accuracy"] for reward in evaluated_rewards],
+                    columns=["accuracy"],
+                ),
             ],
             axis=1,
         )
     )
+
+    pd.concat(
+        [
+            pd.DataFrame(points_to_evaluate),
+            pd.DataFrame(
+                [reward["accuracy"] for reward in evaluated_rewards],
+                columns=["accuracy"],
+            ),
+        ],
+        axis=1,
+    ).to_csv("trial.csv")
 
 
 if __name__ == "__main__":

@@ -60,6 +60,10 @@ def instantiate_pipeline(prototype, seed, config):
 def objective(X, y, metric, seed, config):
     result = {"accuracy": float("-inf"), "status": "fail"}
 
+    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
+    if is_point_to_evaluate:
+        return reward
+
     if Buffer().check_template_constraints(config):
         Buffer().add_evaluation(config=config, result=result)
         return result
@@ -69,7 +73,6 @@ def objective(X, y, metric, seed, config):
 
         pipeline = instantiate_pipeline(prototype, seed, config)
 
-        # We evaluate the pipeline with k-cross validarion
         scores = cross_validate(
             pipeline,
             X.copy(),
@@ -81,7 +84,6 @@ def objective(X, y, metric, seed, config):
             verbose=0,
         )
 
-        # We get the accuracy
         accuracy = np.mean(scores["test_" + metric])
         result[metric] = accuracy
         result["status"] = "success"

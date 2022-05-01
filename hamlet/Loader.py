@@ -7,6 +7,8 @@ class Loader:
     _space = {}
     _template_constraints = []
     _instance_constraints = []
+    _points_to_evaluate = []
+    _evaluated_rewards = []
 
     def __init__(self, path=None):
         if path:
@@ -17,6 +19,12 @@ class Loader:
             )
             self._instance_constraints = self._get_instance_constraints(
                 input_instance_constraints=knowledge["instance_constraints"]
+            )
+            self._points_to_evaluate = self._get_points_to_evaluate(
+                input_points_to_evaluate=knowledge["points_to_evaluate"]
+            )
+            self._evaluated_rewards = self._get_evaluated_rewards(
+                input_evaluated_rewards=knowledge["evaluated_rewards"]
             )
         else:
             raise Exception("No knowledge path provided")
@@ -114,6 +122,12 @@ class Loader:
     def _get_instance_constraints(self, input_instance_constraints):
         return input_instance_constraints
 
+    def _get_points_to_evaluate(self, input_points_to_evaluate):
+        return input_points_to_evaluate
+
+    def _get_evaluated_rewards(self, input_evaluated_rewards):
+        return input_evaluated_rewards
+
     def get_space(self):
         return self._space
 
@@ -122,3 +136,9 @@ class Loader:
 
     def get_instance_constraints(self):
         return self._instance_constraints
+
+    def get_points_to_evaluate(self):
+        return self._points_to_evaluate
+
+    def get_evaluated_rewards(self):
+        return self._evaluated_rewards
