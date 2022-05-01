@@ -25,14 +25,14 @@
                 }
             ]
         },
-        "FeatureEngineering": {
+        "FeaturesEngineering": {
             "choice": [
                 {
                     "type": "FunctionTransformer"
                 },
                 {
                     "type": "SelectKBest",
-                    "n_features": {
+                    "k": {
                         "randint": [
                             1,
                             10
@@ -41,7 +41,7 @@
                 },
                 {
                     "type": "PCA",
-                    "n_features": {
+                    "n_components": {
                         "randint": [
                             1,
                             10
@@ -79,11 +79,11 @@
     },
     "template_constraints": [
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": {
                     "eq": "SelectKBest"
                 },
-                "n_features": {
+                "k": {
                     "eq": 1
                 }
             },
@@ -99,9 +99,9 @@
     ],
     "instance_constraints": [
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": "SelectKBest",
-                "n_features": 1
+                "k": 1
             },
             "Normalization": {
                 "type": "StandardScaler",
@@ -111,9 +111,9 @@
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": "SelectKBest",
-                "n_features": 1
+                "k": 1
             },
             "Normalization": {
                 "type": "StandardScaler",
@@ -123,9 +123,9 @@
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": "SelectKBest",
-                "n_features": 1
+                "k": 1
             },
             "Normalization": {
                 "type": "StandardScaler",
@@ -135,9 +135,9 @@
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": "SelectKBest",
-                "n_features": 1
+                "k": 1
             },
             "Normalization": {
                 "type": "StandardScaler",
@@ -147,9 +147,9 @@
             "Prototype": "FeaturesEngineering_Normalization_Classification"
         },
         {
-            "Feature Engineering": {
+            "FeaturesEngineering": {
                 "type": "SelectKBest",
-                "n_features": 1
+                "k": 1
             },
             "Normalization": {
                 "type": "MinMaxScaler"

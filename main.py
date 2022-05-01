@@ -39,10 +39,18 @@ def main(args):
     space = buffer.get_space()
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
 
+    print(
+        pd.concat(
+            [
+                pd.DataFrame(points_to_evaluate),
+                pd.DataFrame(evaluated_rewards, columns=["accuracy"]),
+            ],
+            axis=1,
+        )
+    )
+
     # TODO:
-    # gestire evaluated_rewards stateless
-    # ottimizzare il check su evaluated_rewards e instance:constraints mettendo in una hasmap
-    # gestire randint
+    # mettere su knowledge.json una nuova coppia chiave-valore per i points_to_evaluate e gli evaluated_rewards
 
     analysis = tune.run(
         evaluation_function=partial(objective, X, y, metric, seed),
@@ -55,7 +63,16 @@ def main(args):
         verbose=False,
     )
 
-    print(analysis.best_result)
+    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
+    print(
+        pd.concat(
+            [
+                pd.DataFrame(points_to_evaluate),
+                pd.DataFrame(evaluated_rewards, columns=["accuracy"]),
+            ],
+            axis=1,
+        )
+    )
 
 
 if __name__ == "__main__":
