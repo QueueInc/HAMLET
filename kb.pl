@@ -15,11 +15,11 @@ o3 : step(algorithm) => operator(algorithm, dt).
 h4 : operator(algorithm, dt) => hyperparameter(dt, max_depth, randint).
 d4 : hyperparameter(dt, max_depth, randint) => domain(dt, max_depth, [1, 5]).
 
-
 c1 : [] => mandatory([normalization], algorithm).
 c2 : [] => forbidden([normalization], dt).
 c3 :=> hyperparameter_exception(algorithm, dt, max_depth, eq, 1).
 c4 :=> hyperparameter_exception(algorithm, dt, max_depth, gt, 2, [normalization]).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,8 +29,8 @@ c4 :=> hyperparameter_exception(algorithm, dt, max_depth, gt, 2, [normalization]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cc0 : mandatory(X, algorithm), operator(algorithm, Y) -> mandatory(X, Y).
-cc1 : forbidden(X, algorithm), operator(algorithm, Y) -> forbidden(X, Y).
+cc0 : mandatory(X, algorithm), operator(algorithm, Y) => mandatory(X, Y).
+cc1 : forbidden(X, algorithm), operator(algorithm, Y) => forbidden(X, Y).
 
 cc2 : mandatory(X, Y), prolog(Y \= algorithm), prolog(
 		findall(Z,
@@ -40,11 +40,11 @@ cc2 : mandatory(X, Y), prolog(Y \= algorithm), prolog(
 				findall(no, \+ context_check(argument([_, _, [operator(XX, XXX)], _, _])), T),
 				T = [],
 				findall(XXX, context_check(argument([_, _, [operator(XX, XXX)], _, _])), Z)
-			), 
+			),
 			ZZ
 		)
 	),
-	prolog((len(ZZ, L1), len(X, L2), L1 = L2)) -> mandatory(X, ZZ, Y).
+	prolog((len(ZZ, L1), len(X, L2), L1 = L2)) => mandatory(X, ZZ, Y).
 
 cc3 : forbidden(X, Y), prolog(Y \= algorithm), prolog(
 		findall(Z ,
@@ -89,11 +89,13 @@ check_conflict(SF, F, SM, M) :-
 	get_subsets(SM, M, SF, NSM, NM),
 	a(NSM, NM, SF, F).
 
-g2 : step(X), step(Y), step(algorithm), prolog((X \= Y, X \= algorithm, Y \= algorithm)) => pipeline_prototype([X, Y], algorithm).
-g3 : step(X), step(algorithm), prolog(X \= algorithm) => pipeline_prototype([X], algorithm).
+% g2 : step(X), step(Y), step(algorithm), prolog((X \= Y, X \= algorithm, Y \= algorithm)) => pipeline_prototype([X, Y], algorithm).
+% g3 : step(X), step(algorithm), prolog(X \= algorithm) => pipeline_prototype([X], algorithm).
+
 g4 : operator(algorithm, Z) => pipeline([], Z).
-g5 : pipeline_prototype([X], Z), operator(X, XX), operator(Z, ZZ) => pipeline([XX], ZZ).
-g6 : pipeline_prototype([X, Y], Z), operator(X, XX), operator(Y, YY), operator(Z, ZZ) => pipeline([XX, YY], ZZ).
+g5 : step(X), step(algorithm), prolog(X \= algorithm), operator(X, XX), operator(algorithm, ZZ) => pipeline([XX], ZZ).
+g6 : step(X), step(Y), step(algorithm), prolog((X \= Y, X \= algorithm, Y \= algorithm)),
+		operator(X, XX), operator(Y, YY), operator(algorithm, ZZ) => pipeline([XX, YY], ZZ).
 
 % controllo sull'errore
 g7 : prolog(context_check(argument([_, _, [hyperparameter_exception(algorithm, OP, H, COMP, VALUE)], _, _]))),
