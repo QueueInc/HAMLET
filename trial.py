@@ -1,5 +1,30 @@
 from flaml import tune
 
+# Mandatory
+# [s1, s2, s3][[op1 V op2] A [op3 V op4] A [op5 V op6]], algorithm)
+# {
+#     "s1": {"type": {"nin": ["op1", "op2"]}},
+#     ...
+#     "classification": {"type": {"eq": "algorithm"}}
+# }
+
+# Forbidden
+# [s1, s2, s3][[op1 V op2] A [op3 V op4] A [op5 V op6]], algorithm)
+# {
+#     "s1": {"type": {"in": ["op1", "op2"]}},
+#     ...
+#     "classification": {"type": {"eq": "algorithm"}}
+# }
+
+# hyperparameter_exception(classification, dt, max_depth, gt, 2)
+# {
+#     "classification": {
+#         "type": {"eq": "dt"},
+#         "max_depth": {"gt": 1},
+#     },
+# }
+
+
 prolog_output = {
     "space": {
         "Normalization": {

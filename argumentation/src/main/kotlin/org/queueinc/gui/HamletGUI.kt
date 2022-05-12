@@ -11,11 +11,14 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller
 import edu.uci.ics.jung.visualization.renderers.Renderer
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
+import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
 import it.unibo.tuprolog.argumentation.core.mining.graph
 import it.unibo.tuprolog.argumentation.core.model.Attack
 import it.unibo.tuprolog.argumentation.core.model.LabelledArgument
 import it.unibo.tuprolog.core.Struct
+import it.unibo.tuprolog.core.Term
+import it.unibo.tuprolog.core.Var
 import it.unibo.tuprolog.core.parsing.parse
 import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
@@ -25,6 +28,7 @@ import it.unibo.tuprolog.solve.classic.ClassicSolverFactory
 import it.unibo.tuprolog.solve.classic.classic
 import it.unibo.tuprolog.theory.Theory
 import it.unibo.tuprolog.theory.parsing.parse
+import it.unibo.tuprolog.unify.Unificator
 import javafx.application.Application
 import javafx.embed.swing.SwingNode
 import javafx.scene.Scene
@@ -43,10 +47,213 @@ import kotlin.system.exitProcess
 
 var path = ""
 
+
+class FakeMain {
+
+    companion object {
+
+        private val theory: String = """
+            s1 : [] => step(discretization).
+            o1 : step(discretization) => operator(discretization, kbins).
+            h1 : operator(discretization, kbins) => hyperparameter(kbins, n_bins, randint).
+            d1 : hyperparameter(kbins, n_bins, randint) => domain(kbins, n_bins, [2, 6]).
+    
+            s2 : [] => step(normalization).
+            o2 : step(normalization) => operator(normalization, standard).
+            h2 : operator(normalization, standard) => hyperparameter(standard, with_mean, choice).
+            d2 : hyperparameter(standard, with_mean, choice) => domain(standard, with_mean, [true, false]).
+            h3 : operator(normalization, standard) => hyperparameter(standard, with_std, choice).
+            d3 : hyperparameter(standard, with_std, choice) => domain(standard, with_std, [true, false]).
+    
+            s3 : [] => step(classification).
+            o3 : step(classification) => operator(classification, dt).
+            h4 : operator(classification, dt) => hyperparameter(dt, max_depth, randint).
+            d4 : hyperparameter(dt, max_depth, randint) => domain(dt, max_depth, [1, 5]).
+            
+            o4 : step(classification) => operator(classification, knn).
+            h5 : operator(classification, knn) => hyperparameter(knn, k, randint).
+            d5 : hyperparameter(knn, k, randint) => domain(knn, k, [6, 10]).
+    
+            c1 : [] => mandatory([normalization], classification).
+            c2 : [] => forbidden([normalization], dt).
+            % c3 :=> hyperparameter_exception(classification, dt, max_depth, eq, 1).
+            % c4 :=> hyperparameter_exception(classification, dt, max_depth, gt, 2, [normalization]).
+            
+        """.trimIndent()
+
+        @JvmStatic
+        fun translateSpace(space: Term) =
+            prolog {
+                space.castToList().toList().joinToString(",\n") { step ->
+                    Unificator.default.mgu(step, tupleOf(X, "choice", Z)).let { unifier ->
+                        unifier[Z]!!.castToList().toList().map { operator ->
+                            if (operator.isAtom) {
+                                if (operator.toString() == "functionTransformer") {
+                                    """
+                                    {
+                                        "type" : "functionTransformer"
+                                    }
+                                    """
+                                } else "\"$operator\""
+                            } else {
+                                Unificator.default.mgu(operator, tupleOf(A, B)).let { unifier2 ->
+                                    unifier2[B]!!.castToList().toList().joinToString(",\n") { hyper ->
+                                        Unificator.default.mgu(hyper, tupleOf(C, D, E)).let { unifier3 ->
+                                            """
+                                            "${unifier3[C]}" : {
+                                               "${unifier3[D]}" : ${unifier3[E]}
+                                            }
+                                            """
+                                        }
+                                    }.let {
+                                        """
+                                        {
+                                            "type" : "${unifier2[A]}",
+                                            $it
+                                        }
+                                        """
+                                    }
+                                }
+                            }
+                        }.let {
+                            """
+                            "${unifier[X]}" : {
+                               "choice" : $it
+                            }
+                            """
+                        }
+                    }
+                }.let {
+                    """
+                    "space" : {
+                        $it
+                    }
+                    """.replace("\\s".toRegex(), "")
+                }
+            }
+
+        @JvmStatic
+        fun translateTemplates(mandatory: Term, forbidden: Term) : String {
+            val transform = { target: Term, comparator: String ->
+                prolog {
+                    target.castToList().toList().map { template ->
+                        Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
+                            unifier[A]!!.castToList().toList().mapIndexed { i, step ->
+                                """
+                                "$step" : {"type": {"$comparator": ${unifier[B]!!.castToList().toList()[i].castToList().toList().map { "\"$it\"" }}}}
+                                """
+                            }.joinToString(",\n").let {
+                                """
+                                {
+                                    $it,
+                                    "classification": {"type": {"eq": "${unifier[C]}"}}
+                                }
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+            return """
+                "template_constraints" : ${transform(mandatory, "nin") + transform(forbidden, "in")}
+            """.replace("\\s".toRegex(), "")
+        }
+
+        @JvmStatic
+        fun translateInstances(instances: Term) =
+            prolog {
+                instances.castToList().toList().map { instance ->
+                    instance.castToList().castToList().toList().joinToString(",\n") { step ->
+                        if (Unificator.default.match(step, tupleOf("prototype", `_`))) {
+                            Unificator.default.mgu(step, tupleOf("prototype", A)).let {
+                                "\"prototype\" : \"${it[A]}\""
+                            }
+                        }
+                        else if(Unificator.default.match(step, tupleOf(D, tupleOf(E, F)))) {
+                            Unificator.default.mgu(step, tupleOf(D, tupleOf(E, F))).let {
+                                it[F]!!.castToList().toList().joinToString(",\n") { h ->
+                                    Unificator.default.mgu(h, tupleOf(G, H)).let { hyper ->
+                                        "\"${hyper[G]}\" : ${hyper[H]}"
+                                    }
+                                }.let { hyperparameters ->
+                                    """
+                                    "${it[D]}": {
+                                        "type": "${it[E]}",
+                                        $hyperparameters
+                                    }
+                                    """
+                                }
+                            }
+                        }
+                        else {
+                            Unificator.default.mgu(step, tupleOf(B, C)).let {
+                                """
+                                "${it[B]}": {
+                                    "type": "${it[C]}"
+                                }
+                                """
+                            }
+                        }
+                    }.let {
+                        """
+                           {
+                                $it
+                           } 
+                        """
+                    }
+                }.let {
+                    """
+                        "instance_constraints" : $it 
+                    """.replace("\\s".toRegex(), "")
+                }
+            }
+
+        @JvmStatic
+        fun mineData(solver: MutableSolver) =
+            arg2pScope {
+
+                val space = solver.solve("miner" call "fetch_complete_space"(X), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                    .filter { it.isYes }
+                    .map { translateSpace(it.substitution[X]!!) }
+                    .first()
+
+                val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_mandatory"(Y)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                    .filter { it.isYes }
+                    .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!) }
+                    .first()
+
+                val instances = solver.solve("miner" call "fetch_out_instances"(X), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                    .filter { it.isYes }
+                    .map { translateInstances(it.substitution[X]!!) }
+                    .first()
+
+                "{ $space, $templates, $instances }"
+            }
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val arg2p = Arg2pSolver.default(staticLibs = listOf(HamletCore), dynamicLibs = listOf(SpaceMining))
+            val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
+                otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
+                staticKb = Theory.parse(theory, arg2p.operators())
+            )
+
+            arg2pScope {
+                solver.solve("buildLabelSets"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                    .filter { it.isYes }
+                    .forEach { println(it.substitution[X]) }
+
+                println(mineData(solver))
+            }
+        }
+    }
+}
+
 class HamletGUI : Application() {
 
     override fun start(stage: Stage) {
         try {
+
             val arg2p = Arg2pSolver.default(staticLibs = emptyList(), dynamicLibs = emptyList())
             val graph = ArgumentationGraphFrame.customTab()
             var graphResult : it.unibo.tuprolog.argumentation.core.model.Graph? = null
