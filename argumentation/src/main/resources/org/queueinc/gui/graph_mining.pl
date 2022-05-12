@@ -135,7 +135,7 @@ sample_range(A, B, Sample) :-
 
 sample_hyperparameters([], []).
 sample_hyperparameters([(Hyperparameter, choice, Value)|T], [(Hyperparameter, X)|R]) :-
-    member(X, Choice),
+    member(X, Value),
     sample_hyperparameters(T, R).
 sample_hyperparameters([(Hyperparameter, randint, [A, B])|T], [(Hyperparameter, X)|R]) :-
     sample_range(A, B, X),
