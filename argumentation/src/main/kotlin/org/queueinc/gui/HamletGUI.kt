@@ -94,7 +94,7 @@ class FakeMain {
                                     }.let {
                                         """
                                         {
-                                            "type" : "${unifier2[A]!!.toSklearnClass()}",
+                                            "type" : "${unifier2[A]!!.toSklearnClass()}"${if (it.isEmpty()) "" else ","}
                                             $it
                                         }
                                         """
@@ -164,7 +164,7 @@ class FakeMain {
                                 }.let { hyperparameters ->
                                     """
                                     "${it[D]}": {
-                                        "type": "${it[E]!!.toSklearnClass()}",
+                                        "type": "${it[E]!!.toSklearnClass()}"${if (hyperparameters.isEmpty()) "" else ","}
                                         $hyperparameters
                                     }
                                     """

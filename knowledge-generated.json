@@ -2,8 +2,8 @@
     "space": {
         "prototype": {
             "choice": [
-                "normalization_classification",
                 "normalization_discretization_classification",
+                "normalization_classification",
                 "classification",
                 "discretization_classification",
                 "discretization_normalization_classification"
@@ -19,7 +19,7 @@
                     "n_bins": {
                         "randint": [
                             2,
-                            6
+                            10
                         ]
                     }
                 }
@@ -44,6 +44,9 @@
                             false
                         ]
                     }
+                },
+                {
+                    "type": "MinMaxScaler"
                 }
             ]
         },
@@ -53,8 +56,8 @@
                     "type": "DecisionTreeClassifier",
                     "max_depth": {
                         "randint": [
-                            1,
-                            5
+                            2,
+                            30
                         ]
                     }
                 },
@@ -62,8 +65,8 @@
                     "type": "KNeighborsClassifier",
                     "n_neighbors": {
                         "randint": [
-                            6,
-                            10
+                            2,
+                            30
                         ]
                     }
                 }
@@ -72,10 +75,25 @@
     },
     "template_constraints": [
         {
+            "discretization": {
+                "type": {
+                    "nin": [
+                        "KBinsDiscretizer"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "DecisionTreeClassifier"
+                }
+            }
+        },
+        {
             "normalization": {
                 "type": {
                     "nin": [
-                        "StandardScaler"
+                        "StandardScaler",
+                        "MinMaxScaler"
                     ]
                 }
             },
@@ -84,10 +102,2027 @@
                     "eq": "KNeighborsClassifier"
                 }
             }
+        },
+        {
+            "normalization": {
+                "type": {
+                    "in": [
+                        "StandardScaler",
+                        "MinMaxScaler"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "DecisionTreeClassifier"
+                }
+            }
         }
     ],
     "instance_constraints": [
         {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 4
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 4
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
             "prototype": "discretization_classification",
             "discretization": {
                 "type": "KBinsDiscretizer",
@@ -105,11 +2140,39 @@
             "prototype": "discretization_classification",
             "discretization": {
                 "type": "KBinsDiscretizer",
-                "n_bins": 6
+                "n_bins": 10
             },
             "classification": {
                 "type": "KNeighborsClassifier",
                 "n_neighbors": 6
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 8
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 8
             },
             "normalization": {
                 "type": "FunctionTransformer"
@@ -133,11 +2196,304 @@
             "prototype": "discretization_classification",
             "discretization": {
                 "type": "KBinsDiscretizer",
-                "n_bins": 6
+                "n_bins": 10
             },
             "classification": {
                 "type": "KNeighborsClassifier",
                 "n_neighbors": 10
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 12
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 12
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 14
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 14
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 16
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 16
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 18
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 18
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 20
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 20
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 22
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 22
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 24
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 24
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 26
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 26
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 28
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 28
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 30
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 30
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
             },
             "normalization": {
                 "type": "FunctionTransformer"
@@ -160,6 +2516,19 @@
             "prototype": "classification",
             "classification": {
                 "type": "KNeighborsClassifier",
+                "n_neighbors": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
                 "n_neighbors": 10
             },
             "discretization": {
@@ -167,6 +2536,3734 @@
             },
             "normalization": {
                 "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": true
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": false,
+                "with_std": false
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 4
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 6
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 8
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 10
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 12
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 14
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 16
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 18
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 20
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 22
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 24
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 26
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 28
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 10
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 30
             }
         }
     ],
