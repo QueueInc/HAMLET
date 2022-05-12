@@ -28,7 +28,7 @@ from hamlet.Buffer import Buffer
 
 def get_prototype(config):
     # We define the ml pipeline to optimize (i.e., the order of the pre-processing transformations + the ml algorithm)
-    ml_pipeline = config["Prototype"]
+    ml_pipeline = config["prototype"]
     if ml_pipeline is None:
         raise NameError("No prototype specified")
     else:
