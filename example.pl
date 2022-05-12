@@ -17,8 +17,8 @@ h4 : operator(classification, dt) => hyperparameter(dt, max_depth, randint).
 d4 : hyperparameter(dt, max_depth, randint) => domain(dt, max_depth, [1, 5]).
 
 o4 : step(classification) => operator(classification, knn).
-h5 : operator(classification, knn) => hyperparameter(knn, k, randint).
-d5 : hyperparameter(knn, k, randint) => domain(knn, k, [6, 10]).
+h5 : operator(classification, knn) => hyperparameter(knn, n_neighbors, randint).
+d5 : hyperparameter(knn, n_neighbors, randint) => domain(knn, n_neighbors, [6, 10]).
 
 c1 : [] => mandatory([normalization], classification).
 c2 : [] => forbidden([normalization], dt).

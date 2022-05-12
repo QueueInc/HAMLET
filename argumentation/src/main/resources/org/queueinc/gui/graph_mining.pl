@@ -22,7 +22,7 @@ fetch_space(Space) :-
     ).
 
 map_space([], []).
-map_space([(algorithm, X, Y)|T], [(classification, X, Y)|TT]) :- !, map_space(T, TT).
+map_space([(classification, X, Y)|T], [(classification, X, Y)|TT]) :- !, map_space(T, TT).
 map_space([(Z, X, Y)|T], [(Z, X, [(functionTransformer)|Y])|TT]) :- map_space(T, TT).
 
 
