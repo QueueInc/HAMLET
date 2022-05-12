@@ -157,7 +157,7 @@ class FakeMain {
                                 """
                                 {
                                     $it,
-                                    "classification": {"type": {"eq": "${unifier[C]}"}}
+                                    "classification": {"type": {"eq": "${unifier[C]!!.toSklearnClass()}"}}
                                 }
                                 """
                             }

@@ -84,7 +84,7 @@
             },
             "classification": {
                 "type": {
-                    "eq": "knn"
+                    "eq": "KNeighborsClassifier"
                 }
             }
         }
