@@ -34,12 +34,13 @@ def main(args):
     metric = "accuracy"
     seed = 42
     np.random.seed(seed)
-    # keep it in mind that this is incremental iterations after iterations (past points_to_evaluate and instance_constraints should be included in the count)
-    batch_size = 25
 
     buffer = Buffer(args["path"])
     space = buffer.get_space()
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
+
+    # keep it in mind that this is incremental iterations after iterations (past points_to_evaluate and instance_constraints should be included in the count)
+    batch_size = 25 + len(points_to_evaluate)
 
     print(
         pd.concat(
@@ -88,7 +89,7 @@ def main(args):
             ),
         ],
         axis=1,
-    ).to_csv("trial.csv")
+    ).to_csv("automl_output.csv")
 
 
 if __name__ == "__main__":
