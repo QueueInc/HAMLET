@@ -57,7 +57,7 @@ class Loader:
                 f"The step {step} in a constraint does not exist in the declared search space."
             )
         hyper_parameter_conditions = []
-        if step == "Prototype":
+        if step == "prototype":
             if "neq" in operator_config:
                 return config[step] != operator_config["neq"]
             if "eq" in operator_config:
@@ -104,6 +104,15 @@ class Loader:
                     hyper_parameter_conditions.append(
                         config[step][hyper_parameter_key]
                         <= hyper_parameter_value["lte"]
+                    )
+                if "in" in hyper_parameter_value:
+                    hyper_parameter_conditions.append(
+                        config[step][hyper_parameter_key] in hyper_parameter_value["in"]
+                    )
+                if "nin" in hyper_parameter_value:
+                    hyper_parameter_conditions.append(
+                        config[step][hyper_parameter_key]
+                        not in hyper_parameter_value["nin"]
                     )
             return all(hyper_parameter_conditions)
 
