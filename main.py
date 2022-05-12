@@ -93,5 +93,5 @@ def main(args):
 
 if __name__ == "__main__":
     # args = parse_args()
-    args = {"path": "/workspace/knowledge.json"}
+    args = {"path": "/workspace/knowledge-generated.json"}
     main(args)

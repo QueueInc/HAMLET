@@ -16,10 +16,12 @@ from sklearn.preprocessing import (
     StandardScaler,
     MinMaxScaler,
     PowerTransformer,
+    KBinsDiscretizer,
 )
 
 ## Classification algorithms
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 from hamlet.Buffer import Buffer
 

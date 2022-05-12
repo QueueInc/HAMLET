@@ -81,6 +81,17 @@ class FakeMain {
             
         """.trimIndent()
 
+        fun Term.toSklearnClass() =
+            when(this.toString()) {
+                "dt" -> "DecisionTreeClassifier"
+                "knn" -> "KNeighborsClassifier"
+                "kbins" -> "KBinsDiscretizer"
+                "standard" -> "StandardScaler"
+                "minmax" -> "MinMaxScaler"
+                "functionTransformer" -> "FunctionTransformer"
+                else -> this.toString()
+            }
+
         @JvmStatic
         fun translateSpace(space: Term) =
             prolog {
@@ -91,7 +102,7 @@ class FakeMain {
                                 if (operator.toString() == "functionTransformer") {
                                     """
                                     {
-                                        "type" : "functionTransformer"
+                                        "type" : "FunctionTransformer"
                                     }
                                     """
                                 } else "\"$operator\""
@@ -108,7 +119,7 @@ class FakeMain {
                                     }.let {
                                         """
                                         {
-                                            "type" : "${unifier2[A]}",
+                                            "type" : "${unifier2[A]!!.toSklearnClass()}",
                                             $it
                                         }
                                         """
@@ -140,7 +151,7 @@ class FakeMain {
                         Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                             unifier[A]!!.castToList().toList().mapIndexed { i, step ->
                                 """
-                                "$step" : {"type": {"$comparator": ${unifier[B]!!.castToList().toList()[i].castToList().toList().map { "\"$it\"" }}}}
+                                "$step" : {"type": {"$comparator": ${unifier[B]!!.castToList().toList()[i].castToList().toList().map { "\"${it.toSklearnClass()}\"" }}}}
                                 """
                             }.joinToString(",\n").let {
                                 """
@@ -178,7 +189,7 @@ class FakeMain {
                                 }.let { hyperparameters ->
                                     """
                                     "${it[D]}": {
-                                        "type": "${it[E]}",
+                                        "type": "${it[E]!!.toSklearnClass()}",
                                         $hyperparameters
                                     }
                                     """
@@ -189,7 +200,7 @@ class FakeMain {
                             Unificator.default.mgu(step, tupleOf(B, C)).let {
                                 """
                                 "${it[B]}": {
-                                    "type": "${it[C]}"
+                                    "type": "${it[C]!!.toSklearnClass()}"
                                 }
                                 """
                             }
@@ -217,7 +228,7 @@ class FakeMain {
                     .map { translateSpace(it.substitution[X]!!) }
                     .first()
 
-                val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_mandatory"(Y)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_forbidden"(Y)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                     .filter { it.isYes }
                     .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!) }
                     .first()
@@ -227,7 +238,7 @@ class FakeMain {
                     .map { translateInstances(it.substitution[X]!!) }
                     .first()
 
-                "{ $space, $templates, $instances }"
+                "{$space,$templates,$instances,\"points_to_evaluate\":[],\"evaluated_rewards\":[]}"
             }
 
         @JvmStatic

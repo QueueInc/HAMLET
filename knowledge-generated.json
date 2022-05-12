@@ -1,0 +1,178 @@
+{
+    "space": {
+        "prototype": {
+            "choice": [
+                "normalization_classification",
+                "normalization_discretization_classification",
+                "classification",
+                "discretization_classification",
+                "discretization_normalization_classification"
+            ]
+        },
+        "discretization": {
+            "choice": [
+                {
+                    "type": "FunctionTransformer"
+                },
+                {
+                    "type": "KBinsDiscretizer",
+                    "n_bins": {
+                        "randint": [
+                            2,
+                            6
+                        ]
+                    }
+                }
+            ]
+        },
+        "normalization": {
+            "choice": [
+                {
+                    "type": "FunctionTransformer"
+                },
+                {
+                    "type": "StandardScaler",
+                    "with_mean": {
+                        "choice": [
+                            true,
+                            false
+                        ]
+                    },
+                    "with_std": {
+                        "choice": [
+                            true,
+                            false
+                        ]
+                    }
+                }
+            ]
+        },
+        "classification": {
+            "choice": [
+                {
+                    "type": "FunctionTransformer"
+                },
+                {
+                    "type": "DecisionTreeClassifier",
+                    "max_depth": {
+                        "randint": [
+                            1,
+                            5
+                        ]
+                    }
+                },
+                {
+                    "type": "KNeighborsClassifier",
+                    "k": {
+                        "randint": [
+                            6,
+                            10
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "template_constraints": [
+        {
+            "normalization": {
+                "type": {
+                    "nin": [
+                        "StandardScaler"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "knn"
+                }
+            }
+        }
+    ],
+    "instance_constraints": [
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 6
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 6
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 6
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 10
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "type": "KBinsDiscretizer",
+                "n_bins": 6
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 10
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 6
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "k": 10
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        }
+    ],
+    "points_to_evaluate": [],
+    "evaluated_rewards": []
+}
