@@ -1,5 +1,5 @@
 import json
-from flaml import tune
+from ray import tune
 
 
 class Loader:

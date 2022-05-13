@@ -23,6 +23,7 @@ from sklearn.preprocessing import (
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+from ray import tune
 from hamlet.Buffer import Buffer
 
 
@@ -59,16 +60,16 @@ def instantiate_pipeline(prototype, seed, config):
 
 
 # We define the function to optimize
-def objective(X, y, metric, seed, config):
-    result = {"accuracy": float("-inf"), "status": "fail"}
+def objective(config, X, y, metric, seed):
+    result = {metric: 0, "status": "fail"}
 
-    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
-    if is_point_to_evaluate:
-        return reward
+    # is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
+    # if is_point_to_evaluate:
+    #    return reward
 
-    if Buffer().check_template_constraints(config):
-        Buffer().add_evaluation(config=config, result=result)
-        return result
+    # if Buffer().check_template_constraints(config):
+    #    Buffer().add_evaluation(config=config, result=result)
+    #    return result
 
     try:
         prototype = get_prototype(config)
@@ -96,5 +97,5 @@ def objective(X, y, metric, seed, config):
               {traceback.print_exc()}"""
         )
 
-    Buffer().add_evaluation(config=config, result=result)
+    # Buffer().add_evaluation(config=config, result=result)
     return result
