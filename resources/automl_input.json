@@ -6267,6 +6267,370 @@
             }
         }
     ],
-    "points_to_evaluate": [],
-    "evaluated_rewards": []
+    "points_to_evaluate": [
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 2,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "classification": {
+                "max_depth": 14,
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 4,
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_mean": false,
+                "with_std": false,
+                "type": "StandardScaler"
+            },
+            "classification": {
+                "max_depth": 25,
+                "type": "DecisionTreeClassifier"
+            }
+        },
+        {
+            "prototype": "classification",
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 2
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "classification": {
+                "n_neighbors": 3,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "n_neighbors": 9,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "classification": {
+                "n_neighbors": 29,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "classification": {
+                "n_neighbors": 25,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "classification",
+            "classification": {
+                "n_neighbors": 28,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 22,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 19,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 25,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "classification": {
+                "n_neighbors": 22,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "classification": {
+                "n_neighbors": 22,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 20,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 24,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 21,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "classification": {
+                "n_neighbors": 23,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 8,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "discretization": {
+                "n_bins": 9,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "discretization": {
+                "n_bins": 9,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "discretization_classification",
+            "discretization": {
+                "n_bins": 3,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "max_depth": 2,
+                "type": "DecisionTreeClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 3,
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_mean": false,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "classification": {
+                "n_neighbors": 17,
+                "type": "KNeighborsClassifier"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "discretization": {
+                "n_bins": 9,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "n_neighbors": 24,
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "normalization_classification",
+            "discretization": {
+                "n_bins": 9,
+                "type": "KBinsDiscretizer"
+            },
+            "classification": {
+                "n_neighbors": 22,
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        }
+    ],
+    "evaluated_rewards": [
+        "0.6699346405228759",
+        "0.865032679738562",
+        "-inf",
+        "0.6699346405228759",
+        "0.7209150326797384",
+        "0.6977124183006536",
+        "0.9663398692810456",
+        "0.9718954248366012",
+        "0.9493464052287581",
+        "0.9718954248366012",
+        "0.9663398692810456",
+        "0.9718954248366012",
+        "-inf",
+        "0.9326797385620915",
+        "0.9774509803921569",
+        "0.9774509803921569",
+        "0.9718954248366012",
+        "-inf",
+        "0.7199346405228757",
+        "0.9774509803921569",
+        "0.9718954248366012",
+        "0.9663398692810456",
+        "0.9774509803921569",
+        "0.9722222222222221",
+        "0.9718954248366012"
+    ]
 }

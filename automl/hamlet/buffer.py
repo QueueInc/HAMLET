@@ -1,4 +1,4 @@
-from .Loader import Loader
+from .loader import Loader
 
 
 class Buffer:
@@ -7,20 +7,20 @@ class Buffer:
     _configs = []
     _results = []
 
-    def __new__(cls, path=None):
+    def __new__(cls, metric=None, input_path=None):
         if cls._instance is None:
             cls._instance = super(Buffer, cls).__new__(cls)
 
-        if path:
-            cls._instance._loader = Loader(path)
+        if metric and input_path:
+            cls._instance._loader = Loader(input_path)
             cls._instance._configs = (
                 cls._instance._loader.get_points_to_evaluate()
                 + cls._instance._loader.get_instance_constraints()
             )
             cls._instance._results = [
-                {"accuracy": result, "status": "success"}
+                {metric: float(result), "status": "success"}
                 for result in cls._instance._loader.get_evaluated_rewards()
-            ] + [{"accuracy": float("-inf"), "status": "fail"}] * len(
+            ] + [{metric: float("-inf"), "status": "fail"}] * len(
                 cls._instance._loader.get_instance_constraints()
             )
         return cls._instance

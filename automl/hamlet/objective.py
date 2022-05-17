@@ -23,7 +23,7 @@ from sklearn.preprocessing import (
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from hamlet.Buffer import Buffer
+from .buffer import Buffer
 
 
 def get_prototype(config):
@@ -60,7 +60,7 @@ def instantiate_pipeline(prototype, seed, config):
 
 # We define the function to optimize
 def objective(X, y, metric, seed, config):
-    result = {"accuracy": float("-inf"), "status": "fail"}
+    result = {metric: float("-inf"), "status": "fail"}
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
     if is_point_to_evaluate:
@@ -86,8 +86,7 @@ def objective(X, y, metric, seed, config):
             verbose=0,
         )
 
-        accuracy = np.mean(scores["test_" + metric])
-        result[metric] = accuracy
+        result[metric] = np.mean(scores["test_" + metric])
         result["status"] = "success"
 
     except Exception as e:
