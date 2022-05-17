@@ -1,3 +1,4 @@
+from asyncore import write
 from functools import partial
 
 import argparse
@@ -13,12 +14,14 @@ from ray.tune.suggest.flaml import BlendSearch
 from ray.tune.suggest.hyperopt import HyperOptSearch
 from ray.tune.suggest.bayesopt import BayesOptSearch
 from ray.tune.suggest import ConcurrencyLimiter
+from ray.tune.suggest.skopt import SkOptSearch
 
 from experiment.datasets import get_dataset
 from experiment.objective import objective
 from experiment.space import get_space
 from hamlet.Buffer import Buffer
 
+from skopt import Optimizer
 
 import psutil
 
@@ -70,23 +73,23 @@ def main(args):
     # algo = BayesOptSearch(
     #    metric=metric, mode="max", points_to_evaluate=points_to_evaluate
     # )
-    # algo = HyperOptSearch(
-    #    metric=metric, mode="max", points_to_evaluate=points_to_evaluate
-    # )
-    algo = BlendSearch(points_to_evaluate=[points_to_evaluate[-1]])
+    algo = HyperOptSearch(
+        metric=metric, mode="max"  # , points_to_evaluate=points_to_evaluate[:20]
+    )
+    # algo = BlendSearch()
     algo = ConcurrencyLimiter(algo, 1)
     analysis = tune.run(
         run_or_experiment=tune.with_parameters(
-            objective, X=X, y=y, metric=metric, seed=seed
+            objective, X=X, y=y, metric="accuracy", seed=seed
         ),
-        metric=metric,
+        metric="accuracy",
         mode="max",
         config=space,
         num_samples=20,
         # stop={"training_iteration": batch_size},
         search_alg=algo,
         # evaluated_rewards=evaluated_rewards,
-        # verbose=False,
+        verbose=0,
     )
 
     # points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
@@ -105,19 +108,61 @@ def main(args):
 
     print(analysis.dataframe())
 
-    # pd.concat(
-    #     [
-    #         pd.DataFrame(points_to_evaluate),
-    #         pd.DataFrame(
-    #             [reward["accuracy"] for reward in evaluated_rewards],
-    #             columns=["accuracy"],
-    #         ),
-    #     ],
-    #     axis=1,
-    # ).to_csv("automl_output.csv")
+    pd.concat(
+        [
+            pd.DataFrame(points_to_evaluate),
+            pd.DataFrame(
+                [reward["accuracy"] for reward in evaluated_rewards],
+                columns=["accuracy"],
+            ),
+        ],
+        axis=1,
+    ).to_csv("automl_output.csv")
+
+
+def prova():
+    def objective(x, a, b):
+        return a * (x**0.5) + b
+
+    def trainable(config, checkpoint_dir=None, pippo=None):
+        print(pippo)
+        # config (dict): A dict of hyperparameters.
+        final_score = 0
+        for x in range(20):
+            final_score = objective(x, config["a"], config["b"])
+            tune.report(
+                **{"merda": final_score, "ciao": 3}
+            )  # This sends the score to Tune.
+
+    # algo = BlendSearch()
+
+    # optimizer = Optimizer(
+    #     base_estimator="rf",
+    # )
+
+    hyperopt_search = HyperOptSearch(metric="merda", mode="min")
+
+    # skopt_search = SkOptSearch(metric="merda", mode="min")
+
+    analysis = tune.run(
+        tune.with_parameters(trainable, pippo="ciao"),
+        # trainable,
+        config={
+            "a": tune.randint(1, 20),
+            "b": tune.randint(1, 20),
+            "c": tune.choice([{"d": "a", "a": tune.randint(1, 10)}]),
+        },
+        num_samples=4,
+        metric="merda",
+        mode="min",
+        search_alg=hyperopt_search,
+    )
+
+    print("best config: ", analysis.get_best_config(metric="merda", mode="max"))
 
 
 if __name__ == "__main__":
     # args = parse_args()
     args = {"path": "/workspace/knowledge-generated.json"}
     main(args)
+    # prova()

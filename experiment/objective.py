@@ -61,6 +61,9 @@ def instantiate_pipeline(prototype, seed, config):
 
 # We define the function to optimize
 def objective(config, X, y, metric, seed):
+
+    print(config)
+
     result = {metric: 0, "status": "fail"}
 
     # is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
@@ -97,5 +100,6 @@ def objective(config, X, y, metric, seed):
               {traceback.print_exc()}"""
         )
 
+    print(result)
     # Buffer().add_evaluation(config=config, result=result)
-    return result
+    tune.report(**result)
