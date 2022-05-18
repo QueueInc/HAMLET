@@ -5,6 +5,6 @@ python automl/main.py \
     -metric "balanced_accuracy" \
     -mode "max" \
     -batch_size 25 \
-    -input_path "/workspace/resources/automl_input.json" \
-    -output_path "/workspace/resources/automl_output.json" \
+    -input_path "/workspaces/HAMLET/resources/automl_input.json" \
+    -output_path "/workspaces/HAMLET/resources/automl_output.json" \
     -seed 42

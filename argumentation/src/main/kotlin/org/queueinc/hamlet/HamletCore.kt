@@ -1,4 +1,4 @@
-package org.queueinc.gui
+package org.queueinc.hamlet
 
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.libs.ArgLibrary

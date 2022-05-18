@@ -14,9 +14,10 @@ choose metric between these ones: https://scikit-learn.org/stable/modules/model_
 
 # TODO ARGUMENTATION
 Per finire il giro:
-- generiamo automl_input
+- generiamo automl_input (salvare il file json)
+- chiamare python
+- ingestion di automl_otput (watcher file system)
 - rifattorizzazione
-- ingestion di automl_otput
 
 Migliorie:
 - gestire vincoli iper-parametri

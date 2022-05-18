@@ -27,6 +27,8 @@ dependencies {
     runtimeOnly("org.openjfx:javafx-graphics:16:linux")
     runtimeOnly("org.openjfx:javafx-graphics:16:mac")
 
+    implementation("com.google.code.gson:gson:2.9.0")
+
     /* JUNG DEPENDENCIES */
     api("ch.qos.logback", "logback-classic", "1.2.3")
     api("ch.qos.logback", "logback-core", "1.2.3")
@@ -42,7 +44,7 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.swing")
 }
 
-val entryPoint = "org.queueinc.gui.Main"
+val entryPoint = "org.queueinc.hamlet.Main"
 
 application {
     mainClassName = entryPoint

@@ -1,7 +1,7 @@
-package org.queueinc.gui;
+package org.queueinc.hamlet;
 
 public class Main {
     public static void main(String[] args) {
-        FakeMain.main(args);
+        Starter.main(args);
     }
 }
