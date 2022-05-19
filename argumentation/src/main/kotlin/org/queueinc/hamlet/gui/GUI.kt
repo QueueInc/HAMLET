@@ -17,16 +17,26 @@ data class AutoMLResults(val values: List<List<String>>)
 
 class GUI(private val stage: Stage) {
 
+    private val graph = GraphVisualizer.customTab()
+    private val textArea = TextArea()
+    private val compute = Button("Compute Graph")
+    private val export = Button("Run AutoML")
+
+    private val tabPane = TabPane()
+    private val tab1 = Tab("Graph", graph.node)
+    private val tab2 = Tab("Data")
+
+    fun displayAutoMLData(data: AutoMLResults) {
+        Platform.runLater { tab2.content = toTableView(data.values) }
+    }
+
+    fun displayGraph(solver: MutableSolver) {
+        Platform.runLater { graph.update(solver) }
+    }
+
     fun prepareStage(theory: String, computeAction : (String, (MutableSolver) -> Unit) -> Unit, exportAction : (String, (AutoMLResults) -> Unit) -> Unit) {
 
-        val graph = GraphVisualizer.customTab()
-        val textArea = TextArea(theory)
-        val compute = Button("Compute Graph")
-        val export = Button("Run AutoML")
-
-        val tabPane = TabPane()
-        val tab1 = Tab("Graph", graph.node)
-        val tab2 = Tab("Data")
+        textArea.text = theory
         tabPane.tabs.add(tab1)
         tabPane.tabs.add(tab2)
 
@@ -34,7 +44,6 @@ class GUI(private val stage: Stage) {
         VBox.setVgrow(tabPane, Priority.ALWAYS)
 
         graph.node.maxHeight(Double.MAX_VALUE)
-
 
         val splitPane = SplitPane()
         splitPane.orientation = Orientation.VERTICAL

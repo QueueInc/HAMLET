@@ -9,20 +9,20 @@ import org.queueinc.hamlet.gui.GUI
 import kotlin.system.exitProcess
 
 private var path : String = ""
-private var pythonMode : Boolean = false
+private var dockerMode : Boolean = true
 
 object Starter {
     @JvmStatic
     fun main(args: Array<String>) {
         path = args[0]
-        pythonMode = args[1].toBoolean()
+        dockerMode = args[1].toBoolean()
         Application.launch(HAMLET::class.java)
     }
 }
 
 class HAMLET : Application() {
 
-    private val controller = Controller(path, pythonMode)
+    private val controller = Controller(path, dockerMode)
 
     override fun start(stage: Stage) {
         try {
@@ -35,6 +35,12 @@ class HAMLET : Application() {
                     controller.launchAutoML(kb, exportAction)
                 }
                 view.prepareStage(theory, computeAction, exportAction)
+                controller.loadAutoMLData()?.also {
+                    view.displayAutoMLData(it)
+                }
+                controller.loadGraphData()?.also {
+                    view.displayGraph(it)
+                }
             }
 
             view.show()

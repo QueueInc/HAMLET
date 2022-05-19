@@ -2,6 +2,7 @@ package org.queueinc.hamlet.controller
 
 import com.google.gson.Gson
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
+import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.parsing.parse
@@ -13,12 +14,12 @@ import it.unibo.tuprolog.theory.Theory
 import it.unibo.tuprolog.theory.parsing.parse
 import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
+import org.queueinc.hamlet.automl.execAutoML
+import org.queueinc.hamlet.automl.runAutoML
+import org.queueinc.hamlet.automl.stopAutoML
 import org.queueinc.hamlet.createAndWrite
 import org.queueinc.hamlet.gui.AutoMLResults
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStreamReader
-
 
 val dataset = "wine"
 val metric = "accuracy"
@@ -26,7 +27,7 @@ val mode = "max"
 val batchSize = 25
 val seed = 42
 
-class Controller(private val workspacePath: String, private val pythonMode: Boolean) {
+class Controller(private val workspacePath: String, private val dockerMode: Boolean) {
 
     private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
@@ -37,9 +38,9 @@ class Controller(private val workspacePath: String, private val pythonMode: Bool
 
     fun init() : String {
 
-        if (!pythonMode) {
+        if (dockerMode) {
             stopAutoML()
-            runAutoML()
+            runAutoML(workspacePath)
         }
 
         configReference = File("$workspacePath/config.json")
@@ -57,7 +58,7 @@ class Controller(private val workspacePath: String, private val pythonMode: Bool
     }
 
     fun stop() {
-        if (!pythonMode) {
+        if (dockerMode) {
             stopAutoML()
         }
     }
@@ -83,64 +84,55 @@ class Controller(private val workspacePath: String, private val pythonMode: Bool
             File("${workspacePath}/automl/input/automl_input_${config.iteration}.json").createAndWrite(res)
             File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
             configReference.createAndWrite(Gson().toJson(config))
+            saveGraphData()
 
             Thread {
-                execAutoML(config.iteration, pythonMode)
-                val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.csv").readText().trim('\n')
-                update(AutoMLResults(output.split("\n").mapIndexed { i, el -> listOf(if (i == 0) "iteration" else i.toString()) + el.split(",").map { it.trim() } }))
+                execAutoML(config.iteration, dockerMode)
+                update(loadAutoMLData()!!)
             }.start()
 
         }
     }
 
-    private fun stopAutoML() {
-        val stop = arrayOf("bash", "-c", "docker stop automl_container")
-        val rm = arrayOf("bash", "-c", "docker rm automl_container")
-
-        Runtime.getRuntime().exec(stop).waitFor()
-        Runtime.getRuntime().exec(rm).waitFor()
-    }
-
-    private fun runAutoML() {
-
-        // Little pig
-        val tempPath = if (workspacePath.startsWith("c:", ignoreCase = true))
-            workspacePath.replace("c:", "/mnt/c", ignoreCase = true)
-        else workspacePath
-
-        val build = arrayOf("bash", "-c", "docker build -t automl_container ./.devcontainer")
-        val run = arrayOf("bash", "-c", "docker run --name automl_container --volume \$(pwd)/automl:/home/automl --volume ${tempPath}:/home/resources --detach -t automl_container")
-
-        Runtime.getRuntime().exec(build).waitFor()
-        Runtime.getRuntime().exec(run).waitFor()
-    }
-
-    private fun execAutoML(iteration: Int, pythonMode: Boolean) {
-
-        val exec  = if (!pythonMode)
-            arrayOf("bash", "-c", "docker exec automl_container python automl/main.py" +
-                " --dataset " + dataset + " --metric " + metric + " --mode " + mode + " --batch_size " + batchSize + " --seed " + seed +
-                " --input_path /home/resources/automl/input/automl_input_${iteration}.json" +
-                " --output_path /home/resources/automl/output/automl_output_${iteration}.json")
-            else
-            arrayOf("bash", "-c", "python /automl/main.py" +
-                    " --dataset " + dataset + " --metric " + metric + " --mode " + mode + " --batch_size " + batchSize + " --seed " + seed +
-                    " --input_path /home/resources/automl/input/automl_input_${iteration}.json" +
-                    " --output_path /home/resources/automl/output/automl_output_${iteration}.json")
-
-        val proc = Runtime.getRuntime().exec(exec)
-        val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
-        val stdError = BufferedReader(InputStreamReader(proc.errorStream))
-
-        println("Here is the standard output of the command:\n")
-        var s: String?
-        while (stdInput.readLine().also { s = it } != null) {
-            println(s)
+    fun loadAutoMLData() : AutoMLResults? {
+        val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.csv").let {
+            if (!it.exists()) return null
+            it.readText().trim('\n')
         }
-        println("Here is the standard error of the command (if any):\n")
-        while (stdError.readLine().also { s = it } != null) {
-            println(s)
+
+        return AutoMLResults(
+            output.split("\n")
+                .mapIndexed { i, el ->
+                    listOf(if (i == 0) "iteration" else i.toString()) + el.split(",")
+                        .map { it.trim() } })
+    }
+
+    fun saveGraphData() {
+        arg2pScope {
+            lastSolver?.solve("miner" call "dump_graph_data"(X))
+                ?.filter { it.isYes }
+                ?.map { it.substitution[X].toString() }
+                ?.first()
+                ?.also {
+                    File("${workspacePath}/argumentation/graph_${config.iteration}.txt").createAndWrite(it)
+                }
         }
     }
 
+    fun loadGraphData() : MutableSolver? {
+        val graph = File("${workspacePath}/argumentation/graph_${config.iteration}.txt").let {
+            if (!it.exists()) return null
+            it.readText()
+        }
+        
+        val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
+            otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
+        )
+
+        arg2pScope {
+            solver.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
+        }
+
+        return solver
+    }
 }

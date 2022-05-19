@@ -9,4 +9,4 @@ COPY automl /automl
 COPY argumentation /argumentation
 RUN cd /argumentation && ./gradlew shadowJar
 WORKDIR /home
-ENTRYPOINT ["java", "-jar", "/argumentation/build/libs/hamlet-1.0-SNAPSHOT-all.jar", "/home/resources", "true"]
+ENTRYPOINT ["java", "-jar", "/argumentation/build/libs/hamlet-1.0-SNAPSHOT-all.jar", "/home/resources", "false"]

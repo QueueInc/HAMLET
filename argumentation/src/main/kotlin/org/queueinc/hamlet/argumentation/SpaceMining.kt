@@ -1,5 +1,6 @@
 package org.queueinc.hamlet.argumentation
 
+import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.libs.ArgLibrary
 import it.unibo.tuprolog.argumentation.core.libs.ArgsFlag
 import it.unibo.tuprolog.argumentation.core.libs.Loadable
@@ -18,7 +19,7 @@ object SpaceMining : ArgLibrary, Loadable {
             theory = Theory.parse(
                 SpaceMining::class.java.getResource("graph_mining.pl").let {
                     it!!.readText()
-                }, theoryOperators
+                }, Arg2pSolver.default().operators()
             )
         )
 

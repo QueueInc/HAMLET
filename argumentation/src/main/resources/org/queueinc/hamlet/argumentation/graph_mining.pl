@@ -180,3 +180,16 @@ fetch_out_instances(Instances) :-
 
 % Attacca -> pipeline_instance(Operators, Algorithm, Hyperparameter, Comparator, Value)
 % hyperparameter_exception(algorithm, dt, max_depth, gt, 2, [normalization]).
+
+
+dump_graph_data(Data) :-
+    findall(argument(X), context_check(argument(X)), Arguments),
+    findall(support(X, Y), context_check(support(X, Y)), Supports),
+    findall(attack(X, Y, Z, Q), context_check(attack(X, Y, Z, Q)), Attacks),
+    findall(in(X), context_check(in(X)), In),
+    findall(out(X), context_check(out(X)), Out),
+    findall(und(X), context_check(und(X)), Und),
+    utils::appendLists([Arguments, Supports, Attacks, In, Out, Und], Data).
+
+load_graph_data(Data) :-
+    findall(_, (member(X, Data), context_assert(X)), _).
