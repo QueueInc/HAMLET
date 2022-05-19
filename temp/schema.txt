@@ -1,0 +1,29 @@
+step(Step)
+operator(Step, Operator)
+hyperparameter(Operator, Hyperparameter, Type)
+domain(Operator, Hyperparameter, Value)
+
+pipeline_prototype(Steps, algorithm)
+pipeline(Operators, Algorithm)
+pipeline_instance(Operators, Algorithm, Hyperparameter, Comparator, Value)
+
+
+
+% Attacca -> pipeline(Operators, Algorithm)
+mandatory_steps_for_algorithm([discretization], dt).
+
+% Attacca -> pipeline_prototype(Steps, algorithm)
+incompatible_steps([normalization, discretization]).
+
+% Attacca -> pipeline_instance(Operators, Algorithm, Hyperparameter, Comparator, Value)
+hyperparameter_exception(algorithm, dt, max_depth, eq, 1).
+
+% Attacca -> pipeline_instance(Operators, Algorithm, Hyperparameter, Comparator, Value)
+hyperparameter_exception(algorithm, dt, max_depth, gt, 2, [normalization]).
+
+
+% prendo eccezione X
+    prendo argomenti Z attaccati di tipo Y
+    argomento Z è il template
+
+
