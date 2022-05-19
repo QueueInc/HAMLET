@@ -1,4 +1,4 @@
-package org.queueinc.hamlet
+package org.queueinc.hamlet.controller
 
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.core.Term
@@ -7,6 +7,7 @@ import it.unibo.tuprolog.solve.MutableSolver
 import it.unibo.tuprolog.solve.SolveOptions
 import it.unibo.tuprolog.solve.TimeDuration
 import it.unibo.tuprolog.unify.Unificator
+import org.queueinc.hamlet.toSklearnClass
 
 object SpaceTranslator {
 

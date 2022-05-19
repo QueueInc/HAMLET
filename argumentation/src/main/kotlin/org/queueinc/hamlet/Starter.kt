@@ -1,11 +1,50 @@
 package org.queueinc.hamlet
 
+import it.unibo.tuprolog.solve.MutableSolver
 import javafx.application.Application
+import javafx.stage.Stage
+import org.queueinc.hamlet.controller.Controller
+import org.queueinc.hamlet.gui.GUI
+import kotlin.system.exitProcess
+
+private var path : String = ""
+private var pythonMode : Boolean = false
 
 object Starter {
     @JvmStatic
     fun main(args: Array<String>) {
-        workspacePath = args[0]
-        Application.launch(HamletGUI::class.java)
+        path = args[0]
+        pythonMode = args[1].toBoolean()
+        Application.launch(HAMLET::class.java)
+    }
+}
+
+class HAMLET : Application() {
+
+    private val controller = Controller(path, pythonMode)
+
+    override fun start(stage: Stage) {
+        try {
+            val view = GUI(stage)
+            controller.init().also { theory ->
+                val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
+                    controller.generateGraph(kb, updateAction)
+                }
+                val exportAction : (String) -> Unit = { kb ->
+                    controller.launchAutoML(kb)
+                }
+                view.prepareStage(theory, computeAction, exportAction)
+            }
+
+            view.show()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            throw Error(e)
+        }
+    }
+
+    override fun stop() {
+        controller.stop()
+        exitProcess(0)
     }
 }

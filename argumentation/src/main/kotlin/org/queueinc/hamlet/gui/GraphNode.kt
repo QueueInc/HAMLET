@@ -1,4 +1,4 @@
-package org.queueinc.hamlet
+package org.queueinc.hamlet.gui
 
 import it.unibo.tuprolog.solve.MutableSolver
 import javafx.embed.swing.SwingNode

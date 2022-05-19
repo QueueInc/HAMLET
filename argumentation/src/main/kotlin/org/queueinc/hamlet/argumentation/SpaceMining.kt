@@ -1,4 +1,4 @@
-package org.queueinc.hamlet
+package org.queueinc.hamlet.argumentation
 
 import it.unibo.tuprolog.argumentation.core.libs.ArgLibrary
 import it.unibo.tuprolog.argumentation.core.libs.ArgsFlag
@@ -14,7 +14,7 @@ object SpaceMining : ArgLibrary, Loadable {
 
     override val baseContent: AliasedLibrary
         get() = Library.aliased(
-            alias = this.alias,
+            alias = alias,
             theory = Theory.parse(
                 SpaceMining::class.java.getResource("graph_mining.pl").let {
                     it!!.readText()

@@ -1,6 +1,7 @@
 package org.queueinc.hamlet
 
 import it.unibo.tuprolog.core.Term
+import java.io.File
 
 fun Term.toSklearnClass() =
     when(this.toString()) {
@@ -12,3 +13,8 @@ fun Term.toSklearnClass() =
         "functionTransformer" -> "FunctionTransformer"
         else -> this.toString()
     }
+
+fun File.createAndWrite(text: String) {
+    this.createNewFile()
+    this.writeText(text)
+}

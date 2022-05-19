@@ -1,4 +1,4 @@
-package org.queueinc.hamlet
+package org.queueinc.hamlet.gui
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout
 import edu.uci.ics.jung.algorithms.layout.Layout

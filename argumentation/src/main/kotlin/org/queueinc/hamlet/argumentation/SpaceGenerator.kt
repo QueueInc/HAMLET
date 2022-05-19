@@ -1,4 +1,4 @@
-package org.queueinc.hamlet
+package org.queueinc.hamlet.argumentation
 
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.libs.ArgLibrary
@@ -8,15 +8,15 @@ import it.unibo.tuprolog.solve.library.Library
 import it.unibo.tuprolog.theory.Theory
 import it.unibo.tuprolog.theory.parsing.parse
 
-object HamletCore : ArgLibrary {
+object SpaceGenerator : ArgLibrary {
 
     override val alias = "hamlet.core"
 
     override val baseContent: AliasedLibrary
         get() = Library.aliased(
-            alias = this.alias,
+            alias = alias,
             theory = Theory.parse(
-                HamletCore::class.java.getResource("engine.pl").let {
+                SpaceGenerator::class.java.getResource("engine.pl").let {
                     it!!.readText()
                 }, Arg2pSolver.default().operators()
             )
