@@ -21,6 +21,7 @@ def json_to_csv(automl_output, args):
     input = [flattenjson(x, "__") for x in to_export]
     columns = [x for row in input for x in row.keys()]
     columns = list(set(columns))
+    columns.sort(reverse=True)
 
     with open(args.output_path.replace("json", "csv"), "w") as out_file:
         csv_w = csv.writer(out_file)
