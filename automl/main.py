@@ -52,9 +52,9 @@ def main(args):
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
 
     automl_output = {
-        "points_to_evaluate": points_to_evaluate[-args.batch_size :],
+        "points_to_evaluate": points_to_evaluate[-buffer.get_num_points_to_consider():],
         "evaluated_rewards": [
-            str(reward[args.metric]) for reward in evaluated_rewards[-args.batch_size :]
+            str(reward[args.metric]) for reward in evaluated_rewards[-buffer.get_num_points_to_consider():]
         ],
         "rules": [],
     }
@@ -66,9 +66,9 @@ def main(args):
 
     # results_df = pd.concat(
     #     [
-    #         pd.DataFrame(points_to_evaluate[-args.batch_size:]),
+    #         pd.DataFrame(points_to_evaluate[-buffer.get_num_points_to_consider():]),
     #         pd.DataFrame(
-    #             [reward[args.metric] for reward in evaluated_rewards[-args.batch_size:]],
+    #             [reward[args.metric] for reward in evaluated_rewards[-buffer.get_num_points_to_consider():]],
     #             columns=[args.metric],
     #         ),
     #     ],
