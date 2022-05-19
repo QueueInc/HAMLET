@@ -14,9 +14,11 @@ import it.unibo.tuprolog.theory.parsing.parse
 import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
 import org.queueinc.hamlet.createAndWrite
+import org.queueinc.hamlet.gui.AutoMLResults
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+
 
 val dataset = "wine"
 val metric = "accuracy"
@@ -74,9 +76,9 @@ class Controller(private val workspacePath: String, private val pythonMode: Bool
         }.start()
     }
 
-    fun launchAutoML(theory: String) {
-        lastSolver?.also {
-            val res = SpaceTranslator.mineData(it)
+    fun launchAutoML(theory: String, update: (AutoMLResults) -> Unit) {
+        lastSolver?.also { solver ->
+            val res = SpaceTranslator.mineData(solver)
             config.iteration++
             File("${workspacePath}/automl/input/automl_input_${config.iteration}.json").createAndWrite(res)
             File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
@@ -84,6 +86,8 @@ class Controller(private val workspacePath: String, private val pythonMode: Bool
 
             Thread {
                 execAutoML(config.iteration, pythonMode)
+                val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.csv").readText().trim('\n')
+                update(AutoMLResults(output.split("\n").mapIndexed { i, el -> listOf(if (i == 0) "iteration" else i.toString()) + el.split(",").map { it.trim() } }))
             }.start()
 
         }

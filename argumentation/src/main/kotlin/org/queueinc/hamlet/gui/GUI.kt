@@ -2,6 +2,9 @@ package org.queueinc.hamlet.gui
 
 import it.unibo.tuprolog.solve.MutableSolver
 import javafx.application.Platform
+import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.geometry.Orientation
 import javafx.scene.Scene
 import javafx.scene.control.*
@@ -10,10 +13,11 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 
+data class AutoMLResults(val values: List<List<String>>)
 
 class GUI(private val stage: Stage) {
 
-    fun prepareStage(theory: String, computeAction : (String, (MutableSolver) -> Unit) -> Unit, exportAction : (String) -> Unit) {
+    fun prepareStage(theory: String, computeAction : (String, (MutableSolver) -> Unit) -> Unit, exportAction : (String, (AutoMLResults) -> Unit) -> Unit) {
 
         val graph = GraphVisualizer.customTab()
         val textArea = TextArea(theory)
@@ -22,7 +26,9 @@ class GUI(private val stage: Stage) {
 
         val tabPane = TabPane()
         val tab1 = Tab("Graph", graph.node)
+        val tab2 = Tab("Data")
         tabPane.tabs.add(tab1)
+        tabPane.tabs.add(tab2)
 
         val vbox = VBox(HBox(compute, export), tabPane)
         VBox.setVgrow(tabPane, Priority.ALWAYS)
@@ -46,7 +52,9 @@ class GUI(private val stage: Stage) {
         }
 
         export.setOnAction {
-            exportAction(textArea.text)
+            exportAction(textArea.text) {
+                Platform.runLater { tab2.content = toTableView(it.values) }
+            }
         }
 
         stage.title = "HAMLET"
@@ -55,3 +63,23 @@ class GUI(private val stage: Stage) {
 
     fun show() = stage.show()
 }
+
+fun toTableView(rows: List<List<String>>) : TableView<ObservableList<String>> {
+    val tableView = TableView<ObservableList<String>>()
+    for (i in rows[0].indices) {
+        val column: TableColumn<ObservableList<String>, String> = TableColumn(
+            rows[0][i]
+        )
+        column.setCellValueFactory { param -> ReadOnlyObjectWrapper(param.value[i]) }
+        tableView.columns.add(column)
+    }
+
+    rows.drop(1).forEach {
+        tableView.items.add(
+            FXCollections.observableArrayList(it)
+        )
+    }
+
+    return tableView
+}
+

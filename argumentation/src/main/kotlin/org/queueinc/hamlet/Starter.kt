@@ -4,6 +4,7 @@ import it.unibo.tuprolog.solve.MutableSolver
 import javafx.application.Application
 import javafx.stage.Stage
 import org.queueinc.hamlet.controller.Controller
+import org.queueinc.hamlet.gui.AutoMLResults
 import org.queueinc.hamlet.gui.GUI
 import kotlin.system.exitProcess
 
@@ -30,8 +31,8 @@ class HAMLET : Application() {
                 val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
                     controller.generateGraph(kb, updateAction)
                 }
-                val exportAction : (String) -> Unit = { kb ->
-                    controller.launchAutoML(kb)
+                val exportAction : (String, (AutoMLResults) -> Unit) -> Unit = { kb, exportAction ->
+                    controller.launchAutoML(kb, exportAction)
                 }
                 view.prepareStage(theory, computeAction, exportAction)
             }
