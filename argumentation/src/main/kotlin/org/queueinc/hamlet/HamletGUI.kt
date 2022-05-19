@@ -50,8 +50,14 @@ fun stopAutoML() {
 }
 
 fun runAutoML() {
+
+    // Little pig
+    val tempPath = if (workspacePath.startsWith("c:", ignoreCase = true))
+        workspacePath.replace("c:", "/mnt/c", ignoreCase = true)
+            else workspacePath
+
     val build = arrayOf("bash", "-c", "docker build -t automl_container ./.devcontainer")
-    val run = arrayOf("bash", "-c", "docker run --name automl_container --volume \$(pwd)/automl:/home/automl --volume /mnt/c/Users/giuseppe.pisano5/Documents/MyProjects/HAMLET/resources:/home/resources --detach -t automl_container")
+    val run = arrayOf("bash", "-c", "docker run --name automl_container --volume \$(pwd)/automl:/home/automl --volume ${tempPath}:/home/resources --detach -t automl_container")
 
     Runtime.getRuntime().exec(build).waitFor()
     Runtime.getRuntime().exec(run).waitFor()
@@ -68,7 +74,7 @@ fun execAutoML(iteration: Int) {
     val stdError = BufferedReader(InputStreamReader(proc.errorStream))
 
     println("Here is the standard output of the command:\n")
-    var s: String? = null
+    var s: String?
     while (stdInput.readLine().also { s = it } != null) {
         println(s)
     }
@@ -83,13 +89,13 @@ fun execAutoML(iteration: Int) {
 class HamletGUI : Application() {
 
     private var config: Config = Config(0)
-    var oldKb = ""
+    private var oldKb = ""
 
     override fun start(stage: Stage) {
         try {
             stopAutoML()
             runAutoML()
-            println("ciao")
+
             val configReference = File("$workspacePath/config.json")
             if (configReference.exists()) {
                 config = Gson().fromJson(configReference.readText(), Config::class.java)
@@ -112,7 +118,7 @@ class HamletGUI : Application() {
             val compute = Button("Compute Graph")
             compute.minWidth = 50.0
 
-            compute.setOnAction { _ ->
+            compute.setOnAction {
                 val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
                     otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
                     staticKb = Theory.parse(textArea.text, arg2p.operators())
