@@ -67,7 +67,7 @@ fun execAutoML(iteration: Int) {
     val exec = arrayOf("bash", "-c", "docker exec automl_container python automl/main.py" +
         " --dataset " + dataset + " --metric " + metric + " --mode " + mode + " --batch_size " + batchSize + " --seed " + seed +
         " --input_path /home/resources/automl/input/automl_input_${iteration}.json" +
-        " --output_path /home/resources/automl/input/automl_output_${iteration}.json")
+        " --output_path /home/resources/automl/output/automl_output_${iteration}.json")
 
     val proc = Runtime.getRuntime().exec(exec)
     val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
