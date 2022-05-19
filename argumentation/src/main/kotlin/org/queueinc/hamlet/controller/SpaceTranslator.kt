@@ -55,7 +55,7 @@ object SpaceTranslator {
                 }
             }.let {
                 """
-                    "space" : {
+                    {
                         $it
                     }
                     """.replace("\\s".toRegex(), "")
@@ -85,7 +85,7 @@ object SpaceTranslator {
             }
         }
         return """
-                "template_constraints" : ${transform(mandatory, "nin") + transform(forbidden, "in")}
+                ${transform(mandatory, "nin") + transform(forbidden, "in")}
             """.replace("\\s".toRegex(), "")
     }
 
@@ -131,17 +131,12 @@ object SpaceTranslator {
                            } 
                         """
                 }
-            }.let {
-                """
-                        "instance_constraints" : $it 
-                    """.replace("\\s".toRegex(), "")
-            }
+            }.toString().replace("\\s".toRegex(), "")
         }
 
     @JvmStatic
     fun mineData(solver: MutableSolver) =
         arg2pScope {
-
             val space = solver.solve("miner" call "fetch_complete_space"(X), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
                 .map { translateSpace(it.substitution[X]!!) }
@@ -157,6 +152,6 @@ object SpaceTranslator {
                 .map { translateInstances(it.substitution[X]!!) }
                 .first()
 
-            "{$space,$templates,$instances,\"points_to_evaluate\":[],\"evaluated_rewards\":[]}"
+            arrayOf(space, templates, instances)
         }
 }

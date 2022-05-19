@@ -1,6 +1,7 @@
 package org.queueinc.hamlet.controller
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
@@ -20,6 +21,7 @@ import org.queueinc.hamlet.automl.stopAutoML
 import org.queueinc.hamlet.createAndWrite
 import org.queueinc.hamlet.gui.AutoMLResults
 import java.io.File
+
 
 val dataset = "wine"
 val metric = "accuracy"
@@ -79,9 +81,13 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
 
     fun launchAutoML(theory: String, update: (AutoMLResults) -> Unit) {
         lastSolver?.also { solver ->
-            val res = SpaceTranslator.mineData(solver)
+
+            val (space, templates, instances) = SpaceTranslator.mineData(solver)
+            val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints()
+
             config.iteration++
-            File("${workspacePath}/automl/input/automl_input_${config.iteration}.json").createAndWrite(res)
+            File("${workspacePath}/automl/input/automl_input_${config.iteration}.json")
+                .createAndWrite("{\"space\":$space,\"template_constraints\":$templates,\"instance_constraints\":$instances,\"points_to_evaluate\":$pointsToEvaluate,\"evaluated_rewards\":$evaluatedRewards}")
             File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
             configReference.createAndWrite(Gson().toJson(config))
             saveGraphData()
@@ -91,6 +97,18 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
                 update(loadAutoMLData()!!)
             }.start()
 
+        }
+    }
+
+    fun loadAutoMLPoints() : Pair<String, String> {
+        val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.json").let {
+            if (!it.exists()) return "[]" to "[]"
+            it.readText().trim('\n')
+        }
+
+        return Gson().fromJson(output, JsonObject::class.java).let {
+            it.getAsJsonArray("points_to_evaluate").toString() to
+                    it.getAsJsonArray("evaluated_rewards").toString()
         }
     }
 
@@ -124,15 +142,15 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
             if (!it.exists()) return null
             it.readText()
         }
-        
-        val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
+
+        lastSolver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
             otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
         )
 
         arg2pScope {
-            solver.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
+            lastSolver!!.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
         }
 
-        return solver
+        return lastSolver
     }
 }
