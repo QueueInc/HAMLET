@@ -1,6 +1,7 @@
 from functools import partial
 
 from utils.argparse import parse_args
+from utils.json_to_csv import json_to_csv
 
 import json
 
@@ -60,6 +61,8 @@ def main(args):
 
     with open(args.output_path, "w") as outfile:
         json.dump(automl_output, outfile)
+
+    json_to_csv(automl_output=automl_output.copy(), args=args)
 
     # results_df = pd.concat(
     #     [
