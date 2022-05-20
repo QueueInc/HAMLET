@@ -5,8 +5,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 fun stopAutoML() {
-    val stop = arrayOf("bash", "-c", "docker stop automl_container")
-    val rm = arrayOf("bash", "-c", "docker rm automl_container")
+    val stop = arrayOf("docker", "stop", "automl_container")
+    val rm = arrayOf("docker", "rm", "automl_container")
 
     Runtime.getRuntime().exec(stop).waitFor()
     Runtime.getRuntime().exec(rm).waitFor()
@@ -14,13 +14,9 @@ fun stopAutoML() {
 
 fun runAutoML(workspacePath: String) {
 
-    // Little pig
-    val tempPath = if (workspacePath.startsWith("c:", ignoreCase = true))
-        workspacePath.replace("c:", "/mnt/c", ignoreCase = true)
-    else workspacePath
-
-    val build = arrayOf("bash", "-c", "docker build -t automl_container ./.devcontainer")
-    val run = arrayOf("bash", "-c", "docker run --name automl_container --volume \$(pwd)/automl:/home/automl --volume ${tempPath}:/home/resources --detach -t automl_container")
+    val build = arrayOf("docker", "build", "-t", "automl_container", ".")
+    val run = arrayOf("docker", "run", "--name", "automl_container", "--volume", "${System.getProperty("user.dir")}/automl:/home/automl",
+        "--volume", "${workspacePath}:/home/resources", "--detach", "-t", "automl_container")
 
     Runtime.getRuntime().exec(build).waitFor()
     Runtime.getRuntime().exec(run).waitFor()
@@ -29,10 +25,10 @@ fun runAutoML(workspacePath: String) {
 fun execAutoML(iteration: Int, dockerMode: Boolean) {
 
     val exec  = if (dockerMode)
-        arrayOf("bash", "-c", "docker exec automl_container python automl/main.py" +
-                " --dataset " + dataset + " --metric " + metric + " --mode " + mode + " --batch_size " + batchSize + " --seed " + seed +
-                " --input_path /home/resources/automl/input/automl_input_${iteration}.json" +
-                " --output_path /home/resources/automl/output/automl_output_${iteration}.json")
+        arrayOf("docker", "exec", "automl_container", "python", "automl/main.py",
+                "--dataset", dataset, "--metric", metric, "--mode", mode, "--batch_size", batchSize.toString(), "--seed", seed.toString(),
+                "--input_path", "/home/resources/automl/input/automl_input_${iteration}.json",
+                "--output_path", "/home/resources/automl/output/automl_output_${iteration}.json")
     else
         arrayOf("bash", "-c", "python /automl/main.py" +
                 " --dataset " + dataset + " --metric " + metric + " --mode " + mode + " --batch_size " + batchSize + " --seed " + seed +
