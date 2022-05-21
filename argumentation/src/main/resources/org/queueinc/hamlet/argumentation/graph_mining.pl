@@ -12,7 +12,24 @@ concat([H|T], HTT) :-
 
 fetch_prototypes(DPrototypes) :-
    findall(Prototype, fetch_prototype(Prototype), Prototypes),
-   distinct(Prototypes, DPrototypes).
+   distinct(Prototypes, [H|TPrototypes]),
+   take_max(TPrototypes, [H], DPrototypes).
+
+take_max([], X, X).
+take_max([H|T], LISTMAX, R) :-
+    member(MAX, LISTMAX),
+    len(H, LH),
+    len(MAX, LMAX),
+    LH > LMAX,
+    take_max(T, [H], R), !.
+take_max([H|T], LISTMAX, R) :-
+    member(MAX, LISTMAX),
+    len(H, LH),
+    len(MAX, LMAX),
+    LH =:= LMAX,
+    take_max(T, [H|LISTMAX], R), !.
+take_max([_|T], LISTMAX, R) :-
+    take_max(T, LISTMAX, R).
 
 fetch_space(Space) :-
     findall(
@@ -166,14 +183,37 @@ fetch_out_instances(Instances) :-
         (
             fetch_out_pipeline(Pipeline),
             pipeline_to_prototype(Pipeline, PipelineWithSteps, Steps),
-            pipeline_to_instance(PipelineWithSteps, Instance),
-            concat(Steps, Prototype),
             missing_steps(Steps, MissingSteps),
-            append(Instance, MissingSteps, InstanceWithMissingSteps)
+            pipeline_to_instance(PipelineWithSteps, Instance),
+            append(Instance, MissingSteps, InstanceWithMissingSteps),
+            write(MissingSteps),nl,
+            complete_prototype(Steps, MissingSteps, CompletePrototype),
+            write(merda),nl,
+            concat(CompletePrototype, Prototype)
         ),
         Instances
     ).
 
+complete_prototype(Steps, Missing, Prototype) :-
+    split_last(Steps, Transformations, Algorithm),
+    clean_missing(Missing, CMissing),
+    merge_with_permutations(Transformations, CMissing, Result),
+    append(Result, [Algorithm], Prototype).
+
+merge_with_permutations([], [], []).
+merge_with_permutations(Target, Missing, [X|NR]) :-
+    member(X, Missing),
+    utils::subtract(Missing, [X], NMissing),
+    merge_with_permutations(Target, NMissing, NR).
+merge_with_permutations([X|NTarget], Missing, [X|NR]) :-
+    merge_with_permutations(NTarget, Missing, NR).
+
+split_last([H], [], H) :- !.
+split_last([H|T], [H|TT], R) :-
+    split_last(T, TT, R).
+
+clean_missing([], []).
+clean_missing([(H, C)|T], [H|R]) :- clean_missing(T, R).
 
 % Attacca -> pipeline_instance(Operators, Algorithm, Hyperparameter, Comparator, Value)
 % hyperparameter_exception(algorithm, dt, max_depth, eq, 1).

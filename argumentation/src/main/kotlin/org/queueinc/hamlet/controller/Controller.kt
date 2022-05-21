@@ -86,15 +86,19 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
             val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints()
 
             config.iteration++
-            File("${workspacePath}/automl/input/automl_input_${config.iteration}.json")
-                .createAndWrite("{\"space\":$space,\"template_constraints\":$templates,\"instance_constraints\":$instances,\"points_to_evaluate\":$pointsToEvaluate,\"evaluated_rewards\":$evaluatedRewards}")
-            File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
-            configReference.createAndWrite(Gson().toJson(config))
-            saveGraphData()
+            val input = File("${workspacePath}/automl/input/automl_input_${config.iteration}.json")
+            input.createAndWrite("{\"space\":$space,\"template_constraints\":$templates,\"instance_constraints\":$instances,\"points_to_evaluate\":$pointsToEvaluate,\"evaluated_rewards\":$evaluatedRewards}")
 
             Thread {
                 execAutoML(config.iteration, dockerMode)
-                update(loadAutoMLData()!!)
+                if (File("${workspacePath}/automl/input/automl_output_${config.iteration}.json").exists()) {
+                    File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
+                    configReference.createAndWrite(Gson().toJson(config))
+                    saveGraphData()
+                    update(loadAutoMLData()!!)
+                } else {
+                    input.delete()
+                }
             }.start()
 
         }
