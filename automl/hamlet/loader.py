@@ -14,9 +14,10 @@ class Loader:
         if path:
             knowledge = self._load(path=path)
             self._space = self._get_space(input_space=knowledge["space"])
-            self._template_constraints = self._get_template_constraints(
-                input_template_constraints=knowledge["template_constraints"]
-            )
+            for constraint in knowledge["template_constraints"]:
+                self._template_constraints.append(
+                    self._get_template_constraint(constraint)
+                )
             self._instance_constraints = self._get_instance_constraints(
                 input_instance_constraints=knowledge["instance_constraints"]
             )
@@ -122,11 +123,8 @@ class Loader:
                 return False
         return True
 
-    def _get_template_constraints(self, input_template_constraints):
-        return [
-            lambda config: self._generate_template_constraint(constraint, config)
-            for constraint in input_template_constraints
-        ]
+    def _get_template_constraint(self, constraint):
+        return lambda config: self._generate_template_constraint(constraint, config)
 
     def _get_instance_constraints(self, input_instance_constraints):
         return input_instance_constraints
