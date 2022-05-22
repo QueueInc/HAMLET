@@ -13,18 +13,11 @@ choose the dataset between: [
 choose metric between these ones: https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
 
 # TODO ARGUMENTATION
-Per finire il giro:
-- generiamo automl_input (salvare il file json)
-- chiamare python
-- ingestion di automl_otput (watcher file system)
-- rifattorizzazione
-
-Migliorie:
-- gestire vincoli iper-parametri
 - pipeline maggiori di 2
+- vincoli
+        - iper-parametri
+        - ordine trasformazioni
 - gestire sugegrimenti
-- gestire vincoli ordine (nice to have)
 
 # TODO AUTOML
-Migliorie:
 - mining
