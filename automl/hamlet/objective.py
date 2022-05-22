@@ -87,6 +87,9 @@ def objective(X, y, metric, seed, config):
         )
 
         result[metric] = np.mean(scores["test_" + metric])
+        if np.isnan(result[metric]):
+            result[metric] = float("-inf")
+            raise Exception(f"The result for {config} was")
         result["status"] = "success"
 
     except Exception as e:
