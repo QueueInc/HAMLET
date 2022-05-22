@@ -186,9 +186,7 @@ fetch_out_instances(Instances) :-
             missing_steps(Steps, MissingSteps),
             pipeline_to_instance(PipelineWithSteps, Instance),
             append(Instance, MissingSteps, InstanceWithMissingSteps),
-            write(MissingSteps),nl,
             complete_prototype(Steps, MissingSteps, CompletePrototype),
-            write(merda),nl,
             concat(CompletePrototype, Prototype)
         ),
         Instances

@@ -97,7 +97,7 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
                     saveGraphData()
                     update(loadAutoMLData()!!)
                 } else {
-                    input.delete()
+                    // input.delete()
                 }
             }.start()
 
