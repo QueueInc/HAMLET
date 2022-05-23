@@ -3,4 +3,4 @@ pandas
 flaml[blendsearch]
 openml
 matplotlib
-seaborn
+seq2pat

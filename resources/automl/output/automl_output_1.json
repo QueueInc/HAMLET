@@ -214,6 +214,21 @@
         },
         {
             "prototype": "normalization_discretization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": false,
+                "type": "StandardScaler"
+            },
+            "classification": {
+                "n_neighbors": 19,
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_classification",
             "discretization": {
                 "type": "KBinsDiscretizer",
                 "n_bins": 2
@@ -226,21 +241,6 @@
             "classification": {
                 "type": "DecisionTreeClassifier",
                 "max_depth": 29
-            }
-        },
-        {
-            "prototype": "normalization_discretization_classification",
-            "normalization": {
-                "with_mean": true,
-                "with_std": false,
-                "type": "StandardScaler"
-            },
-            "classification": {
-                "n_neighbors": 19,
-                "type": "KNeighborsClassifier"
-            },
-            "discretization": {
-                "type": "FunctionTransformer"
             }
         },
         {
@@ -378,8 +378,8 @@
         "0.9466666666666667",
         "0.9799999999999999",
         "0.9733333333333333",
-        "-inf",
         "0.9733333333333333",
+        "-inf",
         "0.9733333333333333",
         "0.9666666666666666",
         "0.9733333333333333",
@@ -389,5 +389,46 @@
         "0.9799999999999999",
         "0.9733333333333333"
     ],
-    "rules": []
+    "rules": [
+        [
+            [
+                [
+                    "normalization",
+                    "discretization",
+                    1
+                ]
+            ],
+            0.6
+        ],
+        [
+            [
+                [
+                    "normalization",
+                    "discretization",
+                    1
+                ]
+            ],
+            0.7
+        ],
+        [
+            [
+                [
+                    "normalization",
+                    "discretization",
+                    1
+                ]
+            ],
+            0.8
+        ],
+        [
+            [
+                [
+                    "normalization",
+                    "discretization",
+                    1
+                ]
+            ],
+            0.9
+        ]
+    ]
 }

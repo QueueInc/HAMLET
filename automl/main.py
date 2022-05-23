@@ -1,4 +1,5 @@
 from functools import partial
+from hamlet.miner import Miner
 
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
@@ -38,7 +39,7 @@ def main(args):
     #     )
     # )
 
-    analysis = tune.run(
+    tune.run(
         evaluation_function=partial(objective, X, y, args.metric, args.seed),
         config=space,
         metric=args.metric,
@@ -50,13 +51,21 @@ def main(args):
     )
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
+    points_to_evaluate = points_to_evaluate[-buffer.get_num_points_to_consider() :]
+    evaluated_rewards = evaluated_rewards[-buffer.get_num_points_to_consider() :]
+
+    miner = Miner(
+        points_to_evaluate=points_to_evaluate,
+        evaluated_rewards=evaluated_rewards,
+        metric=args.metric,
+        mode=args.mode,
+    )
+    rules = miner.get_rules()
 
     automl_output = {
-        "points_to_evaluate": points_to_evaluate[-buffer.get_num_points_to_consider():],
-        "evaluated_rewards": [
-            str(reward[args.metric]) for reward in evaluated_rewards[-buffer.get_num_points_to_consider():]
-        ],
-        "rules": [],
+        "points_to_evaluate": points_to_evaluate,
+        "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
+        "rules": rules,
     }
 
     with open(args.output_path, "w") as outfile:
