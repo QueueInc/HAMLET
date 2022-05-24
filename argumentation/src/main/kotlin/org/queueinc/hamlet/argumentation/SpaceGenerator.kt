@@ -7,6 +7,9 @@ import it.unibo.tuprolog.solve.library.AliasedLibrary
 import it.unibo.tuprolog.solve.library.Library
 import it.unibo.tuprolog.theory.Theory
 import it.unibo.tuprolog.theory.parsing.parse
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 object SpaceGenerator : ArgLibrary {
 
@@ -28,36 +31,36 @@ object SpaceGenerator : ArgLibrary {
 
     fun createGeneratorRules(theory: String) : String {
 
-        val getStepNames = { number: Int ->
-            IntRange(1, number).map { "X".repeat(it) }
-        }
-        val getSteps = { stepNames: List<String> ->
-            stepNames.joinToString(", ") { "step($it)" }
-        }
-        val checkDistinct = { stepNames: List<String> ->
-            if (stepNames.count() <= 1) ""
-            else stepNames.flatMapIndexed { i, out -> stepNames.drop(i).filter { it != out }.map { """$it \= $out""" } }
-                .joinToString(", ") + ", "
-        }
-        val checkNoClassification = { stepNames: List<String> ->
-            stepNames.joinToString(", ") { """$it \= classification""" }
-        }
         val getOperatorNames = { stepNames: List<String> ->
-            stepNames.joinToString(",") { "${it}Y" }
+            stepNames.joinToString(",") { "Y${it}" }
         }
         val getOperators = { stepNames: List<String> ->
-            stepNames.joinToString(", ") { "operator($it, ${it}Y)" }
+            stepNames.joinToString(", ") { "operator($it, Y${it})" }
         }
 
-        val regex = """step\(\w+\)\.""".toRegex()
-        val matchResult = regex.findAll(theory).count()
+        val regex = """step\((\w+)\)\.""".toRegex()
+        val matchResult = regex.findAll(theory).map { it.groupValues[1] }.filterNot { it == "classification" }.toList()
+        val matchResultCount = matchResult.count()
 
-        return IntRange(1, matchResult).joinToString("\n") {
-            val stepNames = getStepNames(it)
-            """g$it : ${getSteps(stepNames)}, step(classification), prolog((${checkDistinct(stepNames)} ${checkNoClassification(stepNames)})), 
-                    ${getOperators(stepNames)}, operator(classification, ZZ) => pipeline([${getOperatorNames(stepNames)}], ZZ)."""
-                .trimIndent()
+        return IntRange(1, matchResultCount).flatMap { elements ->
+            permK(matchResult, 0, elements).mapIndexed { i, stepNames ->
+                """g$elements$i : ${getOperators(stepNames)}, operator(classification, ZZ) => pipeline([${getOperatorNames(stepNames)}], ZZ)."""
+                    .trimIndent()
+            }
+        }.joinToString("\n")
+    }
+
+    private fun <E> permK(p: List<E>, i: Int, k: Int) : List<List<E>> {
+        if (i == k) {
+            return listOf(ArrayList(p.subList(0, k)))
         }
+        val r = mutableListOf<List<E>>()
+        for (j in i until p.size) {
+            Collections.swap(p, i, j)
+            r.addAll(permK(p, i + 1, k))
+            Collections.swap(p, i, j)
+        }
+        return r
     }
 
 }
