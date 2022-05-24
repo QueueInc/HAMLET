@@ -29,6 +29,14 @@ d5 : hyperparameter(knn, n_neighbors, randint) => domain(knn, n_neighbors, [2, 3
 
 c1 : [] => mandatory([discretization], dt).
 c2 : [] => forbidden([normalization], dt).
-c2 : [] => mandatory([normalization], knn).
+c3 : [] => mandatory([normalization], knn).
+
+c4 : [] => mandatory_order([discretization, normalization], classification).
+
+
+
 % c3 :=> hyperparameter_exception(classification, dt, max_depth, eq, 1).
 % c4 :=> hyperparameter_exception(classification, dt, max_depth, gt, 2, [normalization]).
+
+
+

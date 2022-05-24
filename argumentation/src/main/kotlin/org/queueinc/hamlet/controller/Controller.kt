@@ -66,10 +66,15 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
     }
 
     fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
+
+        val generator = SpaceGenerator.createGeneratorRules(theory)
+        println(generator)
+
         val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
             otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
-            staticKb = Theory.parse(theory, arg2p.operators())
+            staticKb = Theory.parse(theory + "\n" + generator, arg2p.operators())
         )
+
         Thread {
             solver.solve(
                 Struct.parse("buildLabelSets(_, _)"),
