@@ -39,10 +39,12 @@ cc3 : forbidden(X, Y), prolog(Y \= classification), prolog(
 	),
 	prolog((len(ZZ, L1), len(X, L2), L1 = L2)) => forbidden(X, ZZ, Y).
 
-conflict([forbidden(SF, F, Y)], [mandatory(SM, M, Y)]) :- check_conflict(SF, F, SM, M).
-conflict([mandatory(SM, M, Y)], [forbidden(SF, F, Y)]) :- check_conflict(SF, F, SM, M).
+conflict([forbidden(SF, F, Y)], [mandatory(SM, M, Y)], check_conflict(SF, F, SM, M)).
+conflict([mandatory(SM, M, Y)], [forbidden(SF, F, Y)], check_conflict(SF, F, SM, M)).
 
-conflict([forbidden(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)]) :-
+conflict([forbidden(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)], forbidden_conflict(Operators, Operators2)).
+
+forbidden_conflict(Operators, Operators2) :-
 	\+ (
 		member(OperatorChoice, Operators),
 		\+ (
@@ -51,7 +53,9 @@ conflict([forbidden(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorit
 		)
 	).
 
-conflict([mandatory(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)]) :-
+conflict([mandatory(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)], mandatory_conflict(Operators, Operators2)).
+
+mandatory_conflict(Operators, Operators2) :-
 	member(OperatorChoice, Operators),
 	\+ (
 		member(Operator, OperatorChoice),
@@ -107,48 +111,12 @@ cc02 : mandatory_order(X, Z, Y), prolog(Y \= classification), prolog(
 
 
 conflict([mandatory_order([A, C], Y)], [mandatory_order([C, A], Y)]).
+conflict([mandatory_order(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)], mandatory_order_conflict(Operators, Operators2)).
 
-conflict([mandatory_order(Steps, Operators, Algorithm)], [pipeline(Operators2, Algorithm)]) :-
-	check_mandatory_order(Operators, Operators2).
-
-check_mandatory_order([A, B], Pipeline) :-
+mandatory_order_conflict([A, B], Pipeline) :-
 	member(BB, B),
 	member(AA, A),
 	is_before(BB, AA, Pipeline), !.
 
 is_before(A, B, [A|Tail]) :- member(B, Tail), !.
 is_before(A, B, [_|Tail]) :- is_before(A, B, Tail).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% HYPER PARAMETER CONSTRAINT
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% controllo sull'errore
-g7 : prolog(context_check(argument([_, _, [hyperparameter_exception(classification, OP, H, COMP, VALUE)], _, _]))),
-	pipeline(X, OP),
-	hyperparameter(OP, H, DOMAIN_TYPE),
-	~(hyperparameter_exception(classification, OP, H, COMP, VALUE)) => pipeline_instance(X, OP, H, COMP, VALUE).
-
-g8 : prolog(context_check(argument([_, _, [hyperparameter_exception(P, OP, H, COMP, VALUE)], _, _]))),
-	pipeline(X, OP),
-	prolog(member(H, X)),
-	hyperparameter(OP, H, DOMAIN_TYPE),
-	~(hyperparameter_exception(P, OP, H, COMP, VALUE)) => pipeline_instance(X, OP, H, COMP, VALUE).
-
-g9 : prolog(context_check(argument([_, _, [hyperparameter_exception(classification, OP, H, COMP, VALUE, EXCEPTION)], _, _]))),
-	pipeline(X, OP),
-	hyperparameter(OP, H, DOMAIN_TYPE),
-	prolog(member(XX, X)),
-	operator(Y, XX),
-	prolog(member(Y, EXCEPTION)),
-	~(hyperparameter_exception(classification, OP, H, COMP, VALUE, EXCEPTION)) => pipeline_instance(X, OP, H, COMP, VALUE).
-
-g10 : prolog(context_check(argument([_, _, [hyperparameter_exception(P, OP, H, COMP, VALUE, EXCEPTION)], _, _]))),
-	pipeline(X, OP),
-	prolog(member(H, X)),
-	hyperparameter(OP, H, DOMAIN_TYPE),
-	prolog(member(XX, X)),
-	operator(Y, XX),
-	prolog(member(Y, EXCEPTION)),
-	~(hyperparameter_exception(P, OP, H, COMP, VALUE, EXCEPTION)) => pipeline_instance(X, OP, H, COMP, VALUE).

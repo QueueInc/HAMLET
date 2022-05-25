@@ -26,24 +26,22 @@ class HAMLET : Application() {
 
     override fun start(stage: Stage) {
         try {
-            val view = GUI(stage)
-            controller.init().also { theory ->
-                val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
-                    controller.generateGraph(kb, updateAction)
-                }
-                val exportAction : (String, (AutoMLResults) -> Unit) -> Unit = { kb, exportAction ->
-                    controller.launchAutoML(kb, exportAction)
-                }
-                view.prepareStage(theory, computeAction, exportAction)
-                controller.loadAutoMLData()?.also {
-                    view.displayAutoMLData(it)
-                }
-                controller.loadGraphData()?.also {
-                    view.displayGraph(it)
-                }
+
+            controller.init()
+            val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
+                controller.generateGraph(kb, updateAction)
+            }
+            val exportAction : (String, (AutoMLResults) -> Unit) -> Unit = { kb, exportAction ->
+                controller.launchAutoML(kb, exportAction)
             }
 
+            val view = GUI(stage)
+            view.prepareStage(computeAction, exportAction)
+            controller.loadKnowledgeBase()?.also { view.displayTheory(it) }
+            controller.loadAutoMLData()?.also { view.displayAutoMLData(it) }
+            controller.loadGraphData()?.also { view.displayGraph(it) }
             view.show()
+
         } catch (e: Throwable) {
             e.printStackTrace()
             throw Error(e)

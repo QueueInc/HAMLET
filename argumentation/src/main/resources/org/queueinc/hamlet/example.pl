@@ -15,7 +15,6 @@ d3 : hyperparameter(standard, with_std, choice) => domain(standard, with_std, [t
 
 o3 : step(normalization) => operator(normalization, minmax).
 
-
 s3 : [] => step(classification).
 
 o4 : step(classification) => operator(classification, dt).
@@ -26,6 +25,8 @@ o4 : step(classification) => operator(classification, knn).
 h5 : operator(classification, knn) => hyperparameter(knn, n_neighbors, randint).
 d5 : hyperparameter(knn, n_neighbors, randint) => domain(knn, n_neighbors, [2, 30]).
 
+s4 : [] => step(features_engineering).
+o5 : step(features_engineering) => operator(features_engineering, select_k_best).
 
 c1 : [] => mandatory([discretization], dt).
 c2 : [] => forbidden([normalization], dt).
@@ -33,10 +34,5 @@ c3 : [] => mandatory([normalization], knn).
 
 c4 : [] => mandatory_order([discretization, normalization], classification).
 
-
-
 % c3 :=> hyperparameter_exception(classification, dt, max_depth, eq, 1).
 % c4 :=> hyperparameter_exception(classification, dt, max_depth, gt, 2, [normalization]).
-
-
-

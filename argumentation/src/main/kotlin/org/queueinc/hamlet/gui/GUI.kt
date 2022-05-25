@@ -26,6 +26,10 @@ class GUI(private val stage: Stage) {
     private val tab1 = Tab("Graph", graph.node)
     private val tab2 = Tab("Data")
 
+    fun displayTheory(theory: String) {
+        Platform.runLater { textArea.text = theory }
+    }
+
     fun displayAutoMLData(data: AutoMLResults) {
         Platform.runLater { tab2.content = toTableView(data.values) }
     }
@@ -34,9 +38,8 @@ class GUI(private val stage: Stage) {
         Platform.runLater { graph.update(solver) }
     }
 
-    fun prepareStage(theory: String, computeAction : (String, (MutableSolver) -> Unit) -> Unit, exportAction : (String, (AutoMLResults) -> Unit) -> Unit) {
+    fun prepareStage(computeAction : (String, (MutableSolver) -> Unit) -> Unit, exportAction : (String, (AutoMLResults) -> Unit) -> Unit) {
 
-        textArea.text = theory
         tabPane.tabs.add(tab1)
         tabPane.tabs.add(tab2)
 

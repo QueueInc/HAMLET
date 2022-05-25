@@ -19,7 +19,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    implementation("it.unibo.tuprolog.argumentation:arg2p-jvm:0.6.1")
+    implementation("it.unibo.tuprolog.argumentation:arg2p-jvm:0.6.5")
     implementation("it.unibo.tuprolog:solve-classic-jvm:0.20.1")
     implementation("it.unibo.tuprolog:parser-theory-jvm:0.20.1")
 
