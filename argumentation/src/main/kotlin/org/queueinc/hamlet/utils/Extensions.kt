@@ -11,6 +11,7 @@ fun Term.toSklearnClass() =
         "standard" -> "StandardScaler"
         "minmax" -> "MinMaxScaler"
         "functionTransformer" -> "FunctionTransformer"
+        "select_k_best" -> "SelectKBest"
         else -> this.toString()
     }
 

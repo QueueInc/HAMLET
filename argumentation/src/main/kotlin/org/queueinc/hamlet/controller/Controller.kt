@@ -87,6 +87,8 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
                 val input = File("${workspacePath}/automl/input/automl_input_${config.iteration + 1}.json")
                 input.createAndWrite(createAutoMLInput(solver))
 
+                println("input created")
+
                 execAutoML(config.iteration + 1, dockerMode)
 
                 if (File("${workspacePath}/automl/input/automl_output_${config.iteration + 1}.json").exists()) {

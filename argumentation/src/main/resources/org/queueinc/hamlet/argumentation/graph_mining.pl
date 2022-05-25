@@ -12,7 +12,7 @@ concat([H|T], HTT) :-
 
 fetch_prototypes(DPrototypes) :-
    findall(Prototype, fetch_prototype(Prototype), Prototypes),
-   distinct(Prototypes, [H|TPrototypes]),
+   utils::deduplicate(Prototypes, [H|TPrototypes]),
    take_max(TPrototypes, [H], DPrototypes).
 
 take_max([], X, X).
@@ -96,19 +96,13 @@ get_out_argument_by_conclusion(Conc) :-
     context_check(out([_, _, [Conc], _, _])).
 
 get_argument_by_conclusion(Conc) :-
-    context_check(argument([_, _, [Conc], _, _])).
+    context_check(clause(conc([Conc]), _)).
 
 get_argument_by_conclusion(Conc, [A, B, [Conc], C, D]) :-
-    context_check(argument([A, B, [Conc], C, D])).
+    context_check(clause(conc([Conc]), argument([A, B, [Conc], C, D]))).
 
 get_attacked_by_conclusion(Conc, Attacker) :-
     context_check(attack(_, Attacker, [_, _, [Conc], _, _], _)).
-
-
-distinct([], []).
-distinct([H|T], T1) :- distinct(T, T1), member(H, T1), !.
-distinct([H|T], [H|T1]) :- distinct(T, T1), \+ member(H, T1).
-
 
 fetch_mandatory(Mandatory) :-
     findall((S, O, A), get_in_argument_by_conclusion(mandatory(S, O, A)), Mandatory).
@@ -175,7 +169,7 @@ missing_steps(Steps, DMissingSteps) :-
         (get_argument_by_conclusion(step(Step)), \+ member(Step, Steps)),
         MissingSteps
     ),
-    distinct(MissingSteps, DMissingSteps).
+    utils::deduplicate(MissingSteps, DMissingSteps).
 
 fetch_out_instances(Instances) :-
     findall(
