@@ -4,3 +4,4 @@ flaml[blendsearch]
 openml
 matplotlib
 seq2pat
+mlxtend
