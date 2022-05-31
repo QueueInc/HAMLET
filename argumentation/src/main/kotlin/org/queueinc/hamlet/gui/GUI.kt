@@ -59,7 +59,7 @@ class GUI(private val stage: Stage) {
 
         compute.setOnAction {
             computeAction(textArea.text) {
-                Platform.runLater { graph.update(it) }
+                graph.update(it)
             }
         }
 

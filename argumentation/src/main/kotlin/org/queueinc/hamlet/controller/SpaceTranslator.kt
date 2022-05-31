@@ -11,6 +11,10 @@ import org.queueinc.hamlet.toSklearnClass
 
 object SpaceTranslator {
 
+    private fun translateList(terms: List<Term>) =
+        if (terms.any { it.isTrue || it.isNumber || it.isFail }) terms.toString()
+        else terms.map { "\"$it\"".replace("'", "") }.toString()
+
     @JvmStatic
     private fun translateSpace(space: Term) =
         prolog {
@@ -18,10 +22,10 @@ object SpaceTranslator {
                 Unificator.default.mgu(step, tupleOf(X, "choice", Z)).let { unifier ->
                     unifier[Z]!!.castToList().toList().map { operator ->
                         if (operator.isAtom) {
-                            if (operator.toString() == "functionTransformer") {
+                            if (operator.toString() == "function_transformer") {
                                 """
                                     {
-                                        "type" : "FunctionTransformer"
+                                        "type" : "${operator.toSklearnClass()}"
                                     }
                                     """
                             } else "\"$operator\""
@@ -31,7 +35,7 @@ object SpaceTranslator {
                                     Unificator.default.mgu(hyper, tupleOf(C, D, E)).let { unifier3 ->
                                         """
                                             "${unifier3[C]}" : {
-                                               "${unifier3[D]}" : ${unifier3[E]}
+                                               "${unifier3[D]}" : ${translateList(unifier3[E]!!.castToList().toList())}
                                             }
                                             """
                                     }
@@ -103,7 +107,7 @@ object SpaceTranslator {
                         Unificator.default.mgu(step, tupleOf(D, tupleOf(E, F))).let {
                             it[F]!!.castToList().toList().joinToString(",\n") { h ->
                                 Unificator.default.mgu(h, tupleOf(G, H)).let { hyper ->
-                                    "\"${hyper[G]}\" : ${hyper[H]}"
+                                    "\"${hyper[G]}\" : ${if (hyper[H]!!.isTrue || hyper[H]!!.isNumber || hyper[H]!!.isFail) hyper[H] else "\"${hyper[H]}\""}"
                                 }
                             }.let { hyperparameters ->
                                 """

@@ -31,22 +31,27 @@ object SpaceGenerator : ArgLibrary {
 
     fun createGeneratorRules(theory: String) : String {
 
-        val getOperatorNames = { stepNames: List<String> ->
-            stepNames.joinToString(",") { "Y${it}" }
+        val getStepNames = { stepNames: Int ->
+            IntRange(1, stepNames).joinToString(",") { "Step_$it" }
         }
-        val getOperators = { stepNames: List<String> ->
-            stepNames.joinToString(", ") { "operator($it, Y${it})" }
+        val getSteps = { steps: Int ->
+            IntRange(1, steps).joinToString(", ") { "step(Step_$it)" }
+        }
+        val getStepsCheck = { steps: Int ->
+            IntRange(1, steps).joinToString(", ") { "Step_$it \\= classification" }
+        }
+        val getStepsComparison = { steps: Int ->
+            if (steps <= 1) ""
+            else ", " + IntRange(1, steps).flatMap { i -> IntRange(i + 1, steps).map { "Step_$i \\= Step_$it" } }.joinToString(", ")
         }
 
         val regex = """step\((\w+)\)\.""".toRegex()
         val matchResult = regex.findAll(theory).map { it.groupValues[1] }.filterNot { it == "classification" }.toList()
         val matchResultCount = matchResult.count()
 
-        return IntRange(1, matchResultCount).flatMap { elements ->
-            permK(matchResult, 0, elements).mapIndexed { i, stepNames ->
-                """g$elements$i : ${getOperators(stepNames)}, operator(classification, ZZ) => pipeline([${getOperatorNames(stepNames)}], ZZ)."""
-                    .trimIndent()
-            }
+        return IntRange(1, matchResultCount).map { i ->
+            """g$i : ${getSteps(i)}, prolog((${getStepsCheck(i)} ${getStepsComparison(i)})), operator(classification, ZZ) => pipeline([${getStepNames(i)}], ZZ)."""
+                .trimIndent()
         }.joinToString("\n")
     }
 

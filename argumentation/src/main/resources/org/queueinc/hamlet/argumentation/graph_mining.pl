@@ -15,6 +15,10 @@ fetch_prototypes(DPrototypes) :-
    utils::deduplicate(Prototypes, [H|TPrototypes]),
    take_max(TPrototypes, [H], DPrototypes).
 
+
+len([], 0).
+len([H|T], Z) :- len(T, Z1), Z is Z1 + 1.
+
 take_max([], X, X).
 take_max([H|T], LISTMAX, R) :-
     member(MAX, LISTMAX),
@@ -40,7 +44,7 @@ fetch_space(Space) :-
 
 map_space([], []).
 map_space([(classification, X, Y)|T], [(classification, X, Y)|TT]) :- !, map_space(T, TT).
-map_space([(Z, X, Y)|T], [(Z, X, [(functionTransformer)|Y])|TT]) :- map_space(T, TT).
+map_space([(Z, X, Y)|T], [(Z, X, [(function_transformer)|Y])|TT]) :- map_space(T, TT).
 
 
 fetch_step_domain(Step, OpWithHyperparameter) :-
@@ -79,8 +83,7 @@ fetch_domain(Operator, Hyperparameter, Value) :-
     get_argument_by_conclusion(domain(Operator, Hyperparameter, Value)).
 
 fetch_prototype(Prototype) :-
-    get_argument_by_conclusion(pipeline(Operators, Algorithm)),
-    operatorToStep(Operators, Steps),
+    get_argument_by_conclusion(pipeline(Steps, Algorithm)),
     append(Steps, [classification], Prototype).
 
 operatorToStep([], []).
@@ -96,20 +99,36 @@ get_out_argument_by_conclusion(Conc) :-
     context_check(out([_, _, [Conc], _, _])).
 
 get_argument_by_conclusion(Conc) :-
-    context_check(clause(conc([Conc]), _)).
+    context_check(argument([_, _, [Conc], _, _])).
 
 get_argument_by_conclusion(Conc, [A, B, [Conc], C, D]) :-
-    context_check(clause(conc([Conc]), argument([A, B, [Conc], C, D]))).
+    context_check(argument([A, B, [Conc], C, D])).
 
 get_attacked_by_conclusion(Conc, Attacker) :-
     context_check(attack(_, Attacker, [_, _, [Conc], _, _], _)).
 
+
+fetch_operators([], []).
+fetch_operators([H|T], [HH|TT]) :-
+    findall(Op, fetch_operator(S, Op), HH),
+    fetch_operators(T, TT).
+
 fetch_mandatory(Mandatory) :-
-    findall((S, O, A), get_in_argument_by_conclusion(mandatory(S, O, A)), Mandatory).
-
+    findall((S, O, A), (
+        get_in_argument_by_conclusion(mandatory(S, A)),
+        fetch_operators(S, O)
+    ), Mandatory).
 fetch_forbidden(Forbidden) :-
-    findall((S, O, A), get_in_argument_by_conclusion(forbidden(S, O, A)), Forbidden).
+    findall((S, O, A), (
+        get_in_argument_by_conclusion(forbidden(S, A)),
+        fetch_operators(S, O)
+    ), Forbidden).
 
+
+get_operators_from_steps([], []).
+get_operators_from_steps([H|T], [HH|TT]) :-
+    get_in_argument_by_conclusion(operator(H, HH)),
+    get_operators_from_steps(T, TT).
 
 get_hyperparameters(Operator, Hyperparameters) :-
     findall(
@@ -126,7 +145,8 @@ fetch_out_pipeline_support([H|T], [(H, Hyperparameters)|R]) :-
     fetch_out_pipeline_support(T, R).
 
 fetch_out_pipeline(Pipeline) :-
-    get_out_argument_by_conclusion(pipeline(Operators, Algorithm)),
+    get_out_argument_by_conclusion(pipeline(Steps, Algorithm)),
+    get_operators_from_steps(Steps, Operators),
     append(Operators, [Algorithm], T),
     fetch_out_pipeline_support(T, Pipeline).
 
@@ -165,7 +185,7 @@ pipeline_to_prototype([(Operator, Hyper)|T], [(Step, (Operator, Hyper))|R1], [St
 
 missing_steps(Steps, DMissingSteps) :-
     findall(
-        (Step, (functionTransformer)),
+        (Step, (function_transformer)),
         (get_argument_by_conclusion(step(Step)), \+ member(Step, Steps)),
         MissingSteps
     ),

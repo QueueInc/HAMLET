@@ -1,10 +1,11 @@
 package org.queueinc.hamlet.gui
 
-import edu.uci.ics.jung.algorithms.layout.KKLayout
+import edu.uci.ics.jung.algorithms.layout.FRLayout
 import edu.uci.ics.jung.algorithms.layout.Layout
 import edu.uci.ics.jung.graph.Graph
 import edu.uci.ics.jung.graph.SparseMultigraph
 import edu.uci.ics.jung.graph.util.EdgeType
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane
 import edu.uci.ics.jung.visualization.VisualizationViewer
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse
@@ -17,6 +18,7 @@ import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
 import it.unibo.tuprolog.solve.classic.classic
 import javafx.embed.swing.SwingNode
+import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -25,7 +27,7 @@ import javax.swing.*
 
 internal class GraphVisualizer {
 
-    private val graphPane: JScrollPane = JScrollPane()
+    private val graphPane: JPanel = JPanel(BorderLayout())
     private val classicTheoryPane: JScrollPane = JScrollPane()
     private val treeTheoryPane: JScrollPane = JScrollPane()
     val splitPane: JSplitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT)
@@ -99,7 +101,7 @@ internal class GraphVisualizer {
 
     private fun clear() {
         SwingUtilities.invokeLater {
-            this.graphPane.viewport.removeAll()
+            this.graphPane.removeAll()
             this.classicTheoryPane.viewport.removeAll()
             this.treeTheoryPane.viewport.removeAll()
         }
@@ -155,8 +157,8 @@ internal class GraphVisualizer {
         }
 
         @JvmStatic
-        private fun printGraph(graphPane: JScrollPane, arguments: List<LabelledArgument>, attacks: List<Attack>) {
-            val layout: Layout<String, String> = KKLayout(buildGraph(arguments, attacks))
+        private fun printGraph(graphPane: JPanel, arguments: List<LabelledArgument>, attacks: List<Attack>) {
+            val layout: Layout<String, String> = FRLayout(buildGraph(arguments, attacks))
             layout.size = Dimension(350, 300)
             val vv: VisualizationViewer<String, String> = VisualizationViewer(layout)
             vv.preferredSize = Dimension(350, 300)
@@ -172,7 +174,8 @@ internal class GraphVisualizer {
             val graphMouse: DefaultModalGraphMouse<String, String> = DefaultModalGraphMouse()
             graphMouse.setMode(ModalGraphMouse.Mode.PICKING)
             vv.graphMouse = graphMouse
-            graphPane.viewport.view = vv
+            vv.addKeyListener(graphMouse.modeKeyListener)
+            graphPane.add(GraphZoomScrollPane(vv), BorderLayout.CENTER)
         }
 
         @JvmStatic

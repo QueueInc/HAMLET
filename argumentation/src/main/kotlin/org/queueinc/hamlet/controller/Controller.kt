@@ -23,10 +23,10 @@ import org.queueinc.hamlet.gui.AutoMLResults
 import java.io.File
 
 
-val dataset = "wine"
+val dataset = "vehicle"
 val metric = "accuracy"
 val mode = "max"
-val batchSize = 25
+val batchSize = 50
 val seed = 42
 
 class Controller(private val workspacePath: String, private val dockerMode: Boolean) {
@@ -63,11 +63,13 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
 
     fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
 
+        val creationRules = SpaceGenerator.createGeneratorRules(theory)
+        // println(creationRules)
         val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
             otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
                 argumentLabellingMode = "grounded_hash",
                 graphExtensions = emptyList()).create().content()),
-            staticKb = Theory.parse(theory + "\n" + SpaceGenerator.createGeneratorRules(theory), arg2p.operators())
+            staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators())
         )
 
         Thread {
@@ -75,8 +77,14 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
                 Struct.parse("buildLabelSetsSilent"),
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE)
             ).first()
+
+            config.iteration++
+            File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
+            configReference.createAndWrite(Gson().toJson(config))
+
             update(solver)
             lastSolver = solver
+            saveGraphData()
         }.start()
     }
 
@@ -84,21 +92,17 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
         lastSolver?.also { solver ->
             Thread {
 
-                val input = File("${workspacePath}/automl/input/automl_input_${config.iteration + 1}.json")
+                val input = File("${workspacePath}/automl/input/automl_input_${config.iteration}.json")
                 input.createAndWrite(createAutoMLInput(solver))
 
                 println("input created")
 
-                execAutoML(config.iteration + 1, dockerMode)
+                execAutoML(config.iteration, dockerMode)
 
-                if (File("${workspacePath}/automl/input/automl_output_${config.iteration + 1}.json").exists()) {
-                    config.iteration++
-                    File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
-                    configReference.createAndWrite(Gson().toJson(config))
-                    saveGraphData()
+                if (File("${workspacePath}/automl/input/automl_output_${config.iteration}.json").exists()) {
                     update(loadAutoMLData()!!)
                 } else {
-                    input.delete()
+                    // input.delete()
                 }
             }.start()
 

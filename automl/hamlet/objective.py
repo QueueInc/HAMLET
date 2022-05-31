@@ -17,11 +17,13 @@ from sklearn.preprocessing import (
     MinMaxScaler,
     PowerTransformer,
     KBinsDiscretizer,
+    Binarizer,
 )
 
 ## Classification algorithms
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
 
 from .buffer import Buffer
 
