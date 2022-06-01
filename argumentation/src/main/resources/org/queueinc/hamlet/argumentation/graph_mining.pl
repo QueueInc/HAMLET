@@ -283,3 +283,22 @@ fetch_out_instance(R) :-
     merge_prototypes(P, Ops, R).
 
 fetch_out_instances(P) :- findall(R, fetch_out_instance(R), P).
+
+
+valorize_operators(_, [], [], []).
+valorize_operators(AllOperators, [(S, O)|T], [(S, O)|TT], [S|TTT]) :-
+    valorize_operators(AllOperators, T, TT, TTT).
+valorize_operators(AllOperators, [H|T], [(H, Operator)|TT], [H|TTT]) :-
+    \+ compound(H),
+    member((H, Operator), AllOperators),
+    valorize_operators(AllOperators, T, TT, TTT).
+
+
+fetch_instance_base([(prototype, CC)|R]) :-
+    steps(AllSteps),
+    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators),
+    out_prototype(AllSteps, P),
+    valorize_operators(AllOperators, P, R, C),
+    concat(C, CC).
+
+fetch_all_instances_base(P) :- findall(R, fetch_instance_base(R), P).
