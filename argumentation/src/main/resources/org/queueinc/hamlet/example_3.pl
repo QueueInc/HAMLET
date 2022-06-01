@@ -71,10 +71,10 @@ dc6 : hyperparameter(dt, splitter, choice) => domain(dt, splitter, ["best", "ran
 dc7 : hyperparameter(dt, criterion, choice) => domain(dt, criterion, ["gini", "entropy"]).
 dc8 : hyperparameter(knn, n_neighbors, randint) => domain(knn, n_neighbors, [3, 19]).
 dc9 : hyperparameter(knn, weights, choice) => domain(knn, weights, ["uniform", "distance"]).
-dc10 : hyperparameter(knn, metric, choice) => domain(knn, n_neighbors, ["minkowski", "euclidean", "manhattan"]).
+dc10 : hyperparameter(knn, metric, choice) => domain(knn, metric, ["minkowski", "euclidean", "manhattan"]).
 
-%c1 :=> mandatory([discretization], dt).
-%c2 :=> forbidden([normalization], dt).
-%c3 :=> mandatory([normalization], knn).
-%c4 :=> mandatory_order([discretization, normalization], classification).
+c1 :=> mandatory([discretization], dt).
+c2 :=> forbidden([normalization], dt).
+c3 :=> mandatory([normalization], knn).
+c4 :=> mandatory_order([discretization, normalization], classification).
 

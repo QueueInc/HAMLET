@@ -107,7 +107,7 @@ object SpaceTranslator {
                         Unificator.default.mgu(step, tupleOf(D, tupleOf(E, F))).let {
                             it[F]!!.castToList().toList().joinToString(",\n") { h ->
                                 Unificator.default.mgu(h, tupleOf(G, H)).let { hyper ->
-                                    "\"${hyper[G]}\" : ${if (hyper[H]!!.isTrue || hyper[H]!!.isNumber || hyper[H]!!.isFail) hyper[H] else "\"${hyper[H]}\""}"
+                                    "\"${hyper[G]}\" : ${if (hyper[H]!!.isTrue || hyper[H]!!.isNumber || hyper[H]!!.isFail) hyper[H] else "\"${hyper[H]}\"".replace("'", "")}"
                                 }
                             }.let { hyperparameters ->
                                 """
@@ -151,11 +151,43 @@ object SpaceTranslator {
                 .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!) }
                 .first()
 
-            val instances = solver.solve("miner" call "fetch_out_instances"(X), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+            val instances = solver.solve("miner" call "fetch_out_instance_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
-                .map { translateInstances(it.substitution[X]!!) }
+                .map { instances(it.substitution[X]!!, it.substitution[Y]!!) }
                 .first()
 
             arrayOf(space, templates, instances)
         }
+
+    @JvmStatic
+    fun instances(operators: Term, pipelines: Term) : String {
+        val operatorList = operators.castToList().toList()
+        val pipelinesList = pipelines.castToList().toList().map { it.castToList().toList() }
+
+        val checkStep = { operator: Term, step: Term ->
+            operator.toString().contains(step.toString()
+                .replace("(", "")
+                .replace(")", ""))
+        }
+
+        println(pipelinesList)
+
+        val instances = pipelinesList.flatMap { pipeline ->
+            pipeline.filter { step -> !step.toString().contains("function_transformer") }.map { step ->
+                operatorList.filter { operator -> checkStep(operator, step)}
+            }.fold(listOf(pipeline)) { acc, set ->
+                acc.flatMap { pipe -> set.map { op -> pipe.map {
+                    if (checkStep(op, it)) op else it
+                } } }
+            }.map { elem ->
+                it.unibo.tuprolog.core.List.of(elem)
+            }
+        }.let { elem ->
+            it.unibo.tuprolog.core.List.of(elem)
+        }
+
+        println(instances)
+
+        return translateInstances(instances)
+    }
 }

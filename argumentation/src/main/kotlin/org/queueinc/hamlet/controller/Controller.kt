@@ -78,13 +78,8 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE)
             ).first()
 
-            config.iteration++
-            File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
-            configReference.createAndWrite(Gson().toJson(config))
-
             update(solver)
             lastSolver = solver
-            saveGraphData()
         }.start()
     }
 
@@ -92,14 +87,19 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
         lastSolver?.also { solver ->
             Thread {
 
-                val input = File("${workspacePath}/automl/input/automl_input_${config.iteration}.json")
+                val input = File("${workspacePath}/automl/input/automl_input_${config.iteration + 1}.json")
                 input.createAndWrite(createAutoMLInput(solver))
+
+                File("${workspacePath}/argumentation/kb_${config.iteration + 1}.txt").createAndWrite(theory)
+                saveGraphData(config.iteration + 1)
 
                 println("input created")
 
-                execAutoML(config.iteration, dockerMode)
+                execAutoML(config.iteration + 1, dockerMode)
 
-                if (File("${workspacePath}/automl/input/automl_output_${config.iteration}.json").exists()) {
+                if (File("${workspacePath}/automl/output/automl_output_${config.iteration + 1}.json").exists()) {
+                    config.iteration++
+                    configReference.createAndWrite(Gson().toJson(config))
                     update(loadAutoMLData()!!)
                 } else {
                     // input.delete()
@@ -168,14 +168,14 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
         }
     }
 
-    private fun saveGraphData() {
+    private fun saveGraphData(iteration: Int) {
         arg2pScope {
             lastSolver?.solve("miner" call "dump_graph_data"(X))
                 ?.filter { it.isYes }
                 ?.map { it.substitution[X].toString() }
                 ?.first()
                 ?.also {
-                    File("${workspacePath}/argumentation/graph_${config.iteration}.txt").createAndWrite(it)
+                    File("${workspacePath}/argumentation/graph_${iteration}.txt").createAndWrite(it)
                 }
         }
     }

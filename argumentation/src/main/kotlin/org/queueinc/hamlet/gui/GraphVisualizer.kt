@@ -32,24 +32,6 @@ internal class GraphVisualizer {
     private val treeTheoryPane: JScrollPane = JScrollPane()
     val splitPane: JSplitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT)
 
-    private val next: JButton = JButton("Next").also { button ->
-        button.addActionListener {
-            this.selectedContext =
-                if (this.selectedContext + 1 >= this.maxContext) this.maxContext else this.selectedContext + 1
-            this.update()
-        }
-    }
-    private val back: JButton = JButton("Back").also { button ->
-        button.addActionListener {
-            this.selectedContext =
-                if (this.selectedContext - 1 <= this.minContext) this.minContext else this.selectedContext - 1
-            this.update()
-        }
-    }
-    private val context: JLabel = JLabel()
-
-    private val minContext: Int = 0
-    private var maxContext: Int = 0
     private var selectedContext: Int = 0
 
     private var mutableSolver: MutableSolver? = null
@@ -59,18 +41,11 @@ internal class GraphVisualizer {
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
 
-        val buttonPanel = JPanel()
-        buttonPanel.layout = BoxLayout(buttonPanel, BoxLayout.X_AXIS)
-        buttonPanel.add(back)
-        buttonPanel.add(next)
-        buttonPanel.add(context)
-
         val tabbedPane = JTabbedPane()
         tabbedPane.addTab("Classic", classicTheoryPane)
         tabbedPane.addTab("Tree", treeTheoryPane)
 
         panel.add(tabbedPane)
-        panel.add(buttonPanel)
 
         splitPane.add(panel)
         splitPane.add(graphPane)
@@ -80,23 +55,23 @@ internal class GraphVisualizer {
     }
 
     private fun update() {
-        SwingUtilities.invokeLater {
-            back.isEnabled = this.selectedContext > this.minContext
-            next.isEnabled = this.selectedContext < this.maxContext
-            context.text = this.selectedContext.toString()
-        }
         mutableSolver?.also { solver ->
-            try {
-                val graph = solver.graph(this.selectedContext)
-                SwingUtilities.invokeLater {
-                    printGraph(this.graphPane, graph.labellings, graph.attacks)
-                    printTheory(this.classicTheoryPane, this.treeTheoryPane, graph.labellings)
+            Thread {
+                try {
+                    val graph = solver.graph(this.selectedContext)
+                    SwingUtilities.invokeLater {
+                        this.graphPane.removeAll()
+                        this.classicTheoryPane.viewport.removeAll()
+                        this.treeTheoryPane.viewport.removeAll()
+                        printGraph(this.graphPane, graph.labellings, graph.attacks)
+                        printTheory(this.classicTheoryPane, this.treeTheoryPane, graph.labellings)
+                        this.splitPane.revalidate()
+                    }
+                } catch (e: Exception) {
+                    this.clear()
                 }
-            } catch (e: Exception) {
-                this.clear()
-            }
+            }.start()
         } ?: clear()
-        revalidate()
     }
 
     private fun clear() {
@@ -104,6 +79,7 @@ internal class GraphVisualizer {
             this.graphPane.removeAll()
             this.classicTheoryPane.viewport.removeAll()
             this.treeTheoryPane.viewport.removeAll()
+            revalidate()
         }
     }
 
@@ -134,9 +110,7 @@ internal class GraphVisualizer {
                         .map { it.substitution[X]!!.asNumeric()!!.intValue.toInt() }
                         .first()
                 }
-                frame.maxContext = frame.selectedContext
                 frame.update()
-                model.graph(frame.selectedContext)
             }
         }
 
