@@ -1,6 +1,6 @@
 s1 :=> step(discretization).
 s2 :=> step(normalization).
-s3 :=> step(features_engineering).
+s3 :=> step(features).
 s4 :=> step(imputation).
 
 sc1 :=> step(classification).
@@ -12,8 +12,8 @@ o3 : step(normalization) => operator(normalization, power_transformer).
 o4 : step(normalization) => operator(normalization, robust_scaler).
 o5 : step(normalization) => operator(normalization, standard).
 o6 : step(normalization) => operator(normalization, minmax).
-o7 : step(features_engineering) => operator(features_engineering, select_k_best).
-o8 : step(features_engineering) => operator(features_engineering, pca).
+o7 : step(features) => operator(features, select_k_best).
+o8 : step(features) => operator(features, pca).
 o9 : step(imputation) => operator(imputation, simple_imputer).
 o10 : step(imputation) => operator(imputation, iterative_imputer).
 
@@ -30,8 +30,8 @@ h5 : operator(normalization, robust_scaler) => hyperparameter(robust_scaler, wit
 h6 : operator(normalization, robust_scaler) => hyperparameter(robust_scaler, with_scaling, choice).
 h7 : operator(normalization, standard) => hyperparameter(standard, with_mean, choice).
 h8 : operator(normalization, standard) => hyperparameter(standard, with_std, choice).
-h9 : operator(features_engineering, select_k_best) => hyperparameter(select_k_best, k, randint).
-h10 : operator(features_engineering, pca) => hyperparameter(pca, n_components, randint).
+h9 : operator(features, select_k_best) => hyperparameter(select_k_best, k, randint).
+h10 : operator(features, pca) => hyperparameter(pca, n_components, randint).
 h11 : operator(imputation, simple_imputer) => hyperparameter(simple_imputer, strategy, choice).
 h11 : operator(imputation, iterative_imputer) => hyperparameter(iterative_imputer, initial_strategy, choice).
 h13 : operator(imputation, iterative_imputer) => hyperparameter(iterative_imputer, imputation_order, choice).

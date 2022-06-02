@@ -1,7 +1,9 @@
 package org.queueinc.hamlet.controller
 
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
+import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.Term
+import it.unibo.tuprolog.core.parsing.parse
 import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
 import it.unibo.tuprolog.solve.SolveOptions
@@ -151,7 +153,7 @@ object SpaceTranslator {
                 .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!) }
                 .first()
 
-            val instances = solver.solve("miner" call "fetch_out_instance_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+            val instances = solver.solve("miner" call "fetch_instance_base_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
                 .map { instances(it.substitution[X]!!, it.substitution[Y]!!) }
                 .first()
@@ -165,28 +167,34 @@ object SpaceTranslator {
         val pipelinesList = pipelines.castToList().toList().map { it.castToList().toList() }
 
         val checkStep = { operator: Term, step: Term ->
-            operator.toString().contains(step.toString()
-                .replace("(", "")
-                .replace(")", ""))
+            operator.toString().contains(step.toString())
         }
 
-        println(pipelinesList)
+        val checkPipeline = { pipeline: Term ->
+            pipeline.toString().let {
+                it.contains("function_transformer") ||
+                        it.contains("classification") ||
+                        it.contains("prototype")
+            }
+        }
+
+        val mapPrototype = { pipeline: List<Term> ->
+            pipeline.joinToString("_") { it.toString().substringBefore(",").replace("(", "").trim() }
+        }
 
         val instances = pipelinesList.flatMap { pipeline ->
-            pipeline.filter { step -> !step.toString().contains("function_transformer") }.map { step ->
+            pipeline.filter { step -> !checkPipeline(step) }.map { step ->
                 operatorList.filter { operator -> checkStep(operator, step)}
             }.fold(listOf(pipeline)) { acc, set ->
                 acc.flatMap { pipe -> set.map { op -> pipe.map {
                     if (checkStep(op, it)) op else it
                 } } }
             }.map { elem ->
-                it.unibo.tuprolog.core.List.of(elem)
+                it.unibo.tuprolog.core.List.of(elem + listOf(Struct.parse("(prototype, ${mapPrototype(elem)})")))
             }
         }.let { elem ->
             it.unibo.tuprolog.core.List.of(elem)
         }
-
-        println(instances)
 
         return translateInstances(instances)
     }

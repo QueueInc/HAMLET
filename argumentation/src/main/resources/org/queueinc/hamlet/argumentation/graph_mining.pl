@@ -200,6 +200,54 @@ fetch_mandatory_order(Mandatory) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+steps(S) :- findall(Step, (fetch_step(Step), Step \= classification), S).
+
+
+merge_with_perm([], [], []).
+merge_with_perm(Target, Missing, [(X, function_transformer)|NR]) :-
+    member(X, Missing),
+    utils::subtract(Missing, [X], NMissing),
+    merge_with_perm(Target, NMissing, NR).
+merge_with_perm([X|NTarget], Missing, [X|NR]) :-
+    merge_with_perm(NTarget, Missing, NR).
+
+
+out_prototype(AllSteps, P) :-
+    get_out_argument_by_conclusion(pipeline(Steps, Algorithm)),
+    utils::subtract(AllSteps, Steps, Missing),
+    merge_with_perm(Steps, Missing, F),
+    utils::append_fast(F, [(classification, Algorithm)], P).
+
+
+valorize_operators(_, [], [], []).
+valorize_operators(AllOperators, [(S, O)|T], [(S, O)|TT], [S|TTT]) :-
+    valorize_operators(AllOperators, T, TT, TTT).
+valorize_operators(AllOperators, [H|T], [(H, Operator)|TT], [H|TTT]) :-
+    \+ compound(H),
+    member((H, Operator), AllOperators),
+    valorize_operators(AllOperators, T, TT, TTT).
+
+
+fetch_instance_base([(prototype, CC)|R]) :-
+    steps(AllSteps),
+    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators),
+    out_prototype(AllSteps, P),
+    valorize_operators(AllOperators, P, R, C),
+    concat(C, CC).
+
+fetch_all_instances_base(P) :- findall(R, fetch_instance_base(R), P).
+
+fetch_instance_base_components(AllOperators, Ps) :-
+    steps(AllSteps),
+    findall(P, out_prototype(AllSteps, P), Ps),
+    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% OPERATORS SAMPLING
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 generate_samples(A, B, 0, [A, B]) :- !.
 generate_samples(A, B, Step, [B]) :-
     X is A + Step,
@@ -242,23 +290,6 @@ step_instances(OpWithHyperparameter) :-
     ).
 
 
-steps(S) :- findall(Step, (fetch_step(Step), Step \= classification), S).
-
-merge_with_perm([], [], []).
-merge_with_perm(Target, Missing, [(X, function_transformer)|NR]) :-
-    member(X, Missing),
-    utils::subtract(Missing, [X], NMissing),
-    merge_with_perm(Target, NMissing, NR).
-merge_with_perm([X|NTarget], Missing, [X|NR]) :-
-    merge_with_perm(NTarget, Missing, NR).
-
-out_prototype(AllSteps, P) :-
-    get_out_argument_by_conclusion(pipeline(Steps, Algorithm)),
-    utils::subtract(AllSteps, Steps, Missing),
-    merge_with_perm(Steps, Missing, F),
-    utils::append_fast(F, [(classification, Algorithm)], P).
-
-
 merge_prototypes([], _, []).
 merge_prototypes([(classification, X)|T], Ops, [(classification, X, Hyper)|TT]) :-
     member((classification, X, Hyper), Ops),
@@ -271,11 +302,6 @@ merge_prototypes([X|T], Ops, [(X, Op, Hyper)|TT]) :-
     merge_prototypes(T, Ops, TT).
 
 
-fetch_out_instance_components(Ops, Ps) :-
-    steps(AllSteps),
-    findall(P, out_prototype(AllSteps, P), Ps),
-    step_instances(Ops).
-
 fetch_out_instance(R) :-
     steps(AllSteps),
     step_instances(Ops),
@@ -285,20 +311,7 @@ fetch_out_instance(R) :-
 fetch_out_instances(P) :- findall(R, fetch_out_instance(R), P).
 
 
-valorize_operators(_, [], [], []).
-valorize_operators(AllOperators, [(S, O)|T], [(S, O)|TT], [S|TTT]) :-
-    valorize_operators(AllOperators, T, TT, TTT).
-valorize_operators(AllOperators, [H|T], [(H, Operator)|TT], [H|TTT]) :-
-    \+ compound(H),
-    member((H, Operator), AllOperators),
-    valorize_operators(AllOperators, T, TT, TTT).
-
-
-fetch_instance_base([(prototype, CC)|R]) :-
+fetch_out_instance_components(Ops, Ps) :-
     steps(AllSteps),
-    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators),
-    out_prototype(AllSteps, P),
-    valorize_operators(AllOperators, P, R, C),
-    concat(C, CC).
-
-fetch_all_instances_base(P) :- findall(R, fetch_instance_base(R), P).
+    findall(P, out_prototype(AllSteps, P), Ps),
+    step_instances(Ops).
