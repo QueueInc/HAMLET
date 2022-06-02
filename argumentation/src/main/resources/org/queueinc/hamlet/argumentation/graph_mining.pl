@@ -87,7 +87,7 @@ fetch_operator(Step, Operator) :-
 
 fetch_operators([], []).
 fetch_operators([H|T], [HH|TT]) :-
-    findall(Op, fetch_operator(S, Op), HH),
+    findall(Op, fetch_operator(H, Op), HH),
     fetch_operators(T, TT).
 
 

@@ -10,6 +10,10 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 from sklearn.pipeline import FeatureUnion
 
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import SimpleImputer
+from sklearn.impute import IterativeImputer
+
 ## Normalization operators
 from sklearn.preprocessing import (
     RobustScaler,

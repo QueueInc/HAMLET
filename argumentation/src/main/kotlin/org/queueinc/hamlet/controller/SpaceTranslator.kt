@@ -76,13 +76,13 @@ object SpaceTranslator {
             else target.map { "\"${it.toSklearnClass()}\"" }
         }
 
-        val transform = { target: Term, comparator: String ->
+        val transform = { target: Term, comparator: String, type: Boolean ->
             prolog {
                 target.castToList().toList().map { template ->
                     Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                         unifier[A]!!.castToList().toList().mapIndexed { i, step ->
                             """
-                                "$step" : {"type": {"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())}}}
+                                "$step" : {${if (type) "\"type\": {" else ""}"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())} ${if (type) "}" else ""}}
                                 """
                         }.joinToString(",\n").let {
                             """
@@ -97,7 +97,7 @@ object SpaceTranslator {
             }
         }
         return """
-                ${transform(mandatory, "nin") + transform(forbidden, "in") + transform(mandatoryOrder, "nin")}
+                ${transform(mandatory, "nin", true) + transform(forbidden, "in", true) + transform(mandatoryOrder, "nin", false)}
             """.replace("\\s".toRegex(), "")
     }
 
