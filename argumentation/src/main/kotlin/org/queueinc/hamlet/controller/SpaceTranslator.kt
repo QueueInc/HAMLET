@@ -69,14 +69,20 @@ object SpaceTranslator {
         }
 
     @JvmStatic
-    private fun translateTemplates(mandatory: Term, forbidden: Term) : String {
+    private fun translateTemplates(mandatory: Term, forbidden: Term, mandatoryOrder: Term) : String {
+
+        val mapTerm = { step: Term, target: List<Term> ->
+            if (step.toString() == "prototype") target.map { "\"${it.castToList().toList().joinToString("_")}\"" }
+            else target.map { "\"${it.toSklearnClass()}\"" }
+        }
+
         val transform = { target: Term, comparator: String ->
             prolog {
                 target.castToList().toList().map { template ->
                     Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                         unifier[A]!!.castToList().toList().mapIndexed { i, step ->
                             """
-                                "$step" : {"type": {"$comparator": ${unifier[B]!!.castToList().toList()[i].castToList().toList().map { "\"${it.toSklearnClass()}\"" }}}}
+                                "$step" : {"type": {"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())}}}
                                 """
                         }.joinToString(",\n").let {
                             """
@@ -91,7 +97,7 @@ object SpaceTranslator {
             }
         }
         return """
-                ${transform(mandatory, "nin") + transform(forbidden, "in")}
+                ${transform(mandatory, "nin") + transform(forbidden, "in") + transform(mandatoryOrder, "nin")}
             """.replace("\\s".toRegex(), "")
     }
 
@@ -148,9 +154,9 @@ object SpaceTranslator {
                 .map { translateSpace(it.substitution[X]!!) }
                 .first()
 
-            val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_forbidden"(Y)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+            val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_forbidden"(Y)) and ("miner" call "fetch_mandatory_order"(Z)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
-                .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!) }
+                .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!, it.substitution[Z]!!) }
                 .first()
 
             val instances = solver.solve("miner" call "fetch_instance_base_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))

@@ -189,10 +189,20 @@ fetch_forbidden(Forbidden) :-
 
 
 fetch_mandatory_order(Mandatory) :-
-    findall((S, O, A), (
+    fetch_prototypes(Prototypes),
+    findall(([prototype], [Ps], A), (
         get_in_argument_by_conclusion(mandatory_order(S, A)),
-        fetch_operators(S, O)
+        A \= classification,
+        findall(P, (
+            member(P, Prototypes),
+            match_prototype(P, S),
+        ), Ps)
     ), Mandatory).
+
+
+match_prototype(_, []) :- !.
+match_prototype([H|T], [H|TT]) :- !, match_prototype(T, TT).
+match_prototype([_|T], TT) :- match_prototype(T, TT).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
