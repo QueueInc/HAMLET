@@ -58,64 +58,62 @@ class Loader:
                 f"The step {step} in a constraint does not exist in the declared search space."
             )
         hyper_parameter_conditions = []
-        if step == "prototype":
-            if "neq" in operator_config:
-                return config[step] != operator_config["neq"]
-            if "eq" in operator_config:
-                return config[step] == operator_config["eq"]
-            if "gt" in operator_config:
-                return config[step] > operator_config["gt"]
-            if "ln" in operator_config:
-                return config[step] < operator_config["ln"]
-            if "gte" in operator_config:
-                return config[step] >= operator_config["gte"]
-            if "lte" in operator_config:
-                return config[step] <= operator_config["lte"]
-            raise Exception(
-                f"It seems like that in the step {step} you used a comparison operator that is not allowed."
-            )
-        else:
-            for hyper_parameter_key, hyper_parameter_value in operator_config.items():
-                if hyper_parameter_key not in config[step]:
-                    return False
+        # if step == "prototype":
+        #     if "neq" in operator_config:
+        #         return config[step] != operator_config["neq"]
+        #     if "eq" in operator_config:
+        #         return config[step] == operator_config["eq"]
+        #     if "gt" in operator_config:
+        #         return config[step] > operator_config["gt"]
+        #     if "ln" in operator_config:
+        #         return config[step] < operator_config["ln"]
+        #     if "gte" in operator_config:
+        #         return config[step] >= operator_config["gte"]
+        #     if "lte" in operator_config:
+        #         return config[step] <= operator_config["lte"]
+        #     if "nin" in
+        #     raise Exception(
+        #         f"It seems like that in the step {step} you used a comparison operator that is not allowed."
+        #     )
+        # else:
+        for hyper_parameter_key, hyper_parameter_value in operator_config.items():
+            if hyper_parameter_key not in config[step]:
+                return False
 
-                if "neq" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key]
-                        != hyper_parameter_value["neq"]
-                    )
-                if "eq" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key] == hyper_parameter_value["eq"]
-                    )
-                if "gt" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key] > hyper_parameter_value["gt"]
-                    )
-                if "ln" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key] < hyper_parameter_value["ln"]
-                    )
-                if "gte" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key]
-                        >= hyper_parameter_value["gte"]
-                    )
-                if "lte" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key]
-                        <= hyper_parameter_value["lte"]
-                    )
-                if "in" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key] in hyper_parameter_value["in"]
-                    )
-                if "nin" in hyper_parameter_value:
-                    hyper_parameter_conditions.append(
-                        config[step][hyper_parameter_key]
-                        not in hyper_parameter_value["nin"]
-                    )
-            return all(hyper_parameter_conditions)
+            if "neq" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] != hyper_parameter_value["neq"]
+                )
+            if "eq" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] == hyper_parameter_value["eq"]
+                )
+            if "gt" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] > hyper_parameter_value["gt"]
+                )
+            if "ln" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] < hyper_parameter_value["ln"]
+                )
+            if "gte" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] >= hyper_parameter_value["gte"]
+                )
+            if "lte" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] <= hyper_parameter_value["lte"]
+                )
+            if "in" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key] in hyper_parameter_value["in"]
+                )
+            if "nin" in hyper_parameter_value:
+                hyper_parameter_conditions.append(
+                    config[step][hyper_parameter_key]
+                    not in hyper_parameter_value["nin"]
+                )
+        return all(hyper_parameter_conditions)
 
     def _generate_template_constraint(self, constraint, config):
         for step, operator_config in constraint.items():

@@ -195,7 +195,7 @@ fetch_mandatory_order(Mandatory) :-
         A \= classification,
         findall(P, (
             member(P, Prototypes),
-            match_prototype(P, S),
+            match_prototype(P, S)
         ), Ps)
     ), Mandatory).
 

@@ -39,13 +39,11 @@ fun execAutoML(iteration: Int, dockerMode: Boolean) {
     val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
     val stdError = BufferedReader(InputStreamReader(proc.errorStream))
 
-    println("Here is the standard output of the command:\n")
+    println("Here is the standard output/error of the command:\n")
     var s: String?
-    while (stdInput.readLine().also { s = it } != null) {
+    while (stdError.readLine().also { s = it } != null || stdInput.readLine().also { s = it } != null) {
         println(s)
     }
-    println("Here is the standard error of the command (if any):\n")
-    while (stdError.readLine().also { s = it } != null) {
-        println(s)
-    }
+
+    println("AutoML execution ended")
 }
