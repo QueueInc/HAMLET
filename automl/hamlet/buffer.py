@@ -4,9 +4,12 @@ from .loader import Loader
 class Buffer:
     _instance = None
     _loader = None
+
     _num_points_to_consider = None
     _configs = []
     _results = []
+    _current_point_to_evaluate = 0
+    _max_points_to_evaluates = 0
 
     def __new__(cls, metric=None, input_path=None):
         if cls._instance is None:
@@ -27,10 +30,14 @@ class Buffer:
             cls._instance._configs = (
                 cls._instance._loader.get_instance_constraints() + points_to_evaluate
             )
+            cls._instance._max_points_to_evaluates = len(cls._instance._configs)
             cls._instance._results = [{metric: float("-inf"), "status": "fail"}] * len(
                 cls._instance._loader.get_instance_constraints()
             ) + [
-                {metric: float(result), "status": "success"}
+                {
+                    metric: float(result),
+                    "status": "fail" if float(result) == float("-inf") else "success",
+                }
                 for result in evaluated_rewards
             ]
         return cls._instance
@@ -68,6 +75,9 @@ class Buffer:
         return False
 
     def check_points_to_evaluate(self, config):
-        if config in self._configs:
-            return True, self._results[self._configs.index(config)]
+        if self._current_point_to_evaluate < self._max_points_to_evaluates:
+            self._configs[self._current_point_to_evaluate] = config
+            to_return = self._results[self._current_point_to_evaluate]
+            self._current_point_to_evaluate += 1
+            return True, to_return
         return False, 0

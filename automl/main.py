@@ -60,7 +60,8 @@ def main(args):
         metric=args.metric,
         mode=args.mode,
     )
-    rules = miner.get_rules()
+    # rules = miner.get_rules()
+    rules = []
 
     automl_output = {
         "points_to_evaluate": points_to_evaluate,
