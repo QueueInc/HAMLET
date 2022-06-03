@@ -6,6 +6,7 @@ from lzma import MODE_FAST
 from sequential.seq2pat import Seq2Pat
 from mlxtend.preprocessing import TransactionEncoder
 from mlxtend.frequent_patterns import apriori, association_rules
+from utils import commons
 
 
 class Miner:
@@ -22,7 +23,7 @@ class Miner:
         # self.max_reward = max(temp_evaluated_rewards)
         # self.min_reward = min(temp_evaluated_rewards)
         self._metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
-        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.1}
+        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.3}
 
     def _clean_prototype(config, classification_flag=False):
         prototype = config["prototype"].split("_")
@@ -40,16 +41,12 @@ class Miner:
         rules = []
         for metric_threshold in np.arange(
             self._metric_stat["max"] - self._metric_stat["step"],
-            self._metric_stat["min"]
-            + self._metric_stat["suff"]
-            - self._metric_stat["step"],
+            self._metric_stat["suff"] - self._metric_stat["step"],
             -self._metric_stat["step"],
         ):
             for support_threshold in np.arange(
                 self._support_stat["max"] - self._support_stat["step"],
-                self._support_stat["min"]
-                + self._support_stat["suff"]
-                - self._support_stat["step"],
+                self._support_stat["suff"] - self._support_stat["step"],
                 -self._support_stat["step"],
             ):
                 prototypes = [
@@ -62,7 +59,7 @@ class Miner:
                     tr_arr = tr.fit_transform(prototypes)
                     df = pd.DataFrame(tr_arr, columns=tr.columns_)
                     frequent_itemsets = apriori(
-                        df, min_support=support_threshold, use_colnames=True
+                        df, min_support=round(support_threshold, 1), use_colnames=True
                     )
                     if frequent_itemsets.shape[0] > 0:
                         current_rules = [
@@ -89,47 +86,48 @@ class Miner:
         rules = []
         for metric_threshold in np.arange(
             self._metric_stat["max"] - self._metric_stat["step"],
-            self._metric_stat["min"]
-            + self._metric_stat["suff"]
-            - self._metric_stat["step"],
+            self._metric_stat["suff"] - self._metric_stat["step"],
             -self._metric_stat["step"],
         ):
             for support_threshold in np.arange(
                 self._support_stat["max"] - self._support_stat["step"],
-                self._support_stat["min"]
-                + self._support_stat["suff"]
-                - self._support_stat["step"],
+                self._support_stat["suff"] - self._support_stat["step"],
                 -self._support_stat["step"],
             ):
                 prototypes = [
-                    Miner._clean_prototype(config)
+                    Miner._clean_prototype(config, classification_flag=True)
                     for config, reward in self._automl_output
                     if reward >= round(metric_threshold, 1)
                 ]
-                prototypes = [
-                    prototype[:-1] for prototype in prototypes if len(prototype) >= 2
-                ]
+                # prototypes = [
+                #     prototype[:-1] for prototype in prototypes if len(prototype) >= 2
+                # ]
                 if len(prototypes) > self._min_automl_outputs:
                     seq2pat = Seq2Pat(sequences=prototypes)
-                    support = int(support_threshold * len(prototypes))
-                    current_rules = seq2pat.get_patterns(min_frequency=support)
-                    if len(current_rules) > 0:
-                        current_rules = [
-                            {
-                                "type": "order",
-                                "rule": rule[:-1],
-                                "support": round(rule[-1] / len(prototypes), 2),
-                                "metric_threshold": round(metric_threshold, 1),
-                            }
-                            for rule in current_rules
-                        ]
-                        current_rules = [
-                            current_rule
-                            for current_rule in current_rules
-                            if current_rule["rule"]
-                            not in [rule["rule"] for rule in rules]
-                        ]
-                        rules += current_rules
+                    support = int(round(support_threshold, 1) * len(prototypes))
+                    if support > 0:
+                        current_rules = seq2pat.get_patterns(min_frequency=support)
+                        if len(current_rules) > 0:
+                            current_rules = [
+                                {
+                                    "type": "order",
+                                    "rule": rule[:-1],
+                                    "support": round(rule[-1] / len(prototypes), 2),
+                                    "metric_threshold": round(metric_threshold, 1),
+                                }
+                                for rule in current_rules
+                            ]
+                            current_rules = [
+                                current_rule
+                                for current_rule in current_rules
+                                if (
+                                    current_rule["rule"]
+                                    not in [rule["rule"] for rule in rules]
+                                )
+                                and (len(current_rule["rule"]) == 3)
+                                and (current_rule["rule"][2] in commons.algorithms)
+                            ]
+                            rules += current_rules
         return rules
 
     def get_rules(self):
