@@ -3,8 +3,9 @@ package org.queueinc.hamlet
 import it.unibo.tuprolog.solve.MutableSolver
 import javafx.application.Application
 import javafx.stage.Stage
+import org.queueinc.hamlet.controller.AutoMLResults
 import org.queueinc.hamlet.controller.Controller
-import org.queueinc.hamlet.gui.AutoMLResults
+import org.queueinc.hamlet.controller.FileSystemManager
 import org.queueinc.hamlet.gui.GUI
 import kotlin.system.exitProcess
 
@@ -22,7 +23,7 @@ object Starter {
 
 class HAMLET : Application() {
 
-    private val controller = Controller(path, dockerMode)
+    private val controller = Controller(dockerMode, FileSystemManager(path))
 
     override fun start(stage: Stage) {
         try {
@@ -37,9 +38,9 @@ class HAMLET : Application() {
 
             val view = GUI(stage)
             view.prepareStage(computeAction, exportAction)
-            controller.loadKnowledgeBase()?.also { view.displayTheory(it) }
-            controller.loadAutoMLData()?.also { view.displayAutoMLData(it) }
-            controller.loadGraphData()?.also { view.displayGraph(it) }
+            controller.knowledgeBase()?.also { view.displayTheory(it) }
+            controller.autoMLData()?.also { view.displayAutoMLData(it) }
+            controller.graphData()?.also { view.displayGraph(it) }
             view.show()
 
         } catch (e: Throwable) {

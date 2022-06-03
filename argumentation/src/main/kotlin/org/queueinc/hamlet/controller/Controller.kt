@@ -1,7 +1,5 @@
 package org.queueinc.hamlet.controller
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
@@ -15,13 +13,7 @@ import it.unibo.tuprolog.theory.Theory
 import it.unibo.tuprolog.theory.parsing.parse
 import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
-import org.queueinc.hamlet.automl.execAutoML
-import org.queueinc.hamlet.automl.runAutoML
-import org.queueinc.hamlet.automl.stopAutoML
-import org.queueinc.hamlet.createAndWrite
-import org.queueinc.hamlet.gui.AutoMLResults
-import java.io.File
-
+import org.queueinc.hamlet.automl.*
 
 val dataset = "vehicle"
 val metric = "accuracy"
@@ -29,30 +21,27 @@ val mode = "max"
 val batchSize = 50
 val seed = 42
 
-class Controller(private val workspacePath: String, private val dockerMode: Boolean) {
+class Controller(private val dockerMode: Boolean, private val dataManager: FileSystemManager) {
 
     private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
-    private lateinit var configReference: File
 
     private var config: Config = Config(0)
+
+    private fun nextIteration() = Config(config.iteration + 1)
+    private fun updateIteration() {
+        config.iteration++
+        dataManager.saveConfig(config)
+    }
 
     fun init() {
 
         if (dockerMode) {
             stopAutoML()
-            runAutoML(workspacePath)
+            runAutoML(dataManager.workspacePath)
         }
 
-        configReference = File("$workspacePath/config.json")
-        if (configReference.exists()) {
-            config = Gson().fromJson(configReference.readText(), Config::class.java)
-            return
-        }
-
-        File("$workspacePath/argumentation").mkdirs()
-        File("${workspacePath}/automl/input").mkdirs()
-        File("${workspacePath}/automl/output").mkdirs()
+        config = dataManager.loadConfig() ?: config
     }
 
     fun stop() {
@@ -60,6 +49,20 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
             stopAutoML()
         }
     }
+
+    fun knowledgeBase() : String? = dataManager.loadKnowledgeBase(config.copy())
+
+    fun autoMLData() : AutoMLResults? = dataManager.loadAutoMLData(config.copy())
+
+    fun graphData() : MutableSolver? =
+        dataManager.loadGraphData(config.copy())?.let { graph ->
+            ClassicSolverFactory.mutableSolverWithDefaultBuiltins(otherLibraries = arg2p.to2pLibraries()).also {
+                lastSolver = it
+                arg2pScope {
+                    it.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
+                }
+            }
+        }
 
     fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
 
@@ -87,20 +90,17 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
         lastSolver?.also { solver ->
             Thread {
 
-                val input = File("${workspacePath}/automl/input/automl_input_${config.iteration + 1}.json")
-                input.createAndWrite(createAutoMLInput(solver))
+                dataManager.saveAutoMLData(nextIteration(), solver)
+                dataManager.saveKnowledgeBase(nextIteration(), theory)
+                dataManager.saveGraphData(nextIteration(), dumpGraphData() ?: "")
 
-                File("${workspacePath}/argumentation/kb_${config.iteration + 1}.txt").createAndWrite(theory)
-                saveGraphData(config.iteration + 1)
+                println("Input created for iteration ${nextIteration()}")
 
-                println("input created")
+                execAutoML(nextIteration().iteration, dockerMode)
 
-                execAutoML(config.iteration + 1, dockerMode)
-
-                if (File("${workspacePath}/automl/output/automl_output_${config.iteration + 1}.json").exists()) {
-                    config.iteration++
-                    configReference.createAndWrite(Gson().toJson(config))
-                    update(loadAutoMLData()!!)
+                if (dataManager.existsAutoMLData(nextIteration())) {
+                    updateIteration()
+                    update(dataManager.loadAutoMLData(config.copy())!!)
                 } else {
                     // input.delete()
                 }
@@ -109,74 +109,11 @@ class Controller(private val workspacePath: String, private val dockerMode: Bool
         }
     }
 
-    fun loadKnowledgeBase() : String? =
-        File("$workspacePath/argumentation/kb_${config.iteration}.txt").let {
-            if (it.exists()) it.readText() else null
-        }
-
-    fun loadAutoMLData() : AutoMLResults? {
-        val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.csv").let {
-            if (!it.exists()) return null
-            it.readText().trim('\n')
-        }
-
-        return AutoMLResults(
-            output.split("\n")
-                .mapIndexed { i, el ->
-                    listOf(if (i == 0) "iteration" else i.toString()) + el.split(",")
-                        .map { it.trim() } })
-    }
-
-    fun loadGraphData() : MutableSolver? {
-        val graph = File("${workspacePath}/argumentation/graph_${config.iteration}.txt").let {
-            if (!it.exists()) return null
-            it.readText()
-        }
-
-        lastSolver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
-            otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(graphExtensions = emptyList()).create().content()),
-        )
-
-        arg2pScope {
-            lastSolver!!.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
-        }
-
-        return lastSolver
-    }
-
-    private fun createAutoMLInput(solver: MutableSolver) : String {
-        val (space, templates, instances) = SpaceTranslator.mineData(solver)
-        val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints()
-        return """{
-                    "space":$space,
-                    "template_constraints":$templates,
-                    "instance_constraints":$instances,
-                    "points_to_evaluate":$pointsToEvaluate,
-                    "evaluated_rewards":$evaluatedRewards
-               }""".trimIndent()
-    }
-
-    private fun loadAutoMLPoints() : Pair<String, String> {
-        val output = File("${workspacePath}/automl/output/automl_output_${config.iteration}.json").let {
-            if (!it.exists()) return "[]" to "[]"
-            it.readText().trim('\n')
-        }
-
-        return Gson().fromJson(output, JsonObject::class.java).let {
-            it.getAsJsonArray("points_to_evaluate").toString() to
-                    it.getAsJsonArray("evaluated_rewards").toString()
-        }
-    }
-
-    private fun saveGraphData(iteration: Int) {
+    private fun dumpGraphData() : String? =
         arg2pScope {
             lastSolver?.solve("miner" call "dump_graph_data"(X))
                 ?.filter { it.isYes }
                 ?.map { it.substitution[X].toString() }
                 ?.first()
-                ?.also {
-                    File("${workspacePath}/argumentation/graph_${iteration}.txt").createAndWrite(it)
-                }
         }
-    }
 }

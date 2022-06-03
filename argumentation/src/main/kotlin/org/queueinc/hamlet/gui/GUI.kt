@@ -12,8 +12,8 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
-
-data class AutoMLResults(val values: List<List<String>>)
+import org.queueinc.hamlet.controller.AutoMLResults
+import org.queueinc.hamlet.controller.Rule
 
 class GUI(private val stage: Stage) {
 
@@ -25,13 +25,18 @@ class GUI(private val stage: Stage) {
     private val tabPane = TabPane()
     private val tab1 = Tab("Graph", graph.node)
     private val tab2 = Tab("Data")
+    private val tab3 = Tab("AutoML Arguments")
+
 
     fun displayTheory(theory: String) {
         Platform.runLater { textArea.text = theory }
     }
 
     fun displayAutoMLData(data: AutoMLResults) {
-        Platform.runLater { tab2.content = toTableView(data.values) }
+        Platform.runLater {
+            tab2.content = toTableView(data.evaluatedPoints)
+            tab3.content = toTableView(rulesToTable(data.inferredRules))
+        }
     }
 
     fun displayGraph(solver: MutableSolver) {
@@ -42,6 +47,7 @@ class GUI(private val stage: Stage) {
 
         tabPane.tabs.add(tab1)
         tabPane.tabs.add(tab2)
+        tabPane.tabs.add(tab3)
 
         val vbox = VBox(HBox(compute, export), tabPane)
         VBox.setVgrow(tabPane, Priority.ALWAYS)
@@ -65,7 +71,10 @@ class GUI(private val stage: Stage) {
 
         export.setOnAction {
             exportAction(textArea.text) {
-                Platform.runLater { tab2.content = toTableView(it.values) }
+                Platform.runLater {
+                    tab2.content = toTableView(it.evaluatedPoints)
+                    tab3.content = toTableView(rulesToTable(it.inferredRules))
+                }
             }
         }
 
@@ -76,7 +85,7 @@ class GUI(private val stage: Stage) {
     fun show() = stage.show()
 }
 
-fun toTableView(rows: List<List<String>>) : TableView<ObservableList<String>> {
+private fun toTableView(rows: List<List<String>>) : TableView<ObservableList<String>> {
     val tableView = TableView<ObservableList<String>>()
     for (i in rows[0].indices) {
         val column: TableColumn<ObservableList<String>, String> = TableColumn(
@@ -95,3 +104,9 @@ fun toTableView(rows: List<List<String>>) : TableView<ObservableList<String>> {
     return tableView
 }
 
+
+private fun rulesToTable(rules: List<Rule>) : List<List<String>> =
+    listOf(listOf("argument", "support", "accuracy")) +
+            rules.map {
+                listOf(it.theoryRepresentation(), it.support.toString(), it.metric_threshold.toString())
+            }
