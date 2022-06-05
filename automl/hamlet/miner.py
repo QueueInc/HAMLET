@@ -24,7 +24,7 @@ class Miner:
         # self.max_reward = max(temp_evaluated_rewards)
         # self.min_reward = min(temp_evaluated_rewards)
         self._metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
-        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.3}
+        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.5}
 
     def _clean_prototype(config, classification_flag=False):
         prototype = config["prototype"].split("_")
@@ -38,22 +38,39 @@ class Miner:
             clean_prototype[-1] = config["classification"]["type"]
         return clean_prototype
 
-    def _get_mandatory_rules(self):
+    def _get_presence_rules(self, mode):
+        def is_reward_eligible(reward):
+            return (
+                reward >= round(metric_threshold, 1)
+                if mode == "mandatory"
+                else reward <= round(metric_threshold, 1)
+            )
+
         rules = []
-        for metric_threshold in np.arange(
-            self._metric_stat["max"] - self._metric_stat["step"],
-            self._metric_stat["suff"] - self._metric_stat["step"],
-            -self._metric_stat["step"],
-        ):
-            for support_threshold in np.arange(
-                self._support_stat["max"] - self._support_stat["step"],
-                self._support_stat["suff"] - self._support_stat["step"],
-                -self._support_stat["step"],
-            ):
+
+        metric_thresholds = np.arange(
+            self._metric_stat["max"] - self._metric_stat["step"]
+            if mode == "mandatory"
+            else self._metric_stat["min"] + self._metric_stat["step"],
+            self._metric_stat["suff"] - self._metric_stat["step"]
+            if mode == "mandatory"
+            else (self._metric_stat["max"] - self._metric_stat["suff"])
+            + self._metric_stat["step"],
+            -self._metric_stat["step"]
+            if mode == "mandatory"
+            else self._metric_stat["step"],
+        )
+        support_thresholds = np.arange(
+            self._support_stat["max"] - self._support_stat["step"],
+            self._support_stat["suff"] - self._support_stat["step"],
+            -self._support_stat["step"],
+        )
+        for metric_threshold in metric_thresholds:
+            for support_threshold in support_thresholds:
                 prototypes = [
                     Miner._clean_prototype(config, classification_flag=True)
                     for config, reward in self._automl_output
-                    if reward >= round(metric_threshold, 1)
+                    if is_reward_eligible(reward)
                 ]
                 if len(prototypes) > self._min_automl_outputs:
                     tr = TransactionEncoder()
@@ -65,9 +82,11 @@ class Miner:
                     if frequent_itemsets.shape[0] > 0:
                         current_rules = [
                             {
-                                "type": "mandatory",
+                                "type": mode,
                                 "rule": list(rule["itemsets"]),
                                 "support": round(rule["support"], 2),
+                                "occurences": int(rule["support"] * len(prototypes)),
+                                "considered_rewards": len(prototypes),
                                 "metric_threshold": round(metric_threshold, 1),
                             }
                             for index, rule in frequent_itemsets.to_dict(
@@ -81,18 +100,32 @@ class Miner:
                             not in [rule["rule"] for rule in rules]
                         ]
                         rules += current_rules
+        # return [
+        #     new_rule
+        #     for new_rule in rules
+        #     if len(
+        #         [
+        #             set(i)
+        #             for j in range(len(new_rule["rule"]))
+        #             for i in itertools.combinations(new_rule["rule"], j)
+        #             if set(i) in [set(rule["rule"]) for rule in rules]
+        #         ]
+        #     )
+        #     == 0
+        # ]
         return [
             new_rule
             for new_rule in rules
-            if len(
-                [
-                    set(i)
-                    for j in range(len(new_rule["rule"]))
-                    for i in itertools.combinations(new_rule["rule"], j)
-                    if set(i) in [set(rule["rule"]) for rule in rules]
-                ]
+            if any([elem in commons.algorithms for elem in new_rule["rule"]])
+            and not (
+                any(
+                    [
+                        all(elem in rule["rule"] for elem in new_rule["rule"])
+                        for rule in rules
+                        if rule["rule"] != new_rule["rule"]
+                    ]
+                )
             )
-            == 0
         ]
 
     def _get_order_rules(self):
@@ -126,6 +159,8 @@ class Miner:
                                     "type": "order",
                                     "rule": rule[:-1],
                                     "support": round(rule[-1] / len(prototypes), 2),
+                                    "occurences": rule[-1],
+                                    "considered_rewards": len(prototypes),
                                     "metric_threshold": round(metric_threshold, 1),
                                 }
                                 for rule in current_rules
@@ -151,5 +186,12 @@ class Miner:
     def get_rules(self):
         rules = []
         rules += self._get_order_rules()
-        rules += self._get_mandatory_rules()
+        mandatory_rules = self._get_presence_rules(mode="mandatory")
+        rules += mandatory_rules
+        rules += [
+            forbidden_rule
+            for forbidden_rule in self._get_presence_rules(mode="forbidden")
+            if forbidden_rule["rule"]
+            not in [mandatory_rule["rule"] for mandatory_rule in mandatory_rules]
+        ]
         return rules
