@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 import pandas as pd
 
@@ -80,7 +81,19 @@ class Miner:
                             not in [rule["rule"] for rule in rules]
                         ]
                         rules += current_rules
-        return rules
+        return [
+            new_rule
+            for new_rule in rules
+            if len(
+                [
+                    set(i)
+                    for j in range(len(new_rule["rule"]))
+                    for i in itertools.combinations(new_rule["rule"], j)
+                    if set(i) in [set(rule["rule"]) for rule in rules]
+                ]
+            )
+            == 0
+        ]
 
     def _get_order_rules(self):
         rules = []
@@ -128,7 +141,12 @@ class Miner:
                                 and (current_rule["rule"][2] in commons.algorithms)
                             ]
                             rules += current_rules
-        return rules
+        return [
+            new_rule
+            for new_rule in rules
+            if [new_rule["rule"][1], new_rule["rule"][0], new_rule["rule"][2]]
+            not in [rule["rule"] for rule in rules]
+        ]
 
     def get_rules(self):
         rules = []
