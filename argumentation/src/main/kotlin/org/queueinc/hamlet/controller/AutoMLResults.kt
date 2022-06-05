@@ -4,7 +4,18 @@ import org.queueinc.hamlet.dictionary
 
 typealias Point = List<String>
 
-data class Rule(val type: String, private val rule: List<String>, val support: Float, val metric_threshold: Float) {
+data class Rule(
+    val type: String,
+    private val rule: List<String>,
+    val occurrences: Int,
+    private val considered_configurations: Int,
+    val support: Float,
+    private val metric_threshold: Float) {
+
+    val consideredConfigurations : Int
+        get() = considered_configurations
+    val metricThreshold : Float
+        get() = metric_threshold
 
     val algorithm : String
         get() = dictionary.filter { rule.contains(it.value) }.map { it.key }.first()

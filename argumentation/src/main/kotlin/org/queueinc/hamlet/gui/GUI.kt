@@ -106,9 +106,10 @@ private fun toTableView(rows: List<List<String>>) : TableView<ObservableList<Str
 
 
 private fun rulesToTable(rules: List<Rule>) : List<List<String>> =
-    listOf(listOf("argument", "support", "accuracy")) +
+    listOf(listOf("argument", "support", "occurrences", "considered configurations", "metric threshold")) +
             rules
                 .filter { it.isValid }
                 .map {
-                    listOf(it.theoryRepresentation, it.support.toString(), it.metric_threshold.toString())
+                    listOf(it.theoryRepresentation, it.support.toString(), it.occurrences.toString(),
+                        it.consideredConfigurations.toString(), it.metricThreshold.toString())
                 }

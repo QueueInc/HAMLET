@@ -35,8 +35,7 @@ subset([H|T], Y) :- member(H, Y), subset(T, Y).
 % MANDATORY ORDER CONSTRAINT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cco0 : mandatory_order([A, B], Y), mandatory_order([B, C], Y), prolog((Y \= classification, A \= C)) => mandatory_order([A, C], Y).
-cco1 : mandatory_order(X, classification), operator(classification, Y) => mandatory_order(X, Y).
+cco0 : mandatory_order(X, classification), operator(classification, Y) => mandatory_order(X, Y).
 
 conflict([mandatory_order([A, C], Y)], [mandatory_order([C, A], Y)]).
 conflict([mandatory_order(Steps, Algorithm)], [pipeline(Steps2, Algorithm)], mandatory_order_conflict(Steps, Steps2)).

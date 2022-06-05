@@ -585,8 +585,8 @@
                 "GaussianNB"
             ],
             "support": 0.67,
-            "occurences": 4,
-            "considered_rewards": 6,
+            "occurrences": 4,
+            "considered_configurations": 6,
             "metric_threshold": 0.9
         },
         {
@@ -597,8 +597,8 @@
                 "GaussianNB"
             ],
             "support": 1.0,
-            "occurences": 6,
-            "considered_rewards": 6,
+            "occurrences": 6,
+            "considered_configurations": 6,
             "metric_threshold": 0.9
         }
     ]

@@ -85,8 +85,8 @@ class Miner:
                                 "type": mode,
                                 "rule": list(rule["itemsets"]),
                                 "support": round(rule["support"], 2),
-                                "occurences": int(rule["support"] * len(prototypes)),
-                                "considered_rewards": len(prototypes),
+                                "occurrences": int(rule["support"] * len(prototypes)),
+                                "considered_configurations": len(prototypes),
                                 "metric_threshold": round(metric_threshold, 1),
                             }
                             for index, rule in frequent_itemsets.to_dict(
@@ -159,8 +159,8 @@ class Miner:
                                     "type": "order",
                                     "rule": rule[:-1],
                                     "support": round(rule[-1] / len(prototypes), 2),
-                                    "occurences": rule[-1],
-                                    "considered_rewards": len(prototypes),
+                                    "occurrences": rule[-1],
+                                    "considered_configurations": len(prototypes),
                                     "metric_threshold": round(metric_threshold, 1),
                                 }
                                 for rule in current_rules
