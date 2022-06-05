@@ -22,9 +22,10 @@ forbidden_conflict(Steps, Steps2) :-
 		\+ member(Step, Steps2)
 	).
 
-conflict([mandatory(Steps, Algorithm)], [pipeline(Steps2, Algorithm)], mandatory_conflict(Steps, Steps2)).
+conflict([mandatory(Steps, Algorithm)], [pipeline(Steps2, Algorithm2)], mandatory_conflict(Steps, Steps2, Algorithm, Algorithm2)).
 
-mandatory_conflict(Steps, Steps2) :-
+mandatory_conflict([], _, Algorithm, Algorithm2) :- Algorithm \= Algorithm2.
+mandatory_conflict(Steps, Steps2, Algorithm, Algorithm) :-
 	member(Step, Steps),
 	\+ member(Step, Steps2).
 
