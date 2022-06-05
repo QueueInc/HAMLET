@@ -3,24 +3,24 @@ package org.queueinc.hamlet
 import it.unibo.tuprolog.core.Term
 import java.io.File
 
-fun Term.toSklearnClass() =
-    when(this.toString()) {
-        "dt" -> "DecisionTreeClassifier"
-        "knn" -> "KNeighborsClassifier"
-        "naive_bayes" -> "GaussianNB"
-        "function_transformer" -> "FunctionTransformer"
-        "robust_scaler" -> "RobustScaler"
-        "kbins" -> "KBinsDiscretizer"
-        "binarizer" -> "Binarizer"
-        "power_transformer" -> "PowerTransformer"
-        "standard" -> "StandardScaler"
-        "minmax" -> "MinMaxScaler"
-        "select_k_best" -> "SelectKBest"
-        "pca" -> "PCA"
-        "simple_imputer" -> "SimpleImputer"
-        "iterative_imputer" -> "IterativeImputer"
-        else -> this.toString()
-    }
+val dictionary = mapOf(
+    "dt" to "DecisionTreeClassifier",
+    "knn" to "KNeighborsClassifier",
+    "naive_bayes" to "GaussianNB",
+    "function_transformer" to "FunctionTransformer",
+    "robust_scaler" to "RobustScaler",
+    "kbins" to "KBinsDiscretizer",
+    "binarizer" to "Binarizer",
+    "power_transformer" to "PowerTransformer",
+    "standard" to "StandardScaler",
+    "minmax" to "MinMaxScaler",
+    "select_k_best" to "SelectKBest",
+    "pca" to "PCA",
+    "simple_imputer" to "SimpleImputer",
+    "iterative_imputer" to "IterativeImputer"
+)
+
+fun Term.toSklearnClass() = dictionary[this.toString()] ?: this.toString()
 
 fun File.createAndWrite(text: String) {
     this.createNewFile()
