@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.queueinc"
-version = "0.1.1"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -50,6 +50,12 @@ val entryPoint = "org.queueinc.hamlet.Main"
 
 application {
     mainClassName = entryPoint
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
 
 tasks.getByName<Test>("test") {
