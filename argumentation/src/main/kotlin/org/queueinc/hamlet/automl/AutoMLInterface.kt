@@ -1,26 +1,52 @@
 package org.queueinc.hamlet.automl
 
 import org.queueinc.hamlet.controller.*
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.util.*
+import java.util.stream.Stream
 
+fun getOutputFromProgram(program: Array<String>) {
+    val proc = Runtime.getRuntime().exec(program)
+
+    println("Here is the standard output/error of the command:\n")
+
+    Stream.of(proc.errorStream, proc.inputStream).parallel().forEach { isForOutput: InputStream ->
+        try {
+            BufferedReader(InputStreamReader(isForOutput)).use { br ->
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    println(line)
+                }
+            }
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+    }
+
+    proc.waitFor()
+    proc.destroy()
+}
 
 fun stopAutoML() {
     val stop = arrayOf("docker", "stop", "automl-container")
     val rm = arrayOf("docker", "rm", "automl-container")
 
-    Runtime.getRuntime().exec(stop).waitFor()
-    Runtime.getRuntime().exec(rm).waitFor()
+    getOutputFromProgram(stop)
+    getOutputFromProgram(rm)
 }
 
 fun runAutoML(workspacePath: String, debug: Boolean) {
 
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-container", ".")
-        val run = arrayOf("docker", "run", "--name", "automl-container", "--volume", "${System.getProperty("user.dir")}/automl:/home/automl",
+        val run = arrayOf("docker", "run", "--name", "automl-container",
             "--volume", "${workspacePath}:/home/resources", "--detach", "-t", "automl-container")
 
-        Runtime.getRuntime().exec(build).waitFor()
-        Runtime.getRuntime().exec(run).waitFor()
+        getOutputFromProgram(build)
+        getOutputFromProgram(run)
 
         return
     }
@@ -33,7 +59,7 @@ fun runAutoML(workspacePath: String, debug: Boolean) {
     val run = arrayOf("docker", "run", "--name", "automl-container",
         "--volume", "${workspacePath}:/home/resources", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
 
-    Runtime.getRuntime().exec(run).waitFor()
+    getOutputFromProgram(run)
 }
 
 fun execAutoML(iteration: Int) {
@@ -44,15 +70,7 @@ fun execAutoML(iteration: Int) {
                 "--input_path", "/home/resources/automl/input/automl_input_${iteration}.json",
                 "--output_path", "/home/resources/automl/output/automl_output_${iteration}.json")
 
-    Runtime.getRuntime().exec(exec).waitFor()
-//    val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
-//    val stdError = BufferedReader(InputStreamReader(proc.errorStream))
-
-//    println("Here is the standard output/error of the command:\n")
-//    var s: String?
-//    while (stdError.readLine().also { s = it } != null || stdInput.readLine().also { s = it } != null) {
-//        println(s)
-//    }
+    getOutputFromProgram(exec)
 
     println("AutoML execution ended")
 }
