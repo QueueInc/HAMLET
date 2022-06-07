@@ -6,7 +6,7 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-  build-svc:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,10 +27,10 @@ jobs:
           github-push-secret: ${{ secrets.GITHUB_TOKEN }}
           docker-image-name: automl-container
           docker-image-tag: ${{github.ref_name}}
-       - uses: marvinpinto/action-automatic-releases@latest
-         name: Create release
-         with:
-           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-           prerelease: false
-           files: |
-             ./argumentation/build/libs/*.jar
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        name: Create release
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            ./argumentation/build/libs/*.jar
