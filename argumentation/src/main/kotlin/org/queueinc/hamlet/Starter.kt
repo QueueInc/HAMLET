@@ -9,14 +9,24 @@ import org.queueinc.hamlet.controller.FileSystemManager
 import org.queueinc.hamlet.gui.GUI
 import kotlin.system.exitProcess
 
-private var path : String = ""
-private var debugMode : Boolean = true
+private var path: String = ""
+private var dataset: String = ""
+private var metric: String = ""
+private var mode: String = ""
+private var batchSize: Int = 0
+private var seed: Int = 0
+private var debugMode: Boolean = true
 
 object Starter {
     @JvmStatic
     fun main(args: Array<String>) {
         path = args[0]
-        debugMode = if (args.size == 1) false else args[1].toBoolean()
+        dataset = args[1]
+        metric = args[2]
+        mode = args[3]
+        batchSize = args[4].toInt()
+        seed = args[5].toInt()
+        debugMode = if (args.size == 6) false else args[6].toBoolean()
         Application.launch(HAMLET::class.java)
     }
 }
@@ -28,7 +38,7 @@ class HAMLET : Application() {
     override fun start(stage: Stage) {
         try {
 
-            controller.init()
+            controller.init(dataset, metric, mode, batchSize, seed)
             val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
                 controller.generateGraph(kb, updateAction)
             }

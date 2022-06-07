@@ -1,3 +1,7 @@
+# RUN
+
+        java -jar hamlet-0.1.4-all.jar /resources vehicle accuracy max 25 42 true
+
 # PICCOLA ON-GOING DOC DI RUN_EXPERIMENTS
 choose the dataset between: [
         "blood",

@@ -15,31 +15,32 @@ import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
 import org.queueinc.hamlet.automl.*
 
-val dataset = "vehicle"
-val metric = "accuracy"
-val mode = "max"
-val batchSize = 50
-val seed = 42
 
 class Controller(private val debugMode: Boolean, private val dataManager: FileSystemManager) {
 
     private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
 
-    private var config: Config = Config(0)
+    private lateinit var config: Config
 
-    private fun nextIteration() = Config(config.iteration + 1)
+    private fun nextIteration() = config.copy(iteration = config.iteration + 1)
     private fun updateIteration() {
         config.iteration++
         dataManager.saveConfig(config)
     }
 
-    fun init() {
-
+    fun init(dataset: String, metric: String, mode: String, batchSize: Int, seed: Int) {
         stopAutoML()
         runAutoML(dataManager.workspacePath, debugMode)
 
-        config = dataManager.loadConfig() ?: config
+        config = dataManager.loadConfig().let {
+            if (it == null || it.dataset != dataset) {
+                dataManager.cleanWorkspace()
+                dataManager.initWorkspace()
+                Config(0, dataset, metric, mode, batchSize, seed)
+            }
+            else it
+        }
     }
 
     fun stop() {
@@ -92,7 +93,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
                 println("Input created for iteration ${nextIteration()}")
 
-                execAutoML(nextIteration().iteration)
+                execAutoML(nextIteration())
 
                 if (dataManager.existsAutoMLData(nextIteration())) {
                     updateIteration()

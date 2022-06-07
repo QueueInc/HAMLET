@@ -62,13 +62,13 @@ fun runAutoML(workspacePath: String, debug: Boolean) {
     getOutputFromProgram(run)
 }
 
-fun execAutoML(iteration: Int) {
+fun execAutoML(config: Config) {
 
     val exec  =
         arrayOf("docker", "exec", "automl-container", "python", "automl/main.py",
-                "--dataset", dataset, "--metric", metric, "--mode", mode, "--batch_size", batchSize.toString(), "--seed", seed.toString(),
-                "--input_path", "/home/resources/automl/input/automl_input_${iteration}.json",
-                "--output_path", "/home/resources/automl/output/automl_output_${iteration}.json")
+                "--dataset", config.dataset, "--metric", config.metric, "--mode", config.mode, "--batch_size", config.batchSize.toString(), "--seed", config.seed.toString(),
+                "--input_path", "/home/resources/automl/input/automl_input_${config.iteration}.json",
+                "--output_path", "/home/resources/automl/output/automl_output_${config.iteration}.json")
 
     getOutputFromProgram(exec)
 

@@ -10,16 +10,24 @@ import java.io.File
 
 class FileSystemManager(val workspacePath: String) {
 
+    fun cleanWorkspace() {
+        File("$workspacePath/argumentation").deleteRecursively()
+        File("${workspacePath}/automl/input").deleteRecursively()
+        File("${workspacePath}/automl/output").deleteRecursively()
+        File("$workspacePath/config.json").delete()
+    }
+
+    fun initWorkspace() {
+        File("$workspacePath/argumentation").mkdirs()
+        File("${workspacePath}/automl/input").mkdirs()
+        File("${workspacePath}/automl/output").mkdirs()
+    }
+
     fun loadConfig() : Config? {
         val configReference = File("$workspacePath/config.json")
         if (configReference.exists()) {
             return Gson().fromJson(configReference.readText(), Config::class.java)
         }
-
-        File("$workspacePath/argumentation").mkdirs()
-        File("${workspacePath}/automl/input").mkdirs()
-        File("${workspacePath}/automl/output").mkdirs()
-
         return null
     }
 
@@ -33,7 +41,7 @@ class FileSystemManager(val workspacePath: String) {
         }
 
     fun saveKnowledgeBase(config: Config, theory : String) =
-        File("${workspacePath}/argumentation/kb_${config.iteration + 1}.txt").createAndWrite(theory)
+        File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
 
 
     fun loadAutoMLData(config: Config) : AutoMLResults? {
@@ -59,7 +67,7 @@ class FileSystemManager(val workspacePath: String) {
 
     fun saveAutoMLData(config: Config, solver: MutableSolver) {
         val (space, templates, instances) = SpaceTranslator.mineData(solver)
-        val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints(Config(config.iteration - 1))
+        val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints(config.copy(iteration = config.iteration - 1))
         val input = """{
                     "space":$space,
                     "template_constraints":$templates,
