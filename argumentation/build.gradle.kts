@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
+import java.io.FileOutputStream
+import java.util.Properties
 
 plugins {
     application
@@ -9,7 +10,7 @@ plugins {
 }
 
 group = "org.queueinc"
-version = "1.0-SNAPSHOT"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -52,4 +53,30 @@ application {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+
+val generatedVersionDir = "$buildDir/generated-version"
+
+sourceSets {
+    main {
+        kotlin {
+            output.dir(generatedVersionDir)
+        }
+    }
+}
+
+tasks.register("generateVersionProperties") {
+    doLast {
+        val propertiesFile = file("$generatedVersionDir/version.properties")
+        propertiesFile.parentFile.mkdirs()
+        val properties = Properties()
+        properties.setProperty("version", "$version")
+        val out = FileOutputStream(propertiesFile)
+        properties.store(out, null)
+    }
+}
+
+tasks.named("processResources") {
+    dependsOn("generateVersionProperties")
 }

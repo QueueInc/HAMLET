@@ -21,7 +21,7 @@ val mode = "max"
 val batchSize = 50
 val seed = 42
 
-class Controller(private val dockerMode: Boolean, private val dataManager: FileSystemManager) {
+class Controller(private val debugMode: Boolean, private val dataManager: FileSystemManager) {
 
     private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
@@ -36,18 +36,14 @@ class Controller(private val dockerMode: Boolean, private val dataManager: FileS
 
     fun init() {
 
-        if (dockerMode) {
-            stopAutoML()
-            runAutoML(dataManager.workspacePath)
-        }
+        stopAutoML()
+        runAutoML(dataManager.workspacePath, debugMode)
 
         config = dataManager.loadConfig() ?: config
     }
 
     fun stop() {
-        if (dockerMode) {
-            stopAutoML()
-        }
+        stopAutoML()
     }
 
     fun knowledgeBase() : String? = dataManager.loadKnowledgeBase(config.copy())
@@ -96,7 +92,7 @@ class Controller(private val dockerMode: Boolean, private val dataManager: FileS
 
                 println("Input created for iteration ${nextIteration()}")
 
-                execAutoML(nextIteration().iteration, dockerMode)
+                execAutoML(nextIteration().iteration)
 
                 if (dataManager.existsAutoMLData(nextIteration())) {
                     updateIteration()

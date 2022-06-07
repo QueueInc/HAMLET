@@ -10,20 +10,20 @@ import org.queueinc.hamlet.gui.GUI
 import kotlin.system.exitProcess
 
 private var path : String = ""
-private var dockerMode : Boolean = true
+private var debugMode : Boolean = true
 
 object Starter {
     @JvmStatic
     fun main(args: Array<String>) {
         path = args[0]
-        dockerMode = args[1].toBoolean()
+        debugMode = if (args.size == 1) false else args[1].toBoolean()
         Application.launch(HAMLET::class.java)
     }
 }
 
 class HAMLET : Application() {
 
-    private val controller = Controller(dockerMode, FileSystemManager(path))
+    private val controller = Controller(debugMode, FileSystemManager(path))
 
     override fun start(stage: Stage) {
         try {
