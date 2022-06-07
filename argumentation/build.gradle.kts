@@ -4,7 +4,7 @@ import java.util.Properties
 
 plugins {
     application
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.21"
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -16,17 +16,18 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     implementation(kotlin("stdlib"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     implementation("it.unibo.tuprolog.argumentation:arg2p-jvm:0.6.7")
-    implementation("it.unibo.tuprolog:solve-classic-jvm:0.20.1")
-    implementation("it.unibo.tuprolog:parser-theory-jvm:0.20.1")
+    implementation("it.unibo.tuprolog:solve-classic-jvm:0.20.4")
+    implementation("it.unibo.tuprolog:parser-theory-jvm:0.20.4")
 
-    runtimeOnly("org.openjfx:javafx-graphics:16:win")
-    runtimeOnly("org.openjfx:javafx-graphics:16:linux")
-    runtimeOnly("org.openjfx:javafx-graphics:16:mac")
+    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:win")
+    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:linux")
+    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:mac")
 
     implementation("com.google.code.gson:gson:2.9.0")
 

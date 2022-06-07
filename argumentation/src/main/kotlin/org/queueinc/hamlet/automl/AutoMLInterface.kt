@@ -1,8 +1,6 @@
 package org.queueinc.hamlet.automl
 
 import org.queueinc.hamlet.controller.*
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.util.*
 
 
@@ -46,15 +44,15 @@ fun execAutoML(iteration: Int) {
                 "--input_path", "/home/resources/automl/input/automl_input_${iteration}.json",
                 "--output_path", "/home/resources/automl/output/automl_output_${iteration}.json")
 
-    val proc = Runtime.getRuntime().exec(exec)
-    val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
-    val stdError = BufferedReader(InputStreamReader(proc.errorStream))
+    Runtime.getRuntime().exec(exec).waitFor()
+//    val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
+//    val stdError = BufferedReader(InputStreamReader(proc.errorStream))
 
-    println("Here is the standard output/error of the command:\n")
-    var s: String?
-    while (stdError.readLine().also { s = it } != null || stdInput.readLine().also { s = it } != null) {
-        println(s)
-    }
+//    println("Here is the standard output/error of the command:\n")
+//    var s: String?
+//    while (stdError.readLine().also { s = it } != null || stdInput.readLine().also { s = it } != null) {
+//        println(s)
+//    }
 
     println("AutoML execution ended")
 }
