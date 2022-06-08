@@ -39,7 +39,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                 dataManager.initWorkspace()
                 Config(0, dataset, metric, mode, batchSize, seed)
             }
-            else it
+            else it.copy(metric = metric, mode = mode, batchSize = batchSize, seed = seed)
         }
     }
 

@@ -12,12 +12,14 @@ from utils import commons
 
 class Miner:
     def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode):
-        temp_evaluated_rewards = [elem[metric] for elem in evaluated_rewards]
-        self._valid_automl_outputs = len(
-            [elem for elem in points_to_evaluate if elem != float("-inf")]
-        )
-        self._min_automl_outputs = int(self._valid_automl_outputs / 5)
-        self._automl_output = list(zip(points_to_evaluate, temp_evaluated_rewards))
+        self._automl_output = [
+            (config, reward)
+            for config, reward in list(
+                zip(points_to_evaluate, [elem[metric] for elem in evaluated_rewards])
+            )
+            if reward != float("-inf")
+        ]
+        self._min_automl_outputs = int(len(self._automl_output) / 5)
         self._metric = metric
         self._mode = mode
         # Pay attention, in this version we assume the metric varies between 0 and 1
@@ -45,6 +47,30 @@ class Miner:
                 if mode == "mandatory"
                 else reward <= round(metric_threshold, 1)
             )
+
+        def maximal_elements(rules):
+            return [
+                new_rule
+                for new_rule in rules
+                if any([elem in commons.algorithms for elem in new_rule["rule"]])
+                and not (
+                    any(
+                        [
+                            all(elem in rule["rule"] for elem in new_rule["rule"])
+                            for rule in rules
+                            if rule["rule"] != new_rule["rule"]
+                        ]
+                    )
+                )
+            ]
+
+        def minimal_elements(rules):
+            return [
+                new_rule
+                for new_rule in rules
+                if any([elem in commons.algorithms for elem in new_rule["rule"]])
+                and len(new_rule["rule"]) <= 2
+            ]
 
         rules = []
 
@@ -100,33 +126,7 @@ class Miner:
                             not in [rule["rule"] for rule in rules]
                         ]
                         rules += current_rules
-        # return [
-        #     new_rule
-        #     for new_rule in rules
-        #     if len(
-        #         [
-        #             set(i)
-        #             for j in range(len(new_rule["rule"]))
-        #             for i in itertools.combinations(new_rule["rule"], j)
-        #             if set(i) in [set(rule["rule"]) for rule in rules]
-        #         ]
-        #     )
-        #     == 0
-        # ]
-        return [
-            new_rule
-            for new_rule in rules
-            if any([elem in commons.algorithms for elem in new_rule["rule"]])
-            and not (
-                any(
-                    [
-                        all(elem in rule["rule"] for elem in new_rule["rule"])
-                        for rule in rules
-                        if rule["rule"] != new_rule["rule"]
-                    ]
-                )
-            )
-        ]
+        return maximal_elements(rules)
 
     def _get_order_rules(self):
         rules = []
@@ -191,7 +191,14 @@ class Miner:
         rules += [
             forbidden_rule
             for forbidden_rule in self._get_presence_rules(mode="forbidden")
-            if forbidden_rule["rule"]
-            not in [mandatory_rule["rule"] for mandatory_rule in mandatory_rules]
+            if not any(
+                [
+                    all(
+                        elem in mandatory_rule["rule"]
+                        for elem in forbidden_rule["rule"]
+                    )
+                    for mandatory_rule in mandatory_rules
+                ]
+            )
         ]
         return rules
