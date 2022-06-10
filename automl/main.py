@@ -1,27 +1,23 @@
 from functools import partial
-from hamlet.miner import Miner
+from flaml import tune
 
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
-
-import json
-
-import numpy as np
-from numpy import dtype
-
-import pandas as pd
-
-from flaml import tune
-
-from utils.datasets import get_dataset
+from utils.datasets import get_dataset_by_id, get_dataset_by_name
 from hamlet.objective import objective
 from hamlet.buffer import Buffer
+from hamlet.miner import Miner
+
+import numpy as np
+
+import json
 
 
 def main(args):
     np.random.seed(args.seed)
 
-    X, y, _ = get_dataset(args.dataset)
+    # X, y, _ = get_dataset_by_name(args.dataset)
+    X, y, _ = get_dataset_by_id(args.dataset)
     buffer = Buffer(metric=args.metric, input_path=args.input_path)
     space = buffer.get_space()
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
@@ -64,7 +60,10 @@ def main(args):
 
     automl_output = {
         "points_to_evaluate": points_to_evaluate,
-        "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
+        # "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
+        "evaluated_rewards": [
+            json.loads(str(reward).replace("'", '"').replace("-inf", "\"-inf\"")) for reward in evaluated_rewards
+        ],
         "rules": rules,
     }
 

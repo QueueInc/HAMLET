@@ -24,6 +24,7 @@ class Buffer:
             ) = cls._instance._filter_previous_results(
                 cls._instance._loader.get_points_to_evaluate(),
                 cls._instance._loader.get_evaluated_rewards(),
+                metric,
             )
 
             cls._instance._num_points_to_consider = len(points_to_evaluate)
@@ -31,25 +32,27 @@ class Buffer:
                 cls._instance._loader.get_instance_constraints() + points_to_evaluate
             )
             cls._instance._max_points_to_evaluates = len(cls._instance._configs)
-            cls._instance._results = [{metric: float("-inf"), "status": "fail"}] * len(
-                cls._instance._loader.get_instance_constraints()
-            ) + [
+            cls._instance._results = [
+                {metric: float("-inf"), "status": "previous_constraint"}
+            ] * len(cls._instance._loader.get_instance_constraints()) + [
                 {
-                    metric: float(result),
-                    "status": "fail" if float(result) == float("-inf") else "success",
+                    metric: float(reward[metric]),
+                    "status": reward["status"],
                 }
-                for result in evaluated_rewards
+                for reward in evaluated_rewards
             ]
         return cls._instance
 
-    def _filter_previous_results(self, points_to_evaluate, evaluated_rewards):
+    def _filter_previous_results(self, points_to_evaluate, evaluated_rewards, metric):
         new_points_to_evaluate, new_evaluated_rewards = [], []
         for i in range(len(points_to_evaluate)):
             if self.check_template_constraints(points_to_evaluate[i]):
                 new_points_to_evaluate.append(points_to_evaluate[i])
-                new_evaluated_rewards.append(float("-inf"))
+                new_evaluated_rewards.append(
+                    {metric: float("-inf"), "status": "previous_constraint"}
+                )
             else:
-                if evaluated_rewards[i] != float("-inf"):
+                if evaluated_rewards[i]["status"] != "previous_constraint":
                     new_points_to_evaluate.append(points_to_evaluate[i])
                     new_evaluated_rewards.append(evaluated_rewards[i])
         return new_points_to_evaluate, new_evaluated_rewards

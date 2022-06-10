@@ -2,10 +2,11 @@
 import openml
 
 
-def get_dataset(name):
+def get_dataset_by_name(name):
     loader = {
         "blood": 1464,
-        "breast": 1465,  # this is breast-tissue, not breast cancer
+        "breast-t": 1465,  # this is breast-tissue, not breast cancer
+        "breast-w": 15,
         "diabetes": 37,
         "ecoli": 40671,
         "iris": 61,
@@ -19,6 +20,10 @@ def get_dataset(name):
         return load_dataset_from_openml(loader[name])
     else:
         raise Exception("There is no such a dataset in the loader")
+
+
+def get_dataset_by_id(id):
+    return load_dataset_from_openml(id)
 
 
 def load_dataset_from_openml(id):

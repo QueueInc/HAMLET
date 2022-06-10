@@ -73,6 +73,7 @@ def objective(X, y, metric, seed, config):
         return reward
 
     if Buffer().check_template_constraints(config):
+        result["status"] = "previous_constraint"
         Buffer().add_evaluation(config=config, result=result)
         return result
 
@@ -100,8 +101,8 @@ def objective(X, y, metric, seed, config):
 
     except Exception as e:
         print(
-            f"""MyException: {e}
-              {traceback.print_exc()}"""
+            f"""MyException: {e}"""
+            #   {traceback.print_exc()}"""
         )
 
     Buffer().add_evaluation(config=config, result=result)

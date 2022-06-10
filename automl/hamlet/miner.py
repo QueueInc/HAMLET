@@ -13,11 +13,9 @@ from utils import commons
 class Miner:
     def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode):
         self._automl_output = [
-            (config, reward)
-            for config, reward in list(
-                zip(points_to_evaluate, [elem[metric] for elem in evaluated_rewards])
-            )
-            if reward != float("-inf")
+            (config, reward[metric])
+            for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
+            if reward["status"] != "previous_constraint"
         ]
         self._min_automl_outputs = int(len(self._automl_output) / 5)
         self._metric = metric
@@ -93,89 +91,103 @@ class Miner:
         )
         for metric_threshold in metric_thresholds:
             for support_threshold in support_thresholds:
-                prototypes = [
-                    Miner._clean_prototype(config, classification_flag=True)
-                    for config, reward in self._automl_output
-                    if is_reward_eligible(reward)
-                ]
-                if len(prototypes) > self._min_automl_outputs:
-                    tr = TransactionEncoder()
-                    tr_arr = tr.fit_transform(prototypes)
-                    df = pd.DataFrame(tr_arr, columns=tr.columns_)
-                    frequent_itemsets = apriori(
-                        df, min_support=round(support_threshold, 1), use_colnames=True
-                    )
-                    if frequent_itemsets.shape[0] > 0:
-                        current_rules = [
-                            {
-                                "type": mode,
-                                "rule": list(rule["itemsets"]),
-                                "support": round(rule["support"], 2),
-                                "occurrences": int(rule["support"] * len(prototypes)),
-                                "considered_configurations": len(prototypes),
-                                "metric_threshold": round(metric_threshold, 1),
-                            }
-                            for index, rule in frequent_itemsets.to_dict(
-                                "index"
-                            ).items()
-                        ]
-                        current_rules = [
-                            current_rule
-                            for current_rule in current_rules
-                            if current_rule["rule"]
-                            not in [rule["rule"] for rule in rules]
-                        ]
-                        rules += current_rules
-        return maximal_elements(rules)
-
-    def _get_order_rules(self):
-        rules = []
-        for metric_threshold in np.arange(
-            self._metric_stat["max"] - self._metric_stat["step"],
-            self._metric_stat["suff"] - self._metric_stat["step"],
-            -self._metric_stat["step"],
-        ):
-            for support_threshold in np.arange(
-                self._support_stat["max"] - self._support_stat["step"],
-                self._support_stat["suff"] - self._support_stat["step"],
-                -self._support_stat["step"],
-            ):
-                prototypes = [
-                    Miner._clean_prototype(config, classification_flag=True)
-                    for config, reward in self._automl_output
-                    if reward >= round(metric_threshold, 1)
-                ]
-                # prototypes = [
-                #     prototype[:-1] for prototype in prototypes if len(prototype) >= 2
-                # ]
-                if len(prototypes) > self._min_automl_outputs:
-                    seq2pat = Seq2Pat(sequences=prototypes)
-                    support = int(round(support_threshold, 1) * len(prototypes))
-                    if support > 0:
-                        current_rules = seq2pat.get_patterns(min_frequency=support)
-                        if len(current_rules) > 0:
+                for algorithm in commons.algorithms:
+                    prototypes = [
+                        Miner._clean_prototype(config, classification_flag=True)
+                        for config, reward in self._automl_output
+                        if is_reward_eligible(reward)
+                    ]
+                    prototypes = [
+                        prototype for prototype in prototypes if algorithm in prototype
+                    ]
+                    if len(prototypes) > self._min_automl_outputs:
+                        tr = TransactionEncoder()
+                        tr_arr = tr.fit_transform(prototypes)
+                        df = pd.DataFrame(tr_arr, columns=tr.columns_)
+                        frequent_itemsets = apriori(
+                            df,
+                            min_support=round(support_threshold, 1),
+                            use_colnames=True,
+                        )
+                        if frequent_itemsets.shape[0] > 0:
                             current_rules = [
                                 {
-                                    "type": "order",
-                                    "rule": rule[:-1],
-                                    "support": round(rule[-1] / len(prototypes), 2),
-                                    "occurrences": rule[-1],
+                                    "type": mode,
+                                    "rule": list(rule["itemsets"]),
+                                    "support": round(rule["support"], 2),
+                                    "occurrences": int(
+                                        rule["support"] * len(prototypes)
+                                    ),
                                     "considered_configurations": len(prototypes),
                                     "metric_threshold": round(metric_threshold, 1),
                                 }
-                                for rule in current_rules
+                                for index, rule in frequent_itemsets.to_dict(
+                                    "index"
+                                ).items()
                             ]
                             current_rules = [
                                 current_rule
                                 for current_rule in current_rules
-                                if (
-                                    current_rule["rule"]
-                                    not in [rule["rule"] for rule in rules]
-                                )
-                                and (len(current_rule["rule"]) == 3)
-                                and (current_rule["rule"][2] in commons.algorithms)
+                                if current_rule["rule"]
+                                not in [rule["rule"] for rule in rules]
                             ]
                             rules += current_rules
+        return maximal_elements(rules)
+
+    def _get_order_rules(self):
+        rules = []
+        metric_thresholds = np.arange(
+            self._metric_stat["max"] - self._metric_stat["step"],
+            self._metric_stat["suff"] - self._metric_stat["step"],
+            -self._metric_stat["step"],
+        )
+        support_thresholds = np.arange(
+            self._support_stat["max"] - self._support_stat["step"],
+            self._support_stat["suff"] - self._support_stat["step"],
+            -self._support_stat["step"],
+        )
+        for metric_threshold in metric_thresholds:
+            for support_threshold in support_thresholds:
+                for algorithm in commons.algorithms:
+                    prototypes = [
+                        Miner._clean_prototype(config, classification_flag=True)
+                        for config, reward in self._automl_output
+                        if reward >= round(metric_threshold, 1)
+                    ]
+                    # prototypes = [
+                    #     prototype[:-1] for prototype in prototypes if len(prototype) >= 2
+                    # ]
+                    prototypes = [
+                        prototype for prototype in prototypes if algorithm in prototype
+                    ]
+                    if len(prototypes) > self._min_automl_outputs:
+                        seq2pat = Seq2Pat(sequences=prototypes)
+                        support = int(round(support_threshold, 1) * len(prototypes))
+                        if support > 0:
+                            current_rules = seq2pat.get_patterns(min_frequency=support)
+                            if len(current_rules) > 0:
+                                current_rules = [
+                                    {
+                                        "type": "mandatory_order",
+                                        "rule": rule[:-1],
+                                        "support": round(rule[-1] / len(prototypes), 2),
+                                        "occurrences": rule[-1],
+                                        "considered_configurations": len(prototypes),
+                                        "metric_threshold": round(metric_threshold, 1),
+                                    }
+                                    for rule in current_rules
+                                ]
+                                current_rules = [
+                                    current_rule
+                                    for current_rule in current_rules
+                                    if (
+                                        current_rule["rule"]
+                                        not in [rule["rule"] for rule in rules]
+                                    )
+                                    and (len(current_rule["rule"]) == 3)
+                                    and (current_rule["rule"][2] in commons.algorithms)
+                                ]
+                                rules += current_rules
         return [
             new_rule
             for new_rule in rules
