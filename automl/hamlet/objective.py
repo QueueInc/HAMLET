@@ -44,7 +44,7 @@ def get_prototype(config):
     return ml_pipeline
 
 
-def instantiate_pipeline(prototype, categorical_indicator, seed, config):
+def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
     num_features = [i for i, x in enumerate(categorical_indicator) if x == False]
     cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # count = 0
@@ -108,6 +108,19 @@ def instantiate_pipeline(prototype, categorical_indicator, seed, config):
             cat_features = list(
                 range(len(num_features), len(num_features) + len(cat_features))
             )
+        elif step == "features":
+            if config[step]["type"] == "PCA":
+                num_features = list(range(config[step]["n_components"]))
+            elif config[step]["type"] == "SelectKBest":
+                selector = Pipeline(pipeline)
+                selector.fit_transform(X, y)
+                selected_features = selector[-1].get_support(indices=True)
+                num_features = [
+                    feature for feature in num_features if feature in selected_features
+                ]
+                cat_features = [
+                    feature for feature in cat_features if feature in selected_features
+                ]
         # if count >= 2:
         #     raise Exception(
         #         "Discretization and Normalization are present in the same pipeline"
@@ -131,7 +144,9 @@ def objective(X, y, categorical_indicator, metric, seed, config):
     try:
         prototype = get_prototype(config)
 
-        pipeline = instantiate_pipeline(prototype, categorical_indicator, seed, config)
+        pipeline = instantiate_pipeline(
+            prototype, categorical_indicator, X, y, seed, config
+        )
 
         scores = cross_validate(
             pipeline,
@@ -152,8 +167,8 @@ def objective(X, y, categorical_indicator, metric, seed, config):
 
     except Exception as e:
         print(
-            "Something went wrong"
-            # f"""MyException: {e}"""
+            # "Something went wrong"
+            f"""MyException: {e}"""
             #   {traceback.print_exc()}"""
         )
 
