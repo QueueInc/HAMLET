@@ -47,9 +47,15 @@ def get_prototype(config):
 def instantiate_pipeline(prototype, categorical_indicator, seed, config):
     num_features = [i for i, x in enumerate(categorical_indicator) if x == False]
     cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
+    # count = 0
     # In such a precise order:
     pipeline = []
     for step in prototype:
+        # if (
+        #     step in ["discretization", "normalization"]
+        #     and config[step]["type"] != "FunctionTransformer"
+        # ):
+        #     count += 1
         # we define the parametrization of each step,
         operator_parameters = {
             param_name: config[step][param_name]
@@ -102,6 +108,10 @@ def instantiate_pipeline(prototype, categorical_indicator, seed, config):
             cat_features = list(
                 range(len(num_features), len(num_features) + len(cat_features))
             )
+        # if count >= 2:
+        #     raise Exception(
+        #         "Discretization and Normalization are present in the same pipeline"
+        #     )
     return Pipeline(pipeline)
 
 
