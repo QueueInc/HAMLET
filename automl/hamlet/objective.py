@@ -1,6 +1,7 @@
 # Scikit-learn provides a set of machine learning techniques
 import traceback
 import numpy as np
+from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_validate
 from sklearn.preprocessing import FunctionTransformer
@@ -16,6 +17,7 @@ from sklearn.impute import IterativeImputer
 
 ## Normalization operators
 from sklearn.preprocessing import (
+    OrdinalEncoder,
     RobustScaler,
     StandardScaler,
     MinMaxScaler,
@@ -42,7 +44,9 @@ def get_prototype(config):
     return ml_pipeline
 
 
-def instantiate_pipeline(prototype, seed, config):
+def instantiate_pipeline(prototype, categorical_indicator, seed, config):
+    num_features = [i for i, x in enumerate(categorical_indicator) if x == False]
+    cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # In such a precise order:
     pipeline = []
     for step in prototype:
@@ -60,12 +64,49 @@ def instantiate_pipeline(prototype, seed, config):
         else:
             operator = globals()[config[step]["type"]](**operator_parameters)
         # and we add it to the pipeline
-        pipeline.append([step, operator])
+        if step in ["discretization", "normalization", "encoding"]:
+            if step in ["discretization", "normalization"]:
+                num_operator = operator
+                cat_operator = FunctionTransformer()
+            else:
+                num_operator = FunctionTransformer()
+                cat_operator = operator
+
+            pipeline.append(
+                [
+                    step,
+                    ColumnTransformer(
+                        transformers=[
+                            (
+                                "num",
+                                Pipeline(steps=[(f"{step}_num", num_operator)]),
+                                num_features,
+                            ),
+                            (
+                                "cat",
+                                Pipeline(steps=[(f"{step}_cat", cat_operator)]),
+                                cat_features,
+                            ),
+                        ]
+                    ),
+                ]
+            )
+        else:
+            pipeline.append([step, operator])
+
+        if step == "discretization":
+            cat_features += num_features
+            num_features = []
+        elif step in ["encoding", "normalization"]:
+            num_features = list(range(len(num_features)))
+            cat_features = list(
+                range(len(num_features), len(num_features) + len(cat_features))
+            )
     return Pipeline(pipeline)
 
 
 # We define the function to optimize
-def objective(X, y, metric, seed, config):
+def objective(X, y, categorical_indicator, metric, seed, config):
     result = {metric: float("-inf"), "status": "fail"}
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
@@ -80,7 +121,7 @@ def objective(X, y, metric, seed, config):
     try:
         prototype = get_prototype(config)
 
-        pipeline = instantiate_pipeline(prototype, seed, config)
+        pipeline = instantiate_pipeline(prototype, categorical_indicator, seed, config)
 
         scores = cross_validate(
             pipeline,
@@ -101,7 +142,8 @@ def objective(X, y, metric, seed, config):
 
     except Exception as e:
         print(
-            f"""MyException: {e}"""
+            "Something went wrong"
+            # f"""MyException: {e}"""
             #   {traceback.print_exc()}"""
         )
 

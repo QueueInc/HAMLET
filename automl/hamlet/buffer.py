@@ -67,6 +67,7 @@ class Buffer:
         self._configs.append(config)
         self._results.append(result)
         self._num_points_to_consider += 1
+        print(self._num_points_to_consider)
 
     def get_evaluations(self):
         return self._configs.copy(), self._results.copy()

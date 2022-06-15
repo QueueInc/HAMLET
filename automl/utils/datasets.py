@@ -1,5 +1,7 @@
 # OpenML provides several benchmark datasets
 import openml
+import pandas as pd
+import numpy as np
 
 
 def get_dataset_by_name(name):
@@ -31,6 +33,11 @@ def load_dataset_from_openml(id):
     X, y, categorical_indicator, _ = dataset.get_data(
         dataset_format="array", target=dataset.default_target_attribute
     )
-    dataset_features_names = [str(elem) for elem in list(dataset.features.values())]
-    dataset_features_names = dataset_features_names[1:]
-    return X, y, dataset_features_names
+    # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
+    # Xt = pd.DataFrame(X)
+    # Xt[cat_features] = Xt[cat_features].fillna(-1)
+    # Xt[cat_features] = Xt[cat_features].astype("str")
+    # Xt[cat_features] = Xt[cat_features].replace("-1", np.nan)
+    # Xt = Xt.to_numpy()
+    # return Xt, y, categorical_indicator
+    return X, y, categorical_indicator

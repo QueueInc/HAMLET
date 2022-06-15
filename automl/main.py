@@ -1,3 +1,12 @@
+import json
+import time
+import warnings
+
+warnings.filterwarnings("ignore")
+
+import numpy as np
+import pandas as pd
+
 from functools import partial
 from flaml import tune
 
@@ -8,16 +17,13 @@ from hamlet.objective import objective
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
 
-import numpy as np
-
-import json
-
 
 def main(args):
     np.random.seed(args.seed)
 
     # X, y, _ = get_dataset_by_name(args.dataset)
-    X, y, _ = get_dataset_by_id(args.dataset)
+    start_time = time.time()
+    X, y, categorical_indicator = get_dataset_by_id(args.dataset)
     buffer = Buffer(metric=args.metric, input_path=args.input_path)
     space = buffer.get_space()
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
@@ -35,15 +41,18 @@ def main(args):
     #     )
     # )
 
-    tune.run(
-        evaluation_function=partial(objective, X, y, args.metric, args.seed),
+    analysis = tune.run(
+        evaluation_function=partial(
+            objective, X, y, categorical_indicator, args.metric, args.seed
+        ),
         config=space,
         metric=args.metric,
         mode=args.mode,
         num_samples=args.batch_size + len(points_to_evaluate),
+        time_budget_s=300,
         points_to_evaluate=points_to_evaluate,
         # evaluated_rewards=evaluated_rewards,
-        verbose=False,
+        verbose=0,
     )
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
@@ -56,15 +65,20 @@ def main(args):
         metric=args.metric,
         mode=args.mode,
     )
+    end_time = time.time()
     rules = miner.get_rules()
 
     automl_output = {
         "points_to_evaluate": points_to_evaluate,
         # "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
         "evaluated_rewards": [
-            json.loads(str(reward).replace("'", '"').replace("-inf", "\"-inf\"")) for reward in evaluated_rewards
+            json.loads(str(reward).replace("'", '"').replace("-inf", '"-inf"'))
+            for reward in evaluated_rewards
         ],
         "rules": rules,
+        "best_config": analysis.best_trial.last_result,
+        "optimization_time": end_time - start_time,
+        "mining_time": time.time() - end_time,
     }
 
     with open(args.output_path, "w") as outfile:
