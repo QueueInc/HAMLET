@@ -23,8 +23,6 @@ class Miner:
         # Pay attention, in this version we assume the metric varies between 0 and 1
         # self.max_reward = max(temp_evaluated_rewards)
         # self.min_reward = min(temp_evaluated_rewards)
-        self._metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
-        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.7}
 
     def _clean_prototype(config, classification_flag=False):
         prototype = config["prototype"].split("_")
@@ -38,7 +36,7 @@ class Miner:
             clean_prototype[-1] = config["classification"]["type"]
         return clean_prototype
 
-    def _get_presence_rules(self, mode):
+    def _get_presence_rules(self, metric_stat, support_stat, mode):
         def is_reward_eligible(reward):
             return (
                 reward >= round(metric_threshold, 1)
@@ -73,28 +71,20 @@ class Miner:
         rules = []
 
         metric_thresholds = np.arange(
-            (self._metric_stat["max"] - self._metric_stat["step"])
+            (metric_stat["max"] - metric_stat["step"])
             if mode == "mandatory"
-            else (self._metric_stat["min"] + self._metric_stat["step"]),
-            (self._metric_stat["suff"] - self._metric_stat["step"])
+            else (metric_stat["min"] + metric_stat["step"]),
+            (metric_stat["suff"] - metric_stat["step"])
             if mode == "mandatory"
-            else (
-                (self._metric_stat["max"] - self._metric_stat["suff"])
-                + self._metric_stat["step"]
-            ),
-            -self._metric_stat["step"]
-            if mode == "mandatory"
-            else self._metric_stat["step"],
+            else ((metric_stat["max"] - metric_stat["suff"]) + metric_stat["step"]),
+            -metric_stat["step"] if mode == "mandatory" else metric_stat["step"],
         )
         support_thresholds = np.arange(
-            self._support_stat["max"] - self._support_stat["step"],
-            (
-                (self._support_stat["max"] - self._support_stat["suff"])
-                - self._support_stat["step"]
-            )
+            support_stat["max"] - support_stat["step"],
+            ((support_stat["max"] - support_stat["suff"]) - support_stat["step"])
             if mode == "mandatory"
-            else self._support_stat["suff"],
-            -self._support_stat["step"],
+            else support_stat["suff"],
+            -support_stat["step"],
         )
         for metric_threshold in metric_thresholds:
             for support_threshold in support_thresholds:
@@ -141,17 +131,18 @@ class Miner:
                             rules += current_rules
         return maximal_elements(rules)
 
-    def _get_order_rules(self):
+    def _get_order_rules(self, metric_stat, support_stat):
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.5}
         rules = []
         metric_thresholds = np.arange(
-            self._metric_stat["max"] - self._metric_stat["step"],
-            self._metric_stat["suff"] - self._metric_stat["step"],
-            -self._metric_stat["step"],
+            metric_stat["max"] - metric_stat["step"],
+            metric_stat["suff"] - metric_stat["step"],
+            -metric_stat["step"],
         )
         support_thresholds = np.arange(
-            self._support_stat["max"] - self._support_stat["step"],
-            self._support_stat["suff"] - self._support_stat["step"],
-            -self._support_stat["step"],
+            support_stat["max"] - support_stat["step"],
+            support_stat["suff"] - support_stat["step"],
+            -support_stat["step"],
         )
         for metric_threshold in metric_thresholds:
             for support_threshold in support_thresholds:
@@ -204,12 +195,22 @@ class Miner:
 
     def get_rules(self):
         rules = []
-        rules += self._get_order_rules()
-        mandatory_rules = self._get_presence_rules(mode="mandatory")
+        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.5}
+        rules += self._get_order_rules(
+            metric_stat=metric_stat, support_stat=support_stat
+        )
+
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
+        mandatory_rules = self._get_presence_rules(
+            metric_stat=metric_stat, support_stat=support_stat, mode="mandatory"
+        )
         rules += mandatory_rules
         rules += [
             forbidden_rule
-            for forbidden_rule in self._get_presence_rules(mode="forbidden")
+            for forbidden_rule in self._get_presence_rules(
+                metric_stat=metric_stat, support_stat=support_stat, mode="forbidden"
+            )
             if not any(
                 [
                     all(
