@@ -24,7 +24,7 @@ class Miner:
         # self.max_reward = max(temp_evaluated_rewards)
         # self.min_reward = min(temp_evaluated_rewards)
         self._metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
-        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.5}
+        self._support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.7}
 
     def _clean_prototype(config, classification_flag=False):
         prototype = config["prototype"].split("_")
@@ -73,20 +73,27 @@ class Miner:
         rules = []
 
         metric_thresholds = np.arange(
-            self._metric_stat["max"] - self._metric_stat["step"]
+            (self._metric_stat["max"] - self._metric_stat["step"])
             if mode == "mandatory"
-            else self._metric_stat["min"] + self._metric_stat["step"],
-            self._metric_stat["suff"] - self._metric_stat["step"]
+            else (self._metric_stat["min"] + self._metric_stat["step"]),
+            (self._metric_stat["suff"] - self._metric_stat["step"])
             if mode == "mandatory"
-            else (self._metric_stat["max"] - self._metric_stat["suff"])
-            + self._metric_stat["step"],
+            else (
+                (self._metric_stat["max"] - self._metric_stat["suff"])
+                + self._metric_stat["step"]
+            ),
             -self._metric_stat["step"]
             if mode == "mandatory"
             else self._metric_stat["step"],
         )
         support_thresholds = np.arange(
             self._support_stat["max"] - self._support_stat["step"],
-            self._support_stat["suff"] - self._support_stat["step"],
+            (
+                (self._support_stat["max"] - self._support_stat["suff"])
+                - self._support_stat["step"]
+            )
+            if mode == "mandatory"
+            else self._support_stat["suff"],
             -self._support_stat["step"],
         )
         for metric_threshold in metric_thresholds:
