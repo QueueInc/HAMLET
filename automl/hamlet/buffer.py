@@ -1,4 +1,7 @@
+import imp
 from .loader import Loader
+
+from utils.json_to_csv import flattenjson
 
 
 class Buffer:
@@ -67,7 +70,6 @@ class Buffer:
         self._configs.append(config)
         self._results.append(result)
         self._num_points_to_consider += 1
-        print(self._num_points_to_consider)
 
     def get_evaluations(self):
         return self._configs.copy(), self._results.copy()
@@ -85,3 +87,46 @@ class Buffer:
             self._current_point_to_evaluate += 1
             return True, to_return
         return False, 0
+
+    def encode_conf(self, conf):
+        result = {}
+        flatten_conf = flattenjson(conf, "/")
+        for key in self._loader.mapped_space.keys():
+            if key in flatten_conf.keys():
+                if self._loader.mapped_space[key][0] != "choice":
+                    result[key] = [flatten_conf[key]]
+                else:
+                    if flatten_conf[key] in self._loader.mapped_space[key][1]:
+                        result[key] = [
+                            self._loader.mapped_space[key][1].index(flatten_conf[key])
+                        ]
+                    else:
+                        result[key] = []
+            else:
+                if "/" in key:
+                    result[key] = []
+                else:
+                    if flatten_conf[key + "/type"] in self._loader.mapped_space[key][1]:
+                        result[key] = [
+                            self._loader.mapped_space[key][1].index(
+                                flatten_conf[key + "/type"]
+                            )
+                            + 1
+                        ]
+                    else:
+                        result[key] = [0]
+
+        return result
+
+    def to_pickle(self, path):
+        import pickle
+
+        with open(path, "wb") as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def from_pickle(path):
+        import pickle
+
+        with open(path, "rb") as f:
+            return pickle.load(f)

@@ -1,5 +1,4 @@
 import json
-from flaml import tune
 
 
 class Loader:
@@ -12,20 +11,26 @@ class Loader:
 
     def __init__(self, path=None):
         if path:
-            knowledge = self._load(path=path)
-            self._space = self._get_space(input_space=knowledge["space"])
-            for constraint in knowledge["template_constraints"]:
+            self._knowledge = self._load(path=path)
+            self.mapped_space = {
+                x: y
+                for x, y in self._get_keys(
+                    input_space=self._knowledge["space"], path=""
+                )
+            }
+            self._space = self._get_space(input_space=self._knowledge["space"])
+            for constraint in self._knowledge["template_constraints"]:
                 self._template_constraints.append(
                     self._get_template_constraint(constraint)
                 )
             self._instance_constraints = self._get_instance_constraints(
-                input_instance_constraints=knowledge["instance_constraints"]
+                input_instance_constraints=self._knowledge["instance_constraints"]
             )
             self._points_to_evaluate = self._get_points_to_evaluate(
-                input_points_to_evaluate=knowledge["points_to_evaluate"]
+                input_points_to_evaluate=self._knowledge["points_to_evaluate"]
             )
             self._evaluated_rewards = self._get_evaluated_rewards(
-                input_evaluated_rewards=knowledge["evaluated_rewards"]
+                input_evaluated_rewards=self._knowledge["evaluated_rewards"]
             )
         else:
             raise Exception("No knowledge path provided")
@@ -35,7 +40,35 @@ class Loader:
             data = json.load(f)
         return data
 
-    def _get_space(self, input_space):
+    def _get_keys(self, input_space, path):
+        def convert_value(value):
+            if any((type(x) is dict) for x in value):
+                return [x["type"] for x in value if type(x["type"]) is not dict]
+            return value
+
+        values = []
+
+        if type(input_space) is not dict:
+            return []
+        for key, value in input_space.items():
+            if key == "choice":
+                return [x for elem in value for x in self._get_keys(elem, path)] + [
+                    (path, ("choice", convert_value(value)))
+                ]
+            if key == "randint":
+                return [(path, ("randint", value))]
+            if type(value) is dict:
+                values = values + self._get_keys(
+                    value, (path + "/" + key) if path else key
+                )
+            else:
+                pass
+        return values
+
+    def _get_space(self, input_space, ray=True):
+
+        from flaml import tune
+
         space = {}
         if type(input_space) is not dict:
             return input_space
@@ -103,7 +136,7 @@ class Loader:
         return lambda config: self._generate_template_constraint(constraint, config)
 
     def _get_instance_constraints(self, input_instance_constraints):
-        return input_instance_constraints
+        return self._complete_instances(input_instance_constraints)
 
     def _get_points_to_evaluate(self, input_points_to_evaluate):
         return input_points_to_evaluate
@@ -125,3 +158,23 @@ class Loader:
 
     def get_evaluated_rewards(self):
         return self._evaluated_rewards
+
+    def _complete_instances(self, instances):
+
+        configs = []
+        from flaml import tune
+
+        def evaluate_config(config: dict):
+            configs.append(config)
+            return {"score": 0}
+
+        tune.run(
+            evaluate_config,
+            config=self._get_space(self._knowledge["space_flaml"], False),
+            metric="score",
+            mode="min",
+            num_samples=len(instances),
+            points_to_evaluate=instances,
+        )
+
+        return configs

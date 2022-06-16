@@ -7,8 +7,8 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 
-from functools import partial
-from flaml import tune
+# from functools import partial
+# from flaml import tune
 
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
@@ -16,6 +16,10 @@ from utils.datasets import get_dataset_by_id, get_dataset_by_name
 from hamlet.objective import objective
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
+
+from lib.ray import tune
+from lib.ray.tune.suggest.hyperopt import HyperOptSearch
+from lib.ray.tune.suggest import ConcurrencyLimiter
 
 
 def main(args):
@@ -41,19 +45,38 @@ def main(args):
     #     )
     # )
 
+    hyperopt_search = HyperOptSearch(
+        metric=args.metric, mode=args.mode, points_to_evaluate=points_to_evaluate
+    )
+
+    hyperopt_search = ConcurrencyLimiter(hyperopt_search, 1)
+
+    buffer.to_pickle("/home/automl/buffer.pickle")
+
     analysis = tune.run(
-        evaluation_function=partial(
-            objective, X, y, categorical_indicator, args.metric, args.seed
+        # evaluation_function=partial(
+        #     objective, X, y, categorical_indicator, args.metric, args.seed
+        # ),
+        tune.with_parameters(
+            objective,
+            X=X,
+            y=y,
+            categorical_indicator=categorical_indicator,
+            metric=args.metric,
+            seed=args.seed,
         ),
         config=space,
         metric=args.metric,
         mode=args.mode,
         num_samples=args.batch_size + len(points_to_evaluate),
         time_budget_s=300,
-        points_to_evaluate=points_to_evaluate,
+        # points_to_evaluate=points_to_evaluate,
         # evaluated_rewards=evaluated_rewards,
         verbose=0,
+        search_alg=hyperopt_search,
     )
+
+    buffer = Buffer.from_pickle("/home/automl/buffer.pickle")
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     points_to_evaluate = points_to_evaluate[-buffer.get_num_points_to_consider() :]

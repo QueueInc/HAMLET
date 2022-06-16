@@ -5,3 +5,5 @@ openml
 matplotlib
 seq2pat
 mlxtend
+ray[tune]
+hyperopt

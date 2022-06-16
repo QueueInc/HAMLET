@@ -26,6 +26,8 @@ from sklearn.preprocessing import (
     Binarizer,
 )
 
+from ray import tune
+
 ## Classification algorithms
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -129,17 +131,30 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 
 # We define the function to optimize
-def objective(X, y, categorical_indicator, metric, seed, config):
+def objective(
+    config,
+    # checkpoint_dir=None,
+    X=None,
+    y=None,
+    categorical_indicator=None,
+    metric=None,
+    seed=None,
+):
     result = {metric: float("-inf"), "status": "fail"}
+    buffer = Buffer.from_pickle("/home/automl/buffer.pickle")
 
-    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
+    is_point_to_evaluate, reward = buffer.check_points_to_evaluate(config)
     if is_point_to_evaluate:
-        return reward
+        tune.report(**reward)
+        buffer.to_pickle("/home/automl/buffer.pickle")
+        return
 
-    if Buffer().check_template_constraints(config):
+    if buffer.check_template_constraints(config):
         result["status"] = "previous_constraint"
-        Buffer().add_evaluation(config=config, result=result)
-        return result
+        buffer.add_evaluation(config=config, result=result)
+        buffer.to_pickle("/home/automl/buffer.pickle")
+        tune.report(**result)
+        return
 
     try:
         prototype = get_prototype(config)
@@ -172,5 +187,6 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             #   {traceback.print_exc()}"""
         )
 
-    Buffer().add_evaluation(config=config, result=result)
-    return result
+    buffer.add_evaluation(config=config, result=result)
+    buffer.to_pickle("/home/automl/buffer.pickle")
+    tune.report(**result)
