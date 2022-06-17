@@ -17,9 +17,9 @@ from hamlet.objective import objective
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
 
-from lib.ray import tune
-from lib.ray.tune.suggest.hyperopt import HyperOptSearch
-from lib.ray.tune.suggest import ConcurrencyLimiter
+from ray import tune
+from hamlet.custom_searcher import CustomHyperOptSearch
+from ray.tune.suggest import ConcurrencyLimiter
 
 
 def main(args):
@@ -45,7 +45,7 @@ def main(args):
     #     )
     # )
 
-    hyperopt_search = HyperOptSearch(
+    hyperopt_search = CustomHyperOptSearch(
         metric=args.metric, mode=args.mode, points_to_evaluate=points_to_evaluate
     )
 
