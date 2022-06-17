@@ -1,8 +1,6 @@
 import imp
 from .loader import Loader
 
-from utils.json_to_csv import flattenjson
-
 
 class Buffer:
     _instance = None
@@ -88,35 +86,8 @@ class Buffer:
             return True, to_return
         return False, 0
 
-    def encode_conf(self, conf):
-        result = {}
-        flatten_conf = flattenjson(conf, "/")
-        for key in self._loader.mapped_space.keys():
-            if key in flatten_conf.keys():
-                if self._loader.mapped_space[key][0] != "choice":
-                    result[key] = [flatten_conf[key]]
-                else:
-                    if flatten_conf[key] in self._loader.mapped_space[key][1]:
-                        result[key] = [
-                            self._loader.mapped_space[key][1].index(flatten_conf[key])
-                        ]
-                    else:
-                        result[key] = []
-            else:
-                if "/" in key:
-                    result[key] = []
-                else:
-                    if flatten_conf[key + "/type"] in self._loader.mapped_space[key][1]:
-                        result[key] = [
-                            self._loader.mapped_space[key][1].index(
-                                flatten_conf[key + "/type"]
-                            )
-                            + 1
-                        ]
-                    else:
-                        result[key] = [0]
-
-        return result
+    def raw_space(self):
+        return self._loader.raw_space
 
     def to_pickle(self, path):
         import pickle

@@ -46,7 +46,10 @@ def main(args):
     # )
 
     hyperopt_search = CustomHyperOptSearch(
-        metric=args.metric, mode=args.mode, points_to_evaluate=points_to_evaluate
+        custom_space=buffer.raw_space(),
+        metric=args.metric,
+        mode=args.mode,
+        points_to_evaluate=points_to_evaluate,
     )
 
     hyperopt_search = ConcurrencyLimiter(hyperopt_search, 1)

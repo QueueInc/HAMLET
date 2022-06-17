@@ -14,11 +14,8 @@ class Loader:
     def __init__(self, path=None):
         if path:
             self._knowledge = self._load(path=path)
-            ray_space = self._convert_space(self._knowledge["space"])
-            self.mapped_space = {
-                x: y for x, y in self._get_keys(input_space=ray_space, path="")
-            }
-            self._space = self._get_space(input_space=ray_space)
+            self.raw_space = self._convert_space(self._knowledge["space"])
+            self._space = self._get_space(input_space=self.raw_space)
             for constraint in self._knowledge["template_constraints"]:
                 self._template_constraints.append(
                     self._get_template_constraint(constraint)
@@ -130,31 +127,6 @@ class Loader:
 
     def get_evaluated_rewards(self):
         return self._evaluated_rewards
-
-    def _get_keys(self, input_space, path):
-        def convert_value(value):
-            if any((type(x) is dict) for x in value):
-                return [x["type"] for x in value if type(x["type"]) is not dict]
-            return value
-
-        values = []
-
-        if type(input_space) is not dict:
-            return []
-        for key, value in input_space.items():
-            if key == "choice":
-                return [x for elem in value for x in self._get_keys(elem, path)] + [
-                    (path, ("choice", convert_value(value)))
-                ]
-            if key == "randint":
-                return [(path, ("randint", value))]
-            if type(value) is dict:
-                values = values + self._get_keys(
-                    value, (path + "/" + key) if path else key
-                )
-            else:
-                pass
-        return values
 
     def _complete_instances(self, instances):
 
