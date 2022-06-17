@@ -1,0 +1,4203 @@
+{
+    "points_to_evaluate": [
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "SelectKBest",
+                "k": 1
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 8,
+                "weights": "distance",
+                "metric": "manhattan"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "discretization": {
+                "threshold": 5.0,
+                "type": "Binarizer"
+            },
+            "features": {
+                "k": 2,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_classification",
+            "discretization": {
+                "n_bins": 3,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "n_components": 1,
+                "type": "PCA"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 3,
+                "min_samples_leaf": 2,
+                "max_features": 2,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "discretization": {
+                "threshold": 5.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_mean": false,
+                "with_std": false,
+                "type": "StandardScaler"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "k": 1,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "initial_strategy": "most_frequent",
+                "imputation_order": "random",
+                "type": "IterativeImputer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "normalization_features_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "n_components": 2,
+                "type": "PCA"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "k": 1,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 4,
+                "min_samples_leaf": 4,
+                "max_features": 2,
+                "max_leaf_nodes": 2,
+                "splitter": "random",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_discretization_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_discretization_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_discretization_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_features_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_features_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_discretization_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "discretization": {
+                "n_bins": 4,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 4,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_normalization_imputation_classification",
+            "discretization": {
+                "n_bins": 4,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_features_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 3,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_features_imputation_classification",
+            "discretization": {
+                "n_bins": 3,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 2,
+                "type": "SelectKBest"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 2,
+                "min_samples_leaf": 2,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "random",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "features": {
+                "k": 2,
+                "type": "SelectKBest"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "imputation_features_discretization_normalization_classification",
+            "discretization": {
+                "n_bins": 4,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "k": 3,
+                "type": "SelectKBest"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 4,
+                "min_samples_leaf": 2,
+                "max_features": 1,
+                "max_leaf_nodes": 4,
+                "splitter": "random",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "features": {
+                "type": "PCA",
+                "n_components": 2
+            },
+            "imputation": {
+                "type": "SimpleImputer",
+                "strategy": "most_frequent"
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 1,
+                "min_samples_split": 2,
+                "min_samples_leaf": 4,
+                "max_features": 2,
+                "max_leaf_nodes": 2,
+                "splitter": "random",
+                "criterion": "gini"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "initial_strategy": "constant",
+                "imputation_order": "roman",
+                "type": "IterativeImputer"
+            },
+            "classification": {
+                "n_neighbors": 3,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "uniform",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_discretization_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_imputation_discretization_classification",
+            "discretization": {
+                "threshold": 2.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "discretization": {
+                "threshold": 5.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "discretization": {
+                "threshold": 0.5,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_features_normalization_discretization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "distance",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "distance",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 17,
+                "weights": "distance",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "uniform",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_imputation_discretization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "distance",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "discretization": {
+                "threshold": 2.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "n_components": 3,
+                "type": "PCA"
+            },
+            "imputation": {
+                "initial_strategy": "constant",
+                "imputation_order": "arabic",
+                "type": "IterativeImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            }
+        },
+        {
+            "prototype": "features_discretization_normalization_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 18,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_features_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_normalization_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_imputation_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_imputation_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_discretization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_features_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 8,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 7,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_normalization_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 7,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_imputation_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_imputation_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 7,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 8,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 8,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 9,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_normalization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 11,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_discretization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 8,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_discretization_features_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 8,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_features_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 12,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_normalization_imputation_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 16,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_normalization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_discretization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 15,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_normalization_features_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 4,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_features_normalization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_imputation_features_discretization_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 14,
+                "weights": "uniform",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        }
+    ],
+    "evaluated_rewards": [
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.4888341543513957,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.5097701149425287,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.5380131362889983,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5424466338259442,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5450738916256157,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5097701149425287,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5330870279146142,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5202791461412152,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5507389162561577,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5558292282430213,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5311165845648604,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5265188834154352,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5332512315270936,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.548440065681445,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5378489326765189,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5528735632183908,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5426108374384236,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5351395730706077,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5332512315270936,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5400656814449917,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5379310344827586,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5405582922824302,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5507389162561577,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5386699507389163,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5450738916256157,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5391625615763548,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5366995073891626,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5327586206896552,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5341543513957306,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5323481116584564,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.527504105090312,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5402298850574712,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5490968801313628,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5431855500821018,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5533661740558292,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5334154351395731,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5247126436781608,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5379310344827586,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5296387520525452,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5327586206896552,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5296387520525452,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5312807881773398,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5558292282430213,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5327586206896552,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5446633825944172,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5481937602627258,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5257799671592777,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.550903119868637,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.5334154351395731,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.5450738916256158,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.49055829228243014,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5258620689655172,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.529064039408867,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5324302134646962,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5236453201970444,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5421182266009852,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5347290640394089,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5363711001642036,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5202791461412151,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.535632183908046,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5198686371100164,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.529064039408867,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.515353037766831,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.535632183908046,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.47422003284072245,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5283251231527093,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5279146141215108,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5524630541871921,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.530295566502463,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5491789819376026,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5243021346469623,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5179802955665025,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5358784893267652,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5407224958949095,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5236453201970444,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5464696223316913,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5117405582922825,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.538423645320197,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5313628899835796,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5371100164203612,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5156814449917897,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5311165845648603,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5386699507389162,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5463054187192118,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5284893267651889,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5464696223316913,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5311165845648605,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5392446633825945,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5283251231527093,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5524630541871921,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5408866995073891,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.538423645320197,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5600985221674877,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5600164203612479,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5339901477832514,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.527504105090312,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5227422003284072,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5279146141215108,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5375205254515599,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5208538587848933,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5401477832512315,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5410509031198687,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.542200328407225,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5401477832512315,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5208538587848933,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5233990147783251,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5358784893267652,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5165845648604269,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5332512315270936,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5524630541871922,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5184729064039408,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5266009852216749,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5236453201970444,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5600164203612479,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5339901477832514,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5094417077175697,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5410509031198687,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.542200328407225,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5184729064039408,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5358784893267652,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5345648604269294,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5094417077175697,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.535303776683087,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5600985221674877,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5094417077175697,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5464696223316913,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5327586206896552,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5366995073891626,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5217569786535304,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5479474548440064,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5490147783251232,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5350574712643679,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.527832512315271,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5505747126436782,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5189655172413793,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5312807881773398,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5558292282430213,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.530623973727422,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.535632183908046,
+            "status": "success"
+        }
+    ],
+    "rules": [],
+    "best_config": {
+        "balanced_accuracy": 0.5600985221674877,
+        "status": "success",
+        "training_iteration": 0,
+        "config": {
+            "prototype": "features_normalization_discretization_imputation_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 10,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        "config/prototype": "features_normalization_discretization_imputation_classification",
+        "config/imputation": {
+            "strategy": "constant",
+            "type": "SimpleImputer"
+        },
+        "config/classification": {
+            "n_neighbors": 10,
+            "weights": "distance",
+            "metric": "manhattan",
+            "type": "KNeighborsClassifier"
+        },
+        "config/discretization": {
+            "type": "FunctionTransformer"
+        },
+        "config/normalization": {
+            "type": "FunctionTransformer"
+        },
+        "config/features": {
+            "type": "FunctionTransformer"
+        },
+        "experiment_tag": "exp",
+        "time_total_s": 0.05782127380371094
+    },
+    "optimization_time": 22.26452112197876,
+    "mining_time": 0.12453055381774902
+}
