@@ -2,6 +2,7 @@ s1 :=> step(discretization).
 s2 :=> step(normalization).
 s3 :=> step(features).
 s4 :=> step(imputation).
+s5 :=> step(encoding).
 
 sc1 :=> step(classification).
 
@@ -16,6 +17,7 @@ o7 : step(features) => operator(features, select_k_best).
 o8 : step(features) => operator(features, pca).
 o9 : step(imputation) => operator(imputation, simple_imputer).
 o10 : step(imputation) => operator(imputation, iterative_imputer).
+o11 : step(encoding) => operator(encoding, ordinal_encoder).
 
 oc1 : step(classification) => operator(classification, dt).
 oc2 : step(classification) => operator(classification, knn).

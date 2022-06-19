@@ -28,16 +28,12 @@ take_max([H|T], LISTMAX, R) :-
     member(MAX, LISTMAX),
     len(H, LH),
     len(MAX, LMAX),
-    LH > LMAX,
-    take_max(T, [H], R), !.
-take_max([H|T], LISTMAX, R) :-
-    member(MAX, LISTMAX),
-    len(H, LH),
-    len(MAX, LMAX),
-    LH =:= LMAX,
-    take_max(T, [H|LISTMAX], R), !.
-take_max([_|T], LISTMAX, R) :-
-    take_max(T, LISTMAX, R).
+    take_max_support(LH, LMAX, H, LISTMAX, RES),
+    take_max(T, RES, R), !.
+
+take_max_support(L, A, H, LIST, [H]) :- L > A, !.
+take_max_support(L, A, H, LIST, [H|LIST]) :- L =:= A, !.
+take_max_support(_, _, _, LIST, LIST).
 
 
 split_last([H], [], H) :- !.
@@ -119,10 +115,10 @@ fetch_prototype(Prototype) :-
     append(Steps, [classification], Prototype).
 
 
-fetch_prototypes(DPrototypes) :-
-   findall(Prototype, fetch_prototype(Prototype), Prototypes),
-   utils::deduplicate(Prototypes, [H|TPrototypes]),
-   take_max(TPrototypes, [H], DPrototypes).
+fetch_prototypes(RPrototypes) :-
+    setof(Steps, get_argument_by_conclusion(pipeline(Steps, Algorithm)), [H|Prototypes]),
+    take_max(Prototypes, [H], DPrototypes),
+    findall(X, (member(Y, DPrototypes), append(Y, [classification], X)), RPrototypes).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
