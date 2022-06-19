@@ -164,8 +164,8 @@ def objective(X, y, categorical_indicator, metric, seed, config):
 
     except Exception as e:
         print(
-            # "Something went wrong"
-            f"""MyException: {e}"""
+            "Something went wrong"
+            # f"""MyException: {e}"""
             #   {traceback.print_exc()}"""
         )
 
