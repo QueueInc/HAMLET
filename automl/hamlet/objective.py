@@ -112,6 +112,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
         elif step == "features":
             if config[step]["type"] == "PCA":
                 num_features = list(range(config[step]["n_components"]))
+                cat_features = []
             elif config[step]["type"] == "SelectKBest":
                 selector = Pipeline(pipeline)
                 selector.fit_transform(X, y)
