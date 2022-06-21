@@ -199,6 +199,7 @@ class Miner:
         rules += self._get_order_rules(
             metric_stat=metric_stat, support_stat=support_stat
         )
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
         mandatory_rules = self._get_presence_rules(
             metric_stat=metric_stat, support_stat=support_stat, mode="mandatory"
         )
