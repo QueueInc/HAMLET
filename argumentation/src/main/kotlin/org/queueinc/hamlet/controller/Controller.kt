@@ -3,8 +3,10 @@ package org.queueinc.hamlet.controller
 import it.unibo.tuprolog.argumentation.core.Arg2pSolver
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
+import it.unibo.tuprolog.core.Clause
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.parsing.parse
+import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
 import it.unibo.tuprolog.solve.SolveOptions
 import it.unibo.tuprolog.solve.TimeDuration
@@ -64,16 +66,30 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
     fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
 
         val creationRules = SpaceGenerator.createGeneratorRules(theory)
-        // println(creationRules)
+        println(creationRules)
         val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
             otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
                 argumentLabellingMode = "grounded_hash",
                 graphExtensions = emptyList()).create().content()),
-            staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators())
-        )
+            staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators()),
+        ).let { solver ->
+            prolog {
+                solver.solve("preparePipelines"(X)).map {
+                    it.substitution[X]
+                }.map {
+                    val a = it?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
+                    ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
+                        otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
+                            argumentLabellingMode = "grounded_hash",
+                            graphExtensions = emptyList()).create().content()),
+                        staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators()).plus(Theory.of(a)),
+                    )
+                }.first()
+            }
+        }
 
         Thread {
-            solver.solve(
+            val a = solver.solve(
                 Struct.parse("buildLabelSetsSilent"),
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE)
             ).first()
@@ -87,9 +103,12 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         lastSolver?.also { solver ->
             Thread {
 
-                dataManager.saveAutoMLData(nextIteration(), solver)
+                print("Saving Graph")
                 dataManager.saveKnowledgeBase(nextIteration(), theory)
                 dataManager.saveGraphData(nextIteration(), dumpGraphData() ?: "")
+
+                print("Exporting AutoML input")
+                dataManager.saveAutoMLData(nextIteration(), solver)
 
                 println("Input created for iteration ${nextIteration()}")
 

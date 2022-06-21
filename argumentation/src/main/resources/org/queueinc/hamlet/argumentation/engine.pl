@@ -2,7 +2,11 @@
 % PIPELINE GENERATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-g0 : operator(classification, Z) => pipeline([], Z).
+pipeline([], Z) :- operator(classification, Z).
+
+preparePipelines(Res) :-
+	findall(Num :=> pipeline(X, Y), (pipeline(X, Y), rand_int(0, 1000000, Num)), Res).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MANDATORY & FORBIDDEN CONSTRAINT

@@ -73,12 +73,10 @@ get_attacked_by_conclusion(Conc, Attacker) :-
     context_check(attack(_, Attacker, [_, _, [Conc], _, _], _)).
 
 
-fetch_step(Step) :-
-    get_argument_by_conclusion(step(Step)).
+fetch_step(Step) :- step(Step).
 
 
-fetch_operator(Step, Operator) :-
-    get_argument_by_conclusion(operator(Step, Operator)).
+fetch_operator(Step, Operator) :- operator(Step, Operator).
 
 
 fetch_operators([], []).
@@ -103,22 +101,32 @@ fetch_hyperparameter_with_domain(Operator, Hyperparameter, Type, Value) :-
 
 
 fetch_hyperparameter(Operator, Hyperparameter, Type) :-
-    get_argument_by_conclusion(hyperparameter(Operator, Hyperparameter, Type)).
+    hyperparameter(Operator, Hyperparameter, Type).
 
 
 fetch_domain(Operator, Hyperparameter, Value) :-
-    get_argument_by_conclusion(domain(Operator, Hyperparameter, Value)).
+    domain(Operator, Hyperparameter, Value).
 
 
-fetch_prototype(Prototype) :-
-    get_argument_by_conclusion(pipeline(Steps, Algorithm)),
-    append(Steps, [classification], Prototype).
+%fetch_prototype(Prototype) :-
+%    get_argument_by_conclusion(pipeline(Steps, Algorithm)),
+%    append(Steps, [classification], Prototype).
 
 
-fetch_prototypes(RPrototypes) :-
-    setof(Steps, get_argument_by_conclusion(pipeline(Steps, Algorithm)), [H|Prototypes]),
-    take_max(Prototypes, [H], DPrototypes),
-    findall(X, (member(Y, DPrototypes), append(Y, [classification], X)), RPrototypes).
+%fetch_prototypes(RPrototypes) :-
+%    setof(Steps, get_argument_by_conclusion(pipeline(Steps, Algorithm)), [H|Prototypes]),
+%    take_max(Prototypes, [H], DPrototypes),
+%    findall(X, (member(Y, DPrototypes), append(Y, [classification], X)), RPrototypes).
+
+fetch_prototypes(Rprototypes) :-
+    findall(X, (step(X), X \= classification), Res),
+    findall(Prot, (perm(Res, Pres), append(Pres, [classification], Prot)), Rprototypes).
+
+takeout(X,[X|R],R).
+takeout(X,[F |R],[F|S]) :- takeout(X,R,S).
+
+perm([X|Y],Z) :- perm(Y,W), takeout(X,Z,W).
+perm([],[]).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -236,7 +244,7 @@ valorize_operators(AllOperators, [H|T], [(H, Operator)|TT], [H|TTT]) :-
 
 fetch_instance_base([(prototype, CC)|R]) :-
     steps(AllSteps),
-    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators),
+    findall((S,O), operator(S, O), AllOperators),
     out_prototype(AllSteps, P),
     valorize_operators(AllOperators, P, R, C),
     concat(C, CC).
@@ -246,7 +254,7 @@ fetch_all_instances_base(P) :- findall(R, fetch_instance_base(R), P).
 fetch_instance_base_components(AllOperators, Ps) :-
     steps(AllSteps),
     findall(P, out_prototype(AllSteps, P), Ps),
-    findall((S,O), get_argument_by_conclusion(operator(S, O)), AllOperators).
+    findall((S,O), operator(S, O), AllOperators).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
