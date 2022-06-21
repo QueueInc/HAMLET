@@ -18,7 +18,10 @@ val dictionary = mapOf(
     "pca" to "PCA",
     "simple_imputer" to "SimpleImputer",
     "iterative_imputer" to "IterativeImputer",
-    "ordinal_encoder" to "OrdinalEncoder"
+    "ordinal_encoder" to "OrdinalEncoder",
+    "smote" to "SMOTE",
+    "near_miss" to "NearMiss"
+
 )
 
 fun Term.toSklearnClass() = dictionary[this.toString()] ?: this.toString()

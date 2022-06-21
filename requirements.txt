@@ -5,3 +5,4 @@ openml
 matplotlib
 seq2pat
 mlxtend
+imbalanced-learn

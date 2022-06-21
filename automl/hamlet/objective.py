@@ -2,14 +2,12 @@
 import traceback
 import numpy as np
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_validate
 from sklearn.preprocessing import FunctionTransformer
 
 ## Feature Engineering operators
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
-from sklearn.pipeline import FeatureUnion
 
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer
@@ -25,6 +23,10 @@ from sklearn.preprocessing import (
     KBinsDiscretizer,
     Binarizer,
 )
+
+from imblearn.under_sampling import NearMiss
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline
 
 ## Classification algorithms
 from sklearn.neighbors import KNeighborsClassifier
