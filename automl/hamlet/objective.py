@@ -89,12 +89,12 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
                             (
                                 "num",
                                 Pipeline(steps=[(f"{step}_num", num_operator)]),
-                                num_features,
+                                num_features.copy(),
                             ),
                             (
                                 "cat",
                                 Pipeline(steps=[(f"{step}_cat", cat_operator)]),
-                                cat_features,
+                                cat_features.copy(),
                             ),
                         ]
                     ),
@@ -104,7 +104,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
             pipeline.append([step, operator])
 
         if step == "discretization":
-            cat_features += num_features
+            cat_features = list(range(len(cat_features + num_features)))
             num_features = []
         elif step in ["encoding", "normalization"]:
             num_features = list(range(len(num_features)))
@@ -118,12 +118,16 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
             elif config[step]["type"] == "SelectKBest":
                 selector = Pipeline(pipeline)
                 selector.fit_transform(X, y)
-                selected_features = selector[-1].get_support(indices=True)
+                selected_features = list(selector[-1].get_support(indices=True))
                 num_features = [
-                    feature for feature in num_features if feature in selected_features
+                    selected_features.index(feature)
+                    for feature in num_features
+                    if feature in selected_features
                 ]
                 cat_features = [
-                    feature for feature in cat_features if feature in selected_features
+                    selected_features.index(feature)
+                    for feature in cat_features
+                    if feature in selected_features
                 ]
     return Pipeline(pipeline)
 
