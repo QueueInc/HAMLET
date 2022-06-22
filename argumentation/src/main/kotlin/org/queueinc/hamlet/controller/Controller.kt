@@ -55,7 +55,11 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     fun graphData() : MutableSolver? =
         dataManager.loadGraphData(config.copy())?.let { graph ->
-            ClassicSolverFactory.mutableSolverWithDefaultBuiltins(otherLibraries = arg2p.to2pLibraries()).also {
+            val theory = dataManager.loadKnowledgeBase(config.copy()) ?: ""
+            ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
+                otherLibraries = arg2p.to2pLibraries(),
+                staticKb = Theory.parse(theory, arg2p.operators())
+            ).also {
                 lastSolver = it
                 arg2pScope {
                     it.solve("miner" call "load_graph_data"(Struct.parse(graph))).first()
