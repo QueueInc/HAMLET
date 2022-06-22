@@ -6,6 +6,7 @@ import java.io.File
 val dictionary = mapOf(
     "dt" to "DecisionTreeClassifier",
     "knn" to "KNeighborsClassifier",
+    "nn" to "MLPClassifier",
     "naive_bayes" to "GaussianNB",
     "function_transformer" to "FunctionTransformer",
     "robust_scaler" to "RobustScaler",

@@ -32,6 +32,7 @@ from imblearn.pipeline import Pipeline
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
 
 from .buffer import Buffer
 
@@ -65,6 +66,13 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
             for param_name in config[step]
             if param_name != "type"
         }
+        if config[step]["type"] == "MLPClassifier":
+            operator_parameters["hidden_layer_sizes"] = (
+                operator_parameters["n_neurons"]
+            ) * operator_parameters["n_hidden_layers"]
+            operator_parameters.pop("n_neurons", None)
+            operator_parameters.pop("n_hidden_layers", None)
+
         # we instantiate the operator/algorithm,
         if "random_state" in globals()[config[step]["type"]]().get_params():
             operator = globals()[config[step]["type"]](
