@@ -149,19 +149,29 @@ object SpaceTranslator {
     @JvmStatic
     fun mineData(solver: MutableSolver) =
         arg2pScope {
+
+            println("Exporting Space")
+
             val space = solver.solve("miner" call "fetch_complete_space"(X), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
                 .map { translateSpace(it.substitution[X]!!) }
                 .first()
+
+            println("Exporting Constrainst")
 
             val templates = solver.solve(("miner" call "fetch_mandatory"(X)) and ("miner" call "fetch_forbidden"(Y)) and ("miner" call "fetch_mandatory_order"(Z)), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
                 .map { translateTemplates(it.substitution[X]!!, it.substitution[Y]!!, it.substitution[Z]!!) }
                 .first()
 
+            println("Exporting Instances")
+
             val instances = solver.solve("miner" call "fetch_instance_base_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
-                .map { instances(it.substitution[X]!!, it.substitution[Y]!!) }
+                .map {
+                    println("Collected Raw Instances")
+                    instances(it.substitution[X]!!, it.substitution[Y]!!)
+                }
                 .first()
 
             arrayOf(space, templates, instances)

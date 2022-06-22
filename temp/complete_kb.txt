@@ -1,83 +1,111 @@
-s1 :=> step(discretization).
-s2 :=> step(normalization).
-s3 :=> step(features).
-s4 :=> step(imputation).
-s5 :=> step(encoding).
-s6 :=> step(rebalancing).
+step(discretization).
+step(normalization).
+step(features).
+step(imputation).
+step(encoding).
+step(rebalancing).
 
-sc1 :=> step(classification).
-
-
-o1 : step(discretization) => operator(discretization, kbins).
-o2 : step(discretization) => operator(discretization, binarizer).
-o3 : step(normalization) => operator(normalization, power_transformer).
-o4 : step(normalization) => operator(normalization, robust_scaler).
-o5 : step(normalization) => operator(normalization, standard).
-o6 : step(normalization) => operator(normalization, minmax).
-o7 : step(features) => operator(features, select_k_best).
-o8 : step(features) => operator(features, pca).
-o9 : step(imputation) => operator(imputation, simple_imputer).
-o10 : step(imputation) => operator(imputation, iterative_imputer).
-o11 : step(encoding) => operator(encoding, ordinal_encoder).
-o12 : step(rebalancing) => operator(rebalancing, near_miss).
-o13 : step(rebalancing) => operator(rebalancing, smote).
-
-oc1 : step(classification) => operator(classification, dt).
-oc2 : step(classification) => operator(classification, knn).
-oc3 : step(classification) => operator(classification, naive_bayes).
+step(classification).
 
 
-h1 : operator(discretization, kbins) => hyperparameter(kbins, n_bins, randint).
-h2 : operator(discretization, kbins) => hyperparameter(kbins, encode, choice).
-h3 : operator(discretization, kbins) => hyperparameter(kbins, strategy, choice).
-h4 : operator(discretization, binarizer) => hyperparameter(binarizer, threshold, choice).
-h5 : operator(normalization, robust_scaler) => hyperparameter(robust_scaler, with_centering, choice).
-h6 : operator(normalization, robust_scaler) => hyperparameter(robust_scaler, with_scaling, choice).
-h7 : operator(normalization, standard) => hyperparameter(standard, with_mean, choice).
-h8 : operator(normalization, standard) => hyperparameter(standard, with_std, choice).
-h9 : operator(features, select_k_best) => hyperparameter(select_k_best, k, randint).
-h10 : operator(features, pca) => hyperparameter(pca, n_components, randint).
-h11 : operator(imputation, simple_imputer) => hyperparameter(simple_imputer, strategy, choice).
-h12 : operator(imputation, iterative_imputer) => hyperparameter(iterative_imputer, initial_strategy, choice).
-h13 : operator(imputation, iterative_imputer) => hyperparameter(iterative_imputer, imputation_order, choice).
-h14 : operator(rebalancing, near_miss) => hyperparameter(near_miss, n_neighbors, randint).
-h15 : operator(rebalancing, smote) => hyperparameter(smote, k_neighbors, randint).
+operator(discretization, kbins).
+operator(discretization, binarizer).
+operator(normalization, power_transformer).
+operator(normalization, robust_scaler).
+operator(normalization, standard).
+operator(normalization, minmax).
+operator(features, select_k_best).
+operator(features, pca).
+operator(imputation, simple_imputer).
+operator(imputation, iterative_imputer).
+operator(encoding, ordinal_encoder).
+operator(rebalancing, near_miss).
+operator(rebalancing, smote).
 
-hc1 : operator(classification, dt) => hyperparameter(dt, max_depth, randint).
-hc2 : operator(classification, dt) => hyperparameter(dt, min_samples_split, randint).
-hc3 : operator(classification, dt) => hyperparameter(dt, min_samples_leaf, randint).
-hc4 : operator(classification, dt) => hyperparameter(dt, max_features, randint).
-hc5 : operator(classification, dt) => hyperparameter(dt, max_leaf_nodes, randint).
-hc6 : operator(classification, dt) => hyperparameter(dt, splitter, choice).
-hc7 : operator(classification, dt) => hyperparameter(dt, criterion, choice).
-hc8 : operator(classification, knn) => hyperparameter(knn, n_neighbors, randint).
-hc9 : operator(classification, knn) => hyperparameter(knn, weights, choice).
-hc10 : operator(classification, knn) => hyperparameter(knn, metric, choice).
+operator(classification, dt).
+operator(classification, knn).
+operator(classification, naive_bayes).
 
 
-d1 : hyperparameter(kbins, n_bins, randint) => domain(kbins, n_bins, [3, 7]).
-d2 : hyperparameter(kbins, encode, choice) => domain(kbins, encode, ["ordinal"]).
-d3 : hyperparameter(kbins, strategy, choice) => domain(kbins, strategy, ["uniform", "quantile", "kmeans"]).
-d4 : hyperparameter(binarizer, threshold, choice) => domain(binarizer, threshold, [0.0, 0.5, 2.0, 5.0]).
-d5 : hyperparameter(robust_scaler, with_centering, choice) => domain(robust_scaler, with_centering, [true, false]).
-d6 : hyperparameter(robust_scaler, with_scaling, choice) => domain(robust_scaler, with_scaling, [true, false]).
-d7 : hyperparameter(standard, with_mean, choice) => domain(standard, with_mean, [true, false]).
-d8 : hyperparameter(standard, with_std, choice) => domain(standard, with_std, [true, false]).
-d9 : hyperparameter(select_k_best, k, randint) => domain(select_k_best, k, [1, 4]).
-d10 : hyperparameter(pca, n_components, randint) => domain(pca, n_components, [1, 4]).
-d11 : hyperparameter(simple_imputer, strategy, choice) => domain(simple_imputer, strategy, ["most_frequent", "constant"]).
-d12 : hyperparameter(iterative_imputer, initial_strategy, choice) => domain(iterative_imputer, initial_strategy, ["most_frequent", "constant"]).
-d13 : hyperparameter(iterative_imputer, imputation_order, choice) => domain(iterative_imputer, imputation_order, ["ascending", "descending", "roman", "arabic", "random"]).
-d14 : hyperparameter(near_miss, n_neighbors, randint) => domain(near_miss, n_neighbors,  [1, 3]).
-d15 : hyperparameter(smote, k_neighbors, randint) => domain(smote, k_neighbors,  [5, 7]).
+hyperparameter(kbins, n_bins, randint).
+hyperparameter(kbins, encode, choice).
+hyperparameter(kbins, strategy, choice).
+hyperparameter(binarizer, threshold, choice).
+hyperparameter(robust_scaler, with_centering, choice).
+hyperparameter(robust_scaler, with_scaling, choice).
+hyperparameter(standard, with_mean, choice).
+hyperparameter(standard, with_std, choice).
+hyperparameter(select_k_best, k, randint).
+hyperparameter(pca, n_components, randint).
+hyperparameter(simple_imputer, strategy, choice).
+hyperparameter(iterative_imputer, initial_strategy, choice).
+hyperparameter(iterative_imputer, imputation_order, choice).
+hyperparameter(near_miss, n_neighbors, randint).
+hyperparameter(smote, k_neighbors, randint).
 
-dc1 : hyperparameter(dt, max_depth, randint) => domain(dt, max_depth, [1, 4]).
-dc2 : hyperparameter(dt, min_samples_split, randint) => domain(dt, min_samples_split, [2, 5]).
-dc3 : hyperparameter(dt, min_samples_leaf, randint) => domain(dt, min_samples_leaf, [1, 5]).
-dc4 : hyperparameter(dt, max_features, randint) => domain(dt, max_features, [1, 3]).
-dc5 : hyperparameter(dt, max_leaf_nodes, randint) => domain(dt, max_leaf_nodes, [2, 5]).
-dc6 : hyperparameter(dt, splitter, choice) => domain(dt, splitter, ["best", "random"]).
-dc7 : hyperparameter(dt, criterion, choice) => domain(dt, criterion, ["gini", "entropy"]).
-dc8 : hyperparameter(knn, n_neighbors, randint) => domain(knn, n_neighbors, [3, 19]).
-dc9 : hyperparameter(knn, weights, choice) => domain(knn, weights, ["uniform", "distance"]).
-dc10 : hyperparameter(knn, metric, choice) => domain(knn, metric, ["minkowski", "euclidean", "manhattan"]).
+hyperparameter(dt, max_depth, randint).
+hyperparameter(dt, min_samples_split, randint).
+hyperparameter(dt, min_samples_leaf, randint).
+hyperparameter(dt, max_features, randint).
+hyperparameter(dt, max_leaf_nodes, randint).
+hyperparameter(dt, splitter, choice).
+hyperparameter(dt, criterion, choice).
+hyperparameter(knn, n_neighbors, randint).
+hyperparameter(knn, weights, choice).
+hyperparameter(knn, metric, choice).
+
+
+domain(kbins, n_bins, [3, 7]).
+domain(kbins, encode, ["ordinal"]).
+domain(kbins, strategy, ["uniform", "quantile", "kmeans"]).
+domain(binarizer, threshold, [0.0, 0.5, 2.0, 5.0]).
+domain(robust_scaler, with_centering, [true, false]).
+domain(robust_scaler, with_scaling, [true, false]).
+domain(standard, with_mean, [true, false]).
+domain(standard, with_std, [true, false]).
+domain(select_k_best, k, [1, 4]).
+domain(pca, n_components, [1, 4]).
+domain(simple_imputer, strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, initial_strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, imputation_order, ["ascending", "descending", "roman", "arabic", "random"]).
+domain(near_miss, n_neighbors,  [1, 3]).
+domain(smote, k_neighbors,  [5, 7]).
+
+domain(dt, max_depth, [1, 4]).
+domain(dt, min_samples_split, [2, 5]).
+domain(dt, min_samples_leaf, [1, 5]).
+domain(dt, max_features, [1, 3]).
+domain(dt, max_leaf_nodes, [2, 5]).
+domain(dt, splitter, ["best", "random"]).
+domain(dt, criterion, ["gini", "entropy"]).
+domain(knn, n_neighbors, [3, 19]).
+domain(knn, weights, ["uniform", "distance"]).
+domain(knn, metric, ["minkowski", "euclidean", "manhattan"]).
+
+
+s0 : data(unbalanced) => step(rebalancing).
+s0 : data(categorical) => step(encoding).
+sc :-> step(classification).
+
+c1 : step(classification) => operator(classification, dt).
+c2 : step(classification) => operator(classification, knn).
+c3 : step(classification) => operator(classification, naive_bayes).
+
+c1 :=> mandatory([imputation, rebalancing], classification).
+c3 :=> mandatory_order([imputation, normalization], classification).
+c4 :=> mandatory_order([imputation, discretization], classification).
+c5 :=> mandatory_order([imputation, features], classification).
+c6 :=> mandatory_order([imputation, rebalancing], classification).
+
+c7 :=> mandatory([normalization], knn).
+c8 :=> mandatory([discretization], dt).
+
+Fixed Space (We do not modify the space, we just constraint it)
+
+Compute Constraints Graph (Would be nice to also compute the space dynamically)
+    -> Use valid constraints to generate out pipelines
+    -> Feed results to the AutoML solver
+    -> Get result constraints
+    -> Revise Graph
+    -> Iterate
+

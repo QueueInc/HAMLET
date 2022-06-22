@@ -103,11 +103,11 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         lastSolver?.also { solver ->
             Thread {
 
-                print("Saving Graph")
+                println("Saving Graph")
                 dataManager.saveKnowledgeBase(nextIteration(), theory)
                 dataManager.saveGraphData(nextIteration(), dumpGraphData() ?: "")
 
-                print("Exporting AutoML input")
+                println("Exporting AutoML input")
                 dataManager.saveAutoMLData(nextIteration(), solver)
 
                 println("Input created for iteration ${nextIteration()}")
