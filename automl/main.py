@@ -25,7 +25,7 @@ def main(args):
     start_time = time.time()
     X, y, categorical_indicator = get_dataset_by_id(args.dataset)
     buffer = Buffer(metric=args.metric, input_path=args.input_path)
-    space = buffer.get_space()
+    space = buffer.loader.get_space()
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
 
     # print(
@@ -70,16 +70,18 @@ def main(args):
     rules = miner.get_rules()
 
     automl_output = {
+        "graph_generation_time": buffer.loader.get_graph_generation_time(),
+        "space_generation_time": buffer.loader.get_space_generation_time(),
+        "optimization_time": end_time - start_time,
+        "mining_time": time.time() - end_time,
+        "best_config": analysis.best_trial.last_result,
+        "rules": rules,
         "points_to_evaluate": points_to_evaluate,
         # "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
         "evaluated_rewards": [
             json.loads(str(reward).replace("'", '"').replace("-inf", '"-inf"'))
             for reward in evaluated_rewards
         ],
-        "rules": rules,
-        "best_config": analysis.best_trial.last_result,
-        "optimization_time": end_time - start_time,
-        "mining_time": time.time() - end_time,
     }
 
     with open(args.output_path, "w") as outfile:

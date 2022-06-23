@@ -13,6 +13,8 @@ class Loader:
     def __init__(self, path=None):
         if path:
             knowledge = self._load(path=path)
+            self._graph_generation_time = knowledge["graph_generation_time"]
+            self._space_generation_time = knowledge["space_generation_time"]
             self._space = self._get_space(input_space=knowledge["space"])
             for constraint in knowledge["template_constraints"]:
                 self._template_constraints.append(
@@ -113,6 +115,12 @@ class Loader:
 
     def get_space(self):
         return self._space
+
+    def get_graph_generation_time(self):
+        return self._graph_generation_time
+
+    def get_space_generation_time(self):
+        return self._space_generation_time
 
     def get_template_constraints(self):
         return self._template_constraints
