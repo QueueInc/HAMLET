@@ -22,6 +22,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
+    private var theory = ""
+
+    private var generationTime = 0L
 
     private lateinit var config: Config
 
@@ -55,7 +58,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     fun graphData() : MutableSolver? =
         dataManager.loadGraphData(config.copy())?.let { graph ->
-            val theory = dataManager.loadKnowledgeBase(config.copy()) ?: ""
+            theory = dataManager.loadKnowledgeBase(config.copy()) ?: ""
             ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
                 otherLibraries = arg2p.to2pLibraries(),
                 staticKb = Theory.parse(theory, arg2p.operators())
@@ -69,6 +72,8 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
 
+        this.theory = theory
+        val start = System.currentTimeMillis()
         val creationRules = SpaceGenerator.createGeneratorRules(theory)
         println(creationRules)
         val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
@@ -100,6 +105,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
             update(solver)
             lastSolver = solver
+            generationTime = System.currentTimeMillis() - start
         }.start()
     }
 
@@ -108,11 +114,11 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
             Thread {
 
                 println("Saving Graph")
-                dataManager.saveKnowledgeBase(nextIteration(), theory)
+                dataManager.saveKnowledgeBase(nextIteration(), this.theory)
                 dataManager.saveGraphData(nextIteration(), dumpGraphData() ?: "")
 
                 println("Exporting AutoML input")
-                dataManager.saveAutoMLData(nextIteration(), solver)
+                dataManager.saveAutoMLData(nextIteration(), generationTime, solver)
 
                 println("Input created for iteration ${nextIteration()}")
 

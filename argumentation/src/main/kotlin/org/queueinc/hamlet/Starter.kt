@@ -7,6 +7,7 @@ import org.queueinc.hamlet.controller.AutoMLResults
 import org.queueinc.hamlet.controller.Controller
 import org.queueinc.hamlet.controller.FileSystemManager
 import org.queueinc.hamlet.gui.GUI
+import java.io.File
 import kotlin.system.exitProcess
 
 private var path: String = ""
@@ -16,6 +17,7 @@ private var mode: String = ""
 private var batchSize: Int = 0
 private var seed: Int = 0
 private var debugMode: Boolean = true
+private var theory: String = ""
 
 object Starter {
     @JvmStatic
@@ -26,8 +28,25 @@ object Starter {
         mode = args[3]
         batchSize = args[4].toInt()
         seed = args[5].toInt()
-        debugMode = if (args.size == 6) false else args[6].toBoolean()
-        Application.launch(HAMLET::class.java)
+        debugMode = args[6].toBoolean()
+        theory = if (args.size == 8) File(args[7]).readText() else ""
+
+        if (theory == "") {
+            Application.launch(HAMLET::class.java)
+        }
+        else {
+            consoleHamlet()
+        }
+    }
+}
+
+
+fun consoleHamlet() {
+    Controller(debugMode, FileSystemManager(path)).also { controller ->
+        controller.init(dataset, metric, mode, batchSize, seed)
+        controller.generateGraph(theory) {}
+        controller.launchAutoML(theory) {}
+        controller.stop()
     }
 }
 
