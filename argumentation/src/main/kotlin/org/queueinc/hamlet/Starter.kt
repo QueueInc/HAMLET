@@ -45,7 +45,7 @@ fun consoleHamlet() {
     Controller(debugMode, FileSystemManager(path)).also { controller ->
         controller.init(dataset, metric, mode, batchSize, seed)
         controller.generateGraph(theory) {}
-        controller.launchAutoML(theory) {}
+        controller.launchAutoML(theory, true) {}
         controller.stop()
     }
 }
@@ -62,7 +62,7 @@ class HAMLET : Application() {
                 controller.generateGraph(kb, updateAction)
             }
             val exportAction : (String, (AutoMLResults) -> Unit) -> Unit = { kb, exportAction ->
-                controller.launchAutoML(kb, exportAction)
+                controller.launchAutoML(kb, false, exportAction)
             }
 
             val view = GUI(stage)

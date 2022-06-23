@@ -109,9 +109,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         }.start()
     }
 
-    fun launchAutoML(theory: String, update: (AutoMLResults) -> Unit) {
+    fun launchAutoML(theory: String, wait: Boolean, update: (AutoMLResults) -> Unit) {
         lastSolver?.also { solver ->
-            Thread {
+            val myThread = Thread {
 
                 println("Saving Graph")
                 dataManager.saveKnowledgeBase(nextIteration(), this.theory)
@@ -130,8 +130,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                 } else {
                     // input.delete()
                 }
-            }.start()
-
+            }
+            myThread.start()
+            if (wait) { myThread.join() }
         }
     }
 
