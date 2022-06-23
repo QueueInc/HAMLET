@@ -108,7 +108,7 @@ domain(nn, activation, ["logistic", "tanh", "relu"]).
 domain(nn, solver, ["lbfgs", "sgd", "adam"]).
 domain(nn, alpha, [0.0001, 0.001, 0.01, 0.00001]).
 domain(nn, learning_rate, ["constant", "invscaling", "adaptive"]).
-domain(svm, "C", [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1., 5.]).
+domain(svm, "C", [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5]).
 domain(svm, kernel, ["linear", "poly", "rbf", "sigmoid"]).
 domain(svm, degree, [2, 3, 4, 5, 10, 20]).
 domain(svm, gamma, ["auto", "scale"]).
