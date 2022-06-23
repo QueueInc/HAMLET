@@ -79,7 +79,9 @@ class Buffer:
         return False
 
     def check_points_to_evaluate(self, config):
-        print(self._current_point_to_evaluate)
+        print(
+            f"{self._current_point_to_evaluate} out of {self._max_points_to_evaluates}"
+        )
         if self._current_point_to_evaluate < self._max_points_to_evaluates:
             self._configs[self._current_point_to_evaluate] = config
             to_return = self._results[self._current_point_to_evaluate]
