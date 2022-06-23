@@ -70,10 +70,10 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
             }
         }
 
-    fun generateGraph(theory: String, update: (MutableSolver) -> Unit) {
+    fun generateGraph(theory: String, blocking: Boolean, update: (MutableSolver) -> Unit) {
 
         this.theory = theory
-        val start = System.currentTimeMillis()
+        val start = System.currentTimeMillis() / 1000
         val creationRules = SpaceGenerator.createGeneratorRules(theory)
         println(creationRules)
         val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
@@ -98,20 +98,23 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         }
 
         Thread {
-            val a = solver.solve(
+            solver.solve(
                 Struct.parse("buildLabelSetsSilent"),
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE)
             ).first()
 
             update(solver)
             lastSolver = solver
-            generationTime = System.currentTimeMillis() - start
-        }.start()
+            generationTime = (System.currentTimeMillis() / 1000) - start
+        }.also {
+            it.start()
+            if (blocking) it.join()
+        }
     }
 
-    fun launchAutoML(theory: String, wait: Boolean, update: (AutoMLResults) -> Unit) {
+    fun launchAutoML(blocking: Boolean, update: (AutoMLResults) -> Unit) {
         lastSolver?.also { solver ->
-            val myThread = Thread {
+            Thread {
 
                 println("Saving Graph")
                 dataManager.saveKnowledgeBase(nextIteration(), this.theory)
@@ -130,9 +133,10 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                 } else {
                     // input.delete()
                 }
+            }.also {
+                it.start()
+                if (blocking) { it.join() }
             }
-            myThread.start()
-            if (wait) { myThread.join() }
         }
     }
 
