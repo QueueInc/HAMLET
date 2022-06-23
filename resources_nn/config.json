@@ -1,8 +1,0 @@
-{
-    "iteration": 3,
-    "dataset": "29",
-    "metric": "balanced_accuracy",
-    "mode": "max",
-    "batchSize": 250,
-    "seed": 42
-}
