@@ -1,6 +1,8 @@
 import subprocess
 import openml
 import os
+import argparse
+
 from tqdm import tqdm
 
 
@@ -22,23 +24,67 @@ def create_directory(result_path, directory):
     return result_path
 
 
-wget_process = subprocess.Popen(
-    "wget https://github.com/QueueInc/HAMLET/releases/download/0.1.5/hamlet-0.1.5-all.jar",
-    shell=True,
-)
-wget_process.wait()
-workspace_path = os.path.join(os.getcwd(), "baseline_results")
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Automated Machine Learning Workflow creation and configuration"
+    )
+    parser.add_argument(
+        "-workspace",
+        "--workspace",
+        nargs="?",
+        type=str,
+        required=False,
+        help="where to save the data",
+    )
+    parser.add_argument(
+        "-metric",
+        "--metric",
+        nargs="?",
+        type=str,
+        required=False,
+        help="metric to optimize",
+    )
+    parser.add_argument(
+        "-mode",
+        "--mode",
+        nargs="?",
+        type=str,
+        required=False,
+        help="how to optimize the metric",
+    )
+    parser.add_argument(
+        "-batch_size",
+        "--batch_size",
+        nargs="?",
+        type=str,
+        required=False,
+        help="automl confs to visit",
+    )
+    parser.add_argument(
+        "-version",
+        "--version",
+        nargs="?",
+        type=str,
+        required=False,
+        help="hamlet version to run",
+    )
+    args = parser.parse_args()
+    return args
+
+
+args = parse_args()
+workspace_path = os.path.join(os.getcwd(), args.workspace)
 processes = {}
 benchmark_suite = openml.study.get_suite("OpenML-CC18")  # obtain the benchmark suite
 for dataset in benchmark_suite.data:
     dataset_path = os.path.join(workspace_path, str(dataset))
     log_path = create_directory(dataset_path, "logs")
-    cmd = f"""java -jar hamlet-0.1.5-all.jar \
+    cmd = f"""java -jar hamlet-{args.version}-all.jar \
                 {dataset_path} \
                 {dataset} \
-                balanced_accuracy \
-                max \
-                10 \
+                {args.metric} \
+                {args.mode} \
+                {args.batch_size} \
                 42 \
                 false \
                 $(pwd)/resources/complete_kb_5_steps.txt"""
