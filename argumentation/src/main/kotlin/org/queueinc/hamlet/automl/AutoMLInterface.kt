@@ -7,6 +7,9 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.*
 import java.util.stream.Stream
+import kotlin.random.Random
+
+private val containerName = "automl-container_" + Random.nextLong(0, Long.MAX_VALUE)
 
 fun getOutputFromProgram(program: Array<String>) {
     val proc = Runtime.getRuntime().exec(program)
@@ -31,8 +34,8 @@ fun getOutputFromProgram(program: Array<String>) {
 }
 
 fun stopAutoML() {
-    val stop = arrayOf("docker", "stop", "automl-container")
-    val rm = arrayOf("docker", "rm", "automl-container")
+    val stop = arrayOf("docker", "stop", containerName)
+    val rm = arrayOf("docker", "rm", containerName)
 
     getOutputFromProgram(stop)
     getOutputFromProgram(rm)
@@ -42,7 +45,7 @@ fun runAutoML(workspacePath: String, debug: Boolean) {
 
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-container", ".")
-        val run = arrayOf("docker", "run", "--name", "automl-container",
+        val run = arrayOf("docker", "run", "--name", containerName,
             "--volume", "${workspacePath}:/home/resources", "--detach", "-t", "automl-container")
 
         getOutputFromProgram(build)
@@ -56,7 +59,7 @@ fun runAutoML(workspacePath: String, debug: Boolean) {
         it.getProperty("version")
     }
 
-    val run = arrayOf("docker", "run", "--name", "automl-container",
+    val run = arrayOf("docker", "run", "--name", containerName,
         "--volume", "${workspacePath}:/home/resources", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
 
     getOutputFromProgram(run)
@@ -65,7 +68,7 @@ fun runAutoML(workspacePath: String, debug: Boolean) {
 fun execAutoML(config: Config) {
 
     val exec  =
-        arrayOf("docker", "exec", "automl-container", "python", "automl/main.py",
+        arrayOf("docker", "exec", containerName, "python", "automl/main.py",
                 "--dataset", config.dataset, "--metric", config.metric, "--mode", config.mode, "--batch_size", config.batchSize.toString(), "--seed", config.seed.toString(),
                 "--input_path", "/home/resources/automl/input/automl_input_${config.iteration}.json",
                 "--output_path", "/home/resources/automl/output/automl_output_${config.iteration}.json")
