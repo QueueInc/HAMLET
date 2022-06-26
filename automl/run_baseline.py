@@ -1,4 +1,3 @@
-import subprocess
 import openml
 import os
 import argparse
@@ -6,6 +5,7 @@ import argparse
 import pandas as pd
 
 from tqdm import tqdm
+from subprocess import Popen, PIPE, CalledProcessError
 
 
 def generate_processes(data):
@@ -31,9 +31,18 @@ def run_cmd(cmd, stdout_path, stderr_path):
     open(stderr_path, "w")
     with open(stdout_path, "a") as log_out:
         with open(stderr_path, "a") as log_err:
-            process = subprocess.Popen(
-                cmd, shell=True, stdout=log_out, stderr=log_err, bufsize=0
-            )
+            with Popen(
+                cmd,
+                shell=True,
+                stdout=PIPE,
+                stderr=PIPE,
+                bufsize=0,
+                universal_newlines=True,
+            ) as process:
+                for line in process.stdout:
+                    log_out.write(line)
+                for line in process.stderr:
+                    log_err.write(line)
     return process
 
 
@@ -128,10 +137,16 @@ with tqdm(total=len(data)) as pbar:
             try:
                 buffer.append(next(generator))
                 count += 1
+                print()
+                print("A process has been instantiated")
+                print()
             except:
                 is_buffer_free = len(buffer) != 0
                 count = max_processes
         else:
             buffer.pop(0).wait()
+            print()
+            print("A process has finished")
+            print()
             pbar.update(1)
             count -= 1
