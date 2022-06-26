@@ -31,7 +31,9 @@ def run_cmd(cmd, stdout_path, stderr_path):
     open(stderr_path, "w")
     with open(stdout_path, "a") as log_out:
         with open(stderr_path, "a") as log_err:
-            process = subprocess.Popen(cmd, shell=True, stdout=log_out, stderr=log_err)
+            process = subprocess.Popen(
+                cmd, shell=True, stdout=log_out, stderr=log_err, bufsize=0
+            )
     return process
 
 
