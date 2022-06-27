@@ -2,10 +2,11 @@ import subprocess
 import openml
 import os
 import argparse
+import utils.istarmap
+
 import pandas as pd
 
 from multiprocessing import Pool
-
 from tqdm import tqdm
 
 
@@ -34,7 +35,7 @@ def run_cmd(cmd, stdout_path, stderr_path):
     open(stderr_path, "w")
     with open(stdout_path, "a") as log_out:
         with open(stderr_path, "a") as log_err:
-            subprocess.call(cmd, stdout=log_out, stderr=log_err, bufsize=0)
+            subprocess.call(cmd, stdout=log_out, stderr=log_err, bufsize=0, shell=True)
 
 
 def create_directory(result_path, directory):
@@ -113,6 +114,14 @@ def parse_args():
         required=False,
         help="which index of the suite to start",
     )
+    parser.add_argument(
+        "-num_tasks",
+        "--num_tasks",
+        nargs="?",
+        type=int,
+        required=False,
+        help="which index of the suite to start",
+    )
     args = parser.parse_args()
     return args
 
@@ -121,14 +130,12 @@ args = parse_args()
 workspace_path = os.path.join(os.getcwd(), args.workspace)
 processes = {}
 benchmark_suite = openml.study.get_suite("OpenML-CC18")  # obtain the benchmark suite
-data = get_filtered_datasets(benchmark_suite.data[args.range : args.range + 15])
+data = get_filtered_datasets(benchmark_suite.data)
+num_datasets = int(len(data) / args.num_tasks)
+data = data[args.range : args.range + num_datasets]
 commands = get_commands(data, args)
-progress_bar = tqdm(total=len(data))
 
-pool = Pool(4)
-
-for command in commands:
-    pool.apply_async(run_cmd, command, callback=progress_bar.update())
-
-pool.close()
-pool.join()
+with tqdm(total=num_datasets) as pbar:
+    with Pool(args.num_tasks) as pool:
+        for _ in pool.istarmap(run_cmd, commands):
+            pbar.update()
