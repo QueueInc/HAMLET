@@ -6,5 +6,5 @@ python -m pip install --upgrade pip
 python -m pip install openml
 python -m pip install tqdm
 python -m pip install pandas
-python automl/run_baseline.py --workspace $1 --metric $2 --mode $3 --batch_size $4 --version $5
+python automl/run_baseline.py --workspace $1 --metric $2 --mode $3 --batch_size $4 --version $5 --range $6
 deactivate

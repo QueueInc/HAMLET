@@ -2,13 +2,15 @@ import subprocess
 import openml
 import os
 import argparse
-
 import pandas as pd
+
+from multiprocessing import Pool
 
 from tqdm import tqdm
 
 
-def generate_processes(data):
+def get_commands(data, args):
+    commands = []
     for dataset in data:
         dataset_path = os.path.join(workspace_path, str(dataset))
         log_path = create_directory(dataset_path, "logs")
@@ -23,7 +25,8 @@ def generate_processes(data):
                     $(pwd)/resources/complete_kb_5_steps.txt"""
         stdout_path = os.path.join(log_path, "stdout_1.txt")
         stderr_path = os.path.join(log_path, "stderr_1.txt")
-        yield run_cmd(cmd=cmd, stdout_path=stdout_path, stderr_path=stderr_path)
+        commands.append((cmd, stdout_path, stderr_path))
+    return commands
 
 
 def run_cmd(cmd, stdout_path, stderr_path):
@@ -31,10 +34,7 @@ def run_cmd(cmd, stdout_path, stderr_path):
     open(stderr_path, "w")
     with open(stdout_path, "a") as log_out:
         with open(stderr_path, "a") as log_err:
-            process = subprocess.Popen(
-                cmd, shell=True, stdout=log_out, stderr=log_err, bufsize=0
-            )
-    return process
+            subprocess.call(cmd, stdout=log_out, stderr=log_err, bufsize=0)
 
 
 def create_directory(result_path, directory):
@@ -105,6 +105,14 @@ def parse_args():
         required=False,
         help="hamlet version to run",
     )
+    parser.add_argument(
+        "-range",
+        "--range",
+        nargs="?",
+        type=int,
+        required=False,
+        help="which index of the suite to start",
+    )
     args = parser.parse_args()
     return args
 
@@ -113,25 +121,14 @@ args = parse_args()
 workspace_path = os.path.join(os.getcwd(), args.workspace)
 processes = {}
 benchmark_suite = openml.study.get_suite("OpenML-CC18")  # obtain the benchmark suite
-data = get_filtered_datasets(benchmark_suite.data)
-generator = generate_processes(data)
+data = get_filtered_datasets(benchmark_suite.data[args.range : args.range + 15])
+commands = get_commands(data, args)
+progress_bar = tqdm(total=len(data))
 
-count = 0
-max_processes = 10
-buffer = []
-is_buffer_free = True
+pool = Pool(4)
 
+for command in commands:
+    pool.apply_async(run_cmd, command, callback=progress_bar.update())
 
-with tqdm(total=len(data)) as pbar:
-    while is_buffer_free:
-        if count < max_processes:
-            try:
-                buffer.append(next(generator))
-                count += 1
-            except:
-                is_buffer_free = len(buffer) != 0
-                count = max_processes
-        else:
-            buffer.pop(0).wait()
-            pbar.update(1)
-            count -= 1
+pool.close()
+pool.join()
