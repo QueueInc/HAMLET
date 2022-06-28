@@ -1,8 +1,8 @@
 # BASELINE EXPERIMENTS
 
-git clone https://github.com/QueueInc/HAMLET.git
+sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
-chmod 777 scripts/run_baseline.sh
+sudo chmod 777 scripts/run_baseline.sh
 sudo ./scripts/run_baseline.sh baseline_results balanced_accuracy max 5000 0.1.5 0 4
 # RUN
 
