@@ -19,7 +19,7 @@ def get_commands(data, args):
                     {args.mode} \
                     {args.batch_size} \
                     42 \
-                    false \
+                    true \
                     $(pwd)/resources/complete_kb_5_steps.txt"""
         stdout_path = os.path.join(log_path, "stdout_1.txt")
         stderr_path = os.path.join(log_path, "stderr_1.txt")
