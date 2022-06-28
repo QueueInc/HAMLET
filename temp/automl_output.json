@@ -1,0 +1,1318 @@
+{
+    "graph_generation_time": 0,
+    "space_generation_time": 0,
+    "optimization_time": 12.210181713104248,
+    "mining_time": 0.05395245552062988,
+    "best_config": {
+        "balanced_accuracy": 0.862122023420835,
+        "status": "success",
+        "training_iteration": 0,
+        "config": {
+            "prototype": "discretization_imputation_features_normalization_rebalancing_classification",
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 4,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        "config/prototype": "discretization_imputation_features_normalization_rebalancing_classification",
+        "config/normalization": {
+            "with_centering": true,
+            "with_scaling": true,
+            "type": "RobustScaler"
+        },
+        "config/features": {
+            "k": 4,
+            "type": "SelectKBest"
+        },
+        "config/imputation": {
+            "strategy": "constant",
+            "type": "SimpleImputer"
+        },
+        "config/classification": {
+            "max_depth": 3,
+            "min_samples_split": 2,
+            "min_samples_leaf": 3,
+            "max_features": 2,
+            "max_leaf_nodes": 4,
+            "splitter": "best",
+            "criterion": "gini",
+            "type": "DecisionTreeClassifier"
+        },
+        "config/discretization": {
+            "type": "FunctionTransformer"
+        },
+        "config/rebalancing": {
+            "type": "FunctionTransformer"
+        },
+        "experiment_tag": "exp",
+        "time_total_s": 0.08501982688903809
+    },
+    "rules": [],
+    "points_to_evaluate": [
+        {
+            "prototype": "features_discretization_rebalancing_normalization_imputation_classification",
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "SelectKBest",
+                "k": 4
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "NearMiss",
+                "n_neighbors": 2
+            },
+            "classification": {
+                "type": "KNeighborsClassifier",
+                "n_neighbors": 15,
+                "weights": "distance",
+                "metric": "minkowski"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_rebalancing_features_normalization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "n_components": 7,
+                "type": "PCA"
+            },
+            "classification": {
+                "n_neighbors": 5,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_discretization_features_imputation_normalization_classification",
+            "features": {
+                "n_components": 7,
+                "type": "PCA"
+            },
+            "imputation": {
+                "initial_strategy": "constant",
+                "imputation_order": "roman",
+                "type": "IterativeImputer"
+            },
+            "rebalancing": {
+                "n_neighbors": 2,
+                "type": "NearMiss"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_normalization_features_rebalancing_classification",
+            "discretization": {
+                "threshold": 0.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 2,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 13,
+                "weights": "uniform",
+                "metric": "minkowski",
+                "type": "KNeighborsClassifier"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_discretization_features_normalization_imputation_classification",
+            "discretization": {
+                "n_bins": 5,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 6,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "rebalancing": {
+                "n_neighbors": 3,
+                "type": "NearMiss"
+            },
+            "classification": {
+                "n_hidden_layers": 200,
+                "n_neurons": 100,
+                "type": "MLPClassifier"
+            }
+        },
+        {
+            "prototype": "features_rebalancing_discretization_imputation_normalization_classification",
+            "discretization": {
+                "n_bins": 6,
+                "encode": "ordinal",
+                "strategy": "quantile",
+                "type": "KBinsDiscretizer"
+            },
+            "features": {
+                "n_components": 5,
+                "type": "PCA"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "rebalancing": {
+                "k_neighbors": 7,
+                "type": "SMOTE"
+            },
+            "classification": {
+                "n_hidden_layers": 10,
+                "n_neurons": 50,
+                "type": "MLPClassifier"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            }
+        },
+        {
+            "prototype": "features_discretization_imputation_normalization_rebalancing_classification",
+            "discretization": {
+                "threshold": 0.0,
+                "type": "Binarizer"
+            },
+            "features": {
+                "n_components": 7,
+                "type": "PCA"
+            },
+            "rebalancing": {
+                "n_neighbors": 3,
+                "type": "NearMiss"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "discretization_features_rebalancing_imputation_normalization_classification",
+            "normalization": {
+                "with_mean": false,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "features": {
+                "k": 8,
+                "type": "SelectKBest"
+            },
+            "rebalancing": {
+                "n_neighbors": 1,
+                "type": "NearMiss"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "features_imputation_normalization_discretization_rebalancing_classification",
+            "features": {
+                "k": 2,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "initial_strategy": "constant",
+                "imputation_order": "descending",
+                "type": "IterativeImputer"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "features_normalization_discretization_imputation_rebalancing_classification",
+            "features": {
+                "n_components": 4,
+                "type": "PCA"
+            },
+            "imputation": {
+                "initial_strategy": "most_frequent",
+                "imputation_order": "random",
+                "type": "IterativeImputer"
+            },
+            "rebalancing": {
+                "n_neighbors": 2,
+                "type": "NearMiss"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "classification": {
+                "type": "GaussianNB"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_rebalancing_classification",
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 4,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_rebalancing_discretization_imputation_normalization_classification",
+            "features": {
+                "k": 9,
+                "type": "SelectKBest"
+            },
+            "rebalancing": {
+                "k_neighbors": 7,
+                "type": "SMOTE"
+            },
+            "classification": {
+                "n_hidden_layers": 50,
+                "n_neurons": 200,
+                "type": "MLPClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_rebalancing_features_normalization_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_rebalancing_imputation_normalization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_rebalancing_normalization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_rebalancing_features_normalization_classification",
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 2,
+                "min_samples_leaf": 2,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "random",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_features_normalization_rebalancing_classification",
+            "normalization": {
+                "with_mean": true,
+                "with_std": false,
+                "type": "StandardScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 4,
+                "min_samples_split": 5,
+                "min_samples_leaf": 5,
+                "max_features": 1,
+                "max_leaf_nodes": 2,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_features_discretization_imputation_rebalancing_classification",
+            "discretization": {
+                "threshold": 0.5,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 3,
+                "min_samples_leaf": 4,
+                "max_features": 3,
+                "max_leaf_nodes": 5,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_discretization_imputation_normalization_features_classification",
+            "discretization": {
+                "n_bins": 3,
+                "encode": "ordinal",
+                "strategy": "uniform",
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 5,
+                "weights": "distance",
+                "metric": "euclidean",
+                "type": "KNeighborsClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_discretization_features_normalization_rebalancing_classification",
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "k": 4,
+                "type": "SelectKBest"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "rebalancing": {
+                "k_neighbors": 5,
+                "type": "SMOTE"
+            },
+            "classification": {
+                "max_depth": 4,
+                "min_samples_split": 3,
+                "min_samples_leaf": 1,
+                "max_features": 1,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_rebalancing_classification",
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 4,
+                "min_samples_leaf": 4,
+                "max_features": 3,
+                "max_leaf_nodes": 5,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_normalization_imputation_features_rebalancing_classification",
+            "discretization": {
+                "n_bins": 3,
+                "encode": "ordinal",
+                "strategy": "kmeans",
+                "type": "KBinsDiscretizer"
+            },
+            "normalization": {
+                "with_mean": false,
+                "with_std": true,
+                "type": "StandardScaler"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 5,
+                "min_samples_leaf": 5,
+                "max_features": 3,
+                "max_leaf_nodes": 5,
+                "splitter": "random",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_rebalancing_features_normalization_imputation_classification",
+            "discretization": {
+                "threshold": 5.0,
+                "type": "Binarizer"
+            },
+            "imputation": {
+                "initial_strategy": "most_frequent",
+                "imputation_order": "ascending",
+                "type": "IterativeImputer"
+            },
+            "classification": {
+                "n_neighbors": 19,
+                "weights": "distance",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "normalization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_imputation_rebalancing_normalization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 4,
+                "min_samples_leaf": 4,
+                "max_features": 3,
+                "max_leaf_nodes": 5,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_normalization_imputation_features_discretization_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 4,
+                "min_samples_leaf": 4,
+                "max_features": 2,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_imputation_normalization_discretization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 3,
+                "min_samples_leaf": 2,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_rebalancing_features_discretization_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 4,
+                "min_samples_leaf": 3,
+                "max_features": 3,
+                "max_leaf_nodes": 5,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_normalization_imputation_features_discretization_classification",
+            "imputation": {
+                "strategy": "most_frequent",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 2,
+                "min_samples_split": 4,
+                "min_samples_leaf": 4,
+                "max_features": 1,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_rebalancing_imputation_normalization_discretization_classification",
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "rebalancing": {
+                "k_neighbors": 5,
+                "type": "SMOTE"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 3,
+                "min_samples_leaf": 2,
+                "max_features": 2,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "MinMaxScaler"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_imputation_normalization_discretization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 4,
+                "min_samples_leaf": 2,
+                "max_features": 3,
+                "max_leaf_nodes": 2,
+                "splitter": "random",
+                "criterion": "entropy",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_rebalancing_discretization_features_imputation_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 3,
+                "min_samples_leaf": 1,
+                "max_features": 2,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "rebalancing_features_imputation_discretization_normalization_classification",
+            "imputation": {
+                "initial_strategy": "most_frequent",
+                "imputation_order": "arabic",
+                "type": "IterativeImputer"
+            },
+            "classification": {
+                "max_depth": 1,
+                "min_samples_split": 3,
+                "min_samples_leaf": 1,
+                "max_features": 1,
+                "max_leaf_nodes": 3,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "normalization": {
+                "type": "PowerTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "imputation_normalization_rebalancing_features_discretization_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": true,
+                "type": "RobustScaler"
+            },
+            "features": {
+                "n_components": 1,
+                "type": "PCA"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_neighbors": 3,
+                "weights": "uniform",
+                "metric": "manhattan",
+                "type": "KNeighborsClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "discretization_rebalancing_imputation_normalization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 3,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "normalization_discretization_rebalancing_features_imputation_classification",
+            "discretization": {
+                "type": "Binarizer",
+                "threshold": 5.0
+            },
+            "normalization": {
+                "type": "StandardScaler",
+                "with_mean": true,
+                "with_std": true
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "imputation": {
+                "type": "IterativeImputer",
+                "initial_strategy": "constant",
+                "imputation_order": "ascending"
+            },
+            "rebalancing": {
+                "type": "SMOTE",
+                "k_neighbors": 5
+            },
+            "classification": {
+                "type": "DecisionTreeClassifier",
+                "max_depth": 1,
+                "min_samples_split": 5,
+                "min_samples_leaf": 5,
+                "max_features": 1,
+                "max_leaf_nodes": 5,
+                "splitter": "best",
+                "criterion": "gini"
+            }
+        },
+        {
+            "prototype": "discretization_rebalancing_imputation_normalization_features_classification",
+            "normalization": {
+                "with_centering": false,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "max_depth": 4,
+                "min_samples_split": 2,
+                "min_samples_leaf": 3,
+                "max_features": 2,
+                "max_leaf_nodes": 4,
+                "splitter": "best",
+                "criterion": "gini",
+                "type": "DecisionTreeClassifier"
+            },
+            "discretization": {
+                "type": "FunctionTransformer"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        },
+        {
+            "prototype": "features_imputation_discretization_normalization_rebalancing_classification",
+            "discretization": {
+                "threshold": 2.0,
+                "type": "Binarizer"
+            },
+            "normalization": {
+                "with_centering": true,
+                "with_scaling": false,
+                "type": "RobustScaler"
+            },
+            "imputation": {
+                "strategy": "constant",
+                "type": "SimpleImputer"
+            },
+            "classification": {
+                "n_hidden_layers": 25,
+                "n_neurons": 10,
+                "type": "MLPClassifier"
+            },
+            "features": {
+                "type": "FunctionTransformer"
+            },
+            "rebalancing": {
+                "type": "FunctionTransformer"
+            }
+        }
+    ],
+    "evaluated_rewards": [
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.6995851290757913,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.8426058943885769,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.617718862914109,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.5,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.5,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.6187159897261765,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": "-inf",
+            "status": "fail"
+        },
+        {
+            "balanced_accuracy": 0.862122023420835,
+            "status": "success"
+        },
+        {
+            "balanced_accuracy": 0.8428951721736102,
+            "status": "success"
+        }
+    ]
+}
