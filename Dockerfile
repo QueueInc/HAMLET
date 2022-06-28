@@ -7,4 +7,3 @@ RUN pip install --upgrade pip && \
     rm requirements.txt
 COPY automl /home/automl
 WORKDIR /home
-COPY run_experiments.sh run_experiments.sh
