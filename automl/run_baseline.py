@@ -2,9 +2,6 @@ import subprocess
 import openml
 import os
 import argparse
-import utils.istarmap
-
-import pandas as pd
 
 from multiprocessing import Pool
 from tqdm import tqdm
@@ -13,7 +10,7 @@ from tqdm import tqdm
 def get_commands(data, args):
     commands = []
     for dataset in data:
-        dataset_path = os.path.join(workspace_path, str(dataset))
+        dataset_path = os.path.join(os.getcwd(), args.workspace, str(dataset))
         log_path = create_directory(dataset_path, "logs")
         cmd = f"""java -jar hamlet-{args.version}-all.jar \
                     {dataset_path} \
@@ -45,21 +42,6 @@ def create_directory(result_path, directory):
         os.makedirs(result_path)
 
     return result_path
-
-
-def get_filtered_datasets(suite):
-    df = pd.read_csv(os.path.join("temp", "simple-meta-features.csv"))
-    df = df.loc[df["did"].isin(suite)]
-    df = df.loc[
-        df["NumberOfMissingValues"] / (df["NumberOfInstances"] * df["NumberOfFeatures"])
-        < 0.1
-    ]
-    df = df.loc[
-        df["NumberOfInstancesWithMissingValues"] / df["NumberOfInstances"] < 0.1
-    ]
-    df = df.loc[df["NumberOfInstances"] * df["NumberOfFeatures"] < 5000000]
-    df = df["did"]
-    return df.values.flatten().tolist()
 
 
 def parse_args():
@@ -127,15 +109,12 @@ def parse_args():
 
 
 args = parse_args()
-workspace_path = os.path.join(os.getcwd(), args.workspace)
-processes = {}
-benchmark_suite = openml.study.get_suite("OpenML-CC18")  # obtain the benchmark suite
-data = get_filtered_datasets(benchmark_suite.data)
-num_datasets = int(len(data) / args.num_tasks)
-data = data[args.range : args.range + num_datasets]
+data = openml.study.get_suite("OpenML-CC18").data
+data = data[args.range : args.range + int(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
-with tqdm(total=num_datasets) as pbar:
-    with Pool(args.num_tasks) as pool:
-        for _ in pool.istarmap(run_cmd, commands):
-            pbar.update()
+
+with tqdm(total=len(data)) as pbar:
+    for cmd, stdout_path, stderr_path in get_commands(data, args):
+        run_cmd(cmd, stdout_path, stderr_path)
+        pbar.update()
