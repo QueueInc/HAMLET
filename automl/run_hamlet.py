@@ -143,7 +143,7 @@ data = data[args.range : args.range + int(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
 
-with tqdm(total=len(data)) as pbar:
+with tqdm(total=len(data) * args.iterations) as pbar:
     for cmd, stdout_path, stderr_path, before_execute in get_commands(data, args):
         before_execute()
         print(cmd)
