@@ -44,6 +44,10 @@ class FileSystemManager(val workspacePath: String) {
         File("${workspacePath}/argumentation/kb_${config.iteration}.txt").createAndWrite(theory)
 
 
+    fun saveGeneratedRules(config: Config, theory : String) =
+        File("${workspacePath}/argumentation/rules_${config.iteration}.txt").createAndWrite(theory)
+
+
     fun loadAutoMLData(config: Config) : AutoMLResults? {
         val outputJson = File("${workspacePath}/automl/output/automl_output_${config.iteration}.json").let { file ->
             if (!file.exists()) return null

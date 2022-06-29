@@ -16,6 +16,7 @@ import it.unibo.tuprolog.theory.parsing.parse
 import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
 import org.queueinc.hamlet.automl.*
+import kotlin.random.Random
 
 
 class Controller(private val debugMode: Boolean, private val dataManager: FileSystemManager) {
@@ -129,7 +130,11 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
                 if (dataManager.existsAutoMLData(nextIteration())) {
                     updateIteration()
-                    update(dataManager.loadAutoMLData(config.copy())!!)
+                    val res = dataManager.loadAutoMLData(config.copy())!!
+                    dataManager.saveGeneratedRules(config.copy(),
+                        res.inferredRules.joinToString("\n") { "cc${Random.nextLong(0, Long.MAX_VALUE)} :=> ${it.theoryRepresentation}." }
+                    )
+                    update(res)
                 } else {
                     // input.delete()
                 }
