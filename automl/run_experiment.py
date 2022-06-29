@@ -9,18 +9,21 @@ from tqdm import tqdm
 
 def get_input(iteration, dataset_path):
     if iteration == 0:
-        return "$(pwd)/resources/complete_kb_5_steps.txt"
+        return "$(pwd)/resources/complete_kb_5_steps.txt", lambda: None
+
+    input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
 
     def read_content(path):
         with open(path, "r") as file:
             return file.read()
 
-    input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
-    kb = read_content(f"{dataset_path}/argumentation/kb_{iteration}.txt")
-    rules = read_content(f"{dataset_path}/argumentation/rules_{iteration}.txt")
-    with open(input, "w+") as file:
-        file.write(kb + "\n" + rules + "\n")
-    return input
+    def execute():
+        kb = read_content(f"{dataset_path}/argumentation/kb_{iteration}.txt")
+        rules = read_content(f"{dataset_path}/argumentation/rules_{iteration}.txt")
+        with open(input, "w+") as file:
+            file.write(kb + "\n" + rules + "\n")
+
+    return (input, lambda: execute())
 
 
 def get_commands(data, args):
@@ -29,6 +32,7 @@ def get_commands(data, args):
         for iteration in range(0, args.iterations):
             dataset_path = os.path.join(os.getcwd(), args.workspace, str(dataset))
             log_path = create_directory(dataset_path, "logs")
+            input_path, before_execute = get_input(iteration, dataset_path)
             cmd = f"""java -jar hamlet-{args.version}-all.jar \
                         {dataset_path} \
                         {dataset} \
@@ -37,10 +41,10 @@ def get_commands(data, args):
                         {args.batch_size} \
                         42 \
                         false \
-                        {get_input(iteration, dataset_path)}"""
+                        {input_path}"""
             stdout_path = os.path.join(log_path, f"stdout_{iteration + 1}.txt")
             stderr_path = os.path.join(log_path, f"stderr_{iteration + 1}.txt")
-            commands.append((cmd, stdout_path, stderr_path))
+            commands.append((cmd, stdout_path, stderr_path, before_execute))
     return commands
 
 
@@ -140,6 +144,8 @@ commands = get_commands(data, args)
 
 
 with tqdm(total=len(data)) as pbar:
-    for cmd, stdout_path, stderr_path in get_commands(data, args):
+    for cmd, stdout_path, stderr_path, before_execute in get_commands(data, args):
+        before_execute()
+        print(cmd)
         run_cmd(cmd, stdout_path, stderr_path)
         pbar.update()
