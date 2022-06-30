@@ -49,7 +49,7 @@ def main(args):
         metric=args.metric,
         mode=args.mode,
         num_samples=args.batch_size + len(points_to_evaluate),
-        time_budget_s=7200,
+        time_budget_s=1800,
         points_to_evaluate=points_to_evaluate,
         # evaluated_rewards=evaluated_rewards,
         verbose=0,
