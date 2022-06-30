@@ -87,7 +87,7 @@ object SpaceTranslator {
                         }.joinToString(",\n").let {
                             """
                                 {
-                                    ${it + if (it == "") "" else ","},
+                                    ${it + if (it == "") "" else ","}
                                     "classification": {"type": {"eq": "${unifier[C]!!.toSklearnClass()}"}}
                                 }
                                 """
