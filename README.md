@@ -10,7 +10,7 @@ sudo ./scripts/run_baseline.sh results/baseline_5000 balanced_accuracy max 5000 
 sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
 sudo chmod 777 scripts/run_hamlet.sh
-sudo ./scripts/run_hamlet.sh results/hamlet_250 balanced_accuracy max 250 0.2.4 0 4 4
+sudo ./scripts/run_hamlet.sh results/hamlet_250 balanced_accuracy max 250 0.2.5 0 4 4
 # RUN
 
         java -jar hamlet-0.1.4-all.jar /resources vehicle accuracy max 25 42 true
