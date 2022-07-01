@@ -10,12 +10,12 @@ def extract_results(path, iteration):
             with open(
                 os.path.join(root, f"automl_output_{iteration}.json")
             ) as json_file:
-                results[root.split("/")[3]] = json.load(json_file)
+                results[root.split("/")[4]] = json.load(json_file)
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
 
 
 path = os.path.join("/", "home", "results")
-extract_results(os.path.join(path, "baseline"), 1)
-extract_results(os.path.join(path, "hamlet"), 4)
+extract_results(os.path.join(path, "baseline_5000"), 1)
+extract_results(os.path.join(path, "old_hamlet_1250"), 4)
