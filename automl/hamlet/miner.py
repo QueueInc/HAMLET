@@ -17,7 +17,7 @@ class Miner:
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
             if reward["status"] != "previous_constraint"
         ]
-        self._min_automl_outputs = 50
+        self._min_automl_outputs = 25
         self._metric = metric
         self._mode = mode
         # Pay attention, in this version we assume the metric varies between 0 and 1
