@@ -17,7 +17,7 @@ class Miner:
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
             if reward["status"] != "previous_constraint"
         ]
-        self._min_automl_outputs = 25
+        self._min_automl_outputs = 50
         self._metric = metric
         self._mode = mode
         # Pay attention, in this version we assume the metric varies between 0 and 1
@@ -81,9 +81,7 @@ class Miner:
         )
         support_thresholds = np.arange(
             support_stat["max"] - support_stat["step"],
-            ((support_stat["max"] - support_stat["suff"]) - support_stat["step"])
-            if mode == "mandatory"
-            else support_stat["suff"],
+            support_stat[f"{mode}_suff"] - support_stat["step"],
             -support_stat["step"],
         )
         for metric_threshold in metric_thresholds:
@@ -199,7 +197,7 @@ class Miner:
         rules += self._get_order_rules(
             metric_stat=metric_stat, support_stat=support_stat
         )
-        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "mandatory_suff": 0.6, "forbidden_suff": 0.8}
         mandatory_rules = self._get_presence_rules(
             metric_stat=metric_stat, support_stat=support_stat, mode="mandatory"
         )
