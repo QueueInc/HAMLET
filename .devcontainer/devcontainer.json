@@ -32,6 +32,7 @@
 		"ms-python.python",
 		"eamodio.gitlens",
 		"shardulm94.trailing-spaces",
-		"vscode-icons-team.vscode-icons"
+		"vscode-icons-team.vscode-icons",
+		"janisdd.vscode-edit-csv"
 	]
 }
