@@ -5,7 +5,7 @@ import pandas as pd
 
 data = {}
 path = os.path.join("/", "home", "results")
-for approach in ["baseline_5000", "old_hamlet_1250"]:
+for approach in ["baseline_5000", "hamlet_250", "hamlet_150"]:
     with open(os.path.join(path, approach, "summary.json")) as f:
         for dataset, result in json.load(f).items():
             if dataset not in data:
