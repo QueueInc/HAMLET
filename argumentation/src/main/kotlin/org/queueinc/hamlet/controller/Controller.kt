@@ -35,7 +35,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         dataManager.saveConfig(config)
     }
 
-    fun init(dataset: String, metric: String, mode: String, batchSize: Int, seed: Int) {
+    fun init(dataset: String, metric: String, mode: String, batchSize: Int, timeBudget: Int, seed: Int) {
         // stopAutoML()
         runAutoML(dataManager.workspacePath, debugMode)
 
@@ -43,9 +43,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
             if (it == null || it.dataset != dataset) {
                 dataManager.cleanWorkspace()
                 dataManager.initWorkspace()
-                Config(0, dataset, metric, mode, batchSize, seed)
+                Config(0, dataset, metric, mode, batchSize, timeBudget, seed)
             }
-            else it.copy(metric = metric, mode = mode, batchSize = batchSize, seed = seed)
+            else it.copy(metric = metric, mode = mode, batchSize = batchSize, timeBudget = timeBudget, seed = seed)
         }
     }
 

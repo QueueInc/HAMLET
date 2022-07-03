@@ -1,43 +1,45 @@
-# BASELINE EXPERIMENTS
+# TODO
+
+- Provare run_hamlet con iterations = 1 per simulare baseline
+- aggiungere parametro budget in secondi
+- Esperimenti:
+  - baseline 1000 con spazio ridotto
+  - hamlet 250 con spazio ridotto
+  - hamlet 250 con kb a priori (scegliere spazio ridotto o no)
+- Graficare iterazione in cui il max è stato raggiunto per ogni dataset
+  - Normalized distance ma senza exhaustive = applichiamo un peso alla distanza fta hamlet e la baseline basata sulla velocità della baseline nel trovare il max (prossimità baseline a 0)
+    - impact = ((it(baseline) - it(hamlet)) * (it(baseline) / tot_it(baseline))) / tot_it(baseline)
+
+    <!-- - accuracy = ((it(hamlet) - it(baseline)) * ((100 - it(baseline)) / 100)) / 100 -->
+
+
+# RUN_EXPERIMENTS CONFIGURATION
+
+choose metric between these ones: https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
+
+## RUN
+
+        java -jar hamlet-0.1.4-all.jar /resources vehicle accuracy max 25 42 true
+
+## BASELINE EXPERIMENTS
 
 sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
 sudo chmod 777 scripts/run_baseline.sh
 sudo ./scripts/run_baseline.sh results/baseline_5000 balanced_accuracy max 5000 0.2.1 0 4
 
-# HAMLET EXPERIMENTS
+## HAMLET EXPERIMENTS
 
 sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
 sudo chmod 777 scripts/run_hamlet.sh
 sudo ./scripts/run_hamlet.sh results/hamlet_150 balanced_accuracy max 150 0.2.5 0 3 6
-# RUN
 
-        java -jar hamlet-0.1.4-all.jar /resources vehicle accuracy max 25 42 true
+# MINING LIBRARY
 
-# PICCOLA ON-GOING DOC DI RUN_EXPERIMENTS
-choose the dataset between: [
-        "blood",
-        "breast",
-        "diabetes",
-        "ecoli",
-        "iris",
-        "parkinsons",
-        "seeds",
-        "thyroid",
-        "vehicle",
-        "wine"]
-choose metric between these ones: https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
-
-# TODO ARGUMENTATION
-- pipeline maggiori di 2
-- vincoli
-        - iper-parametri
-        - ordine trasformazioni
-- gestire sugegrimenti
-
-# TODO AUTOML
 Libreria per frequent seq mining: https://github.com/fidelity/seq2pat
+
+# MINING NOTES
 
 Mining su ordinamenti (vincoli non implementati)
 - prendo i prototype dei config e tolgo gli step con FunctionTransformer

@@ -15,6 +15,7 @@ private var dataset: String = ""
 private var metric: String = ""
 private var mode: String = ""
 private var batchSize: Int = 0
+private var timeBudget: Int = 0
 private var seed: Int = 0
 private var debugMode: Boolean = true
 private var theory: String = ""
@@ -27,9 +28,10 @@ object Starter {
         metric = args[2]
         mode = args[3]
         batchSize = args[4].toInt()
-        seed = args[5].toInt()
-        debugMode = args[6].toBoolean()
-        theory = if (args.size == 8) File(args[7]).readText() else ""
+        timeBudget = args[5].toInt()
+        seed = args[6].toInt()
+        debugMode = args[7].toBoolean()
+        theory = if (args.size == 9) File(args[8]).readText() else ""
 
         if (theory == "") {
             Application.launch(HAMLET::class.java)
@@ -43,7 +45,7 @@ object Starter {
 
 fun consoleHamlet() {
     Controller(debugMode, FileSystemManager(path)).also { controller ->
-        controller.init(dataset, metric, mode, batchSize, seed)
+        controller.init(dataset, metric, mode, batchSize, timeBudget, seed)
         controller.generateGraph(theory, true) {}
         controller.launchAutoML(true) {}
         controller.stop()
@@ -57,7 +59,7 @@ class HAMLET : Application() {
     override fun start(stage: Stage) {
         try {
 
-            controller.init(dataset, metric, mode, batchSize, seed)
+            controller.init(dataset, metric, mode, batchSize, timeBudget, seed)
             val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
                 controller.generateGraph(kb, false, updateAction)
             }

@@ -6,5 +6,6 @@ data class Config(
     val metric: String,
     val mode: String,
     val batchSize: Int,
+    val timeBudget: Int,
     val seed: Int
 )

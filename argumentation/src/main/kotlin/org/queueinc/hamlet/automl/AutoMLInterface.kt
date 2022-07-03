@@ -69,7 +69,7 @@ fun execAutoML(config: Config) {
 
     val exec  =
         arrayOf("docker", "exec", containerName, "python", "automl/main.py",
-                "--dataset", config.dataset, "--metric", config.metric, "--mode", config.mode, "--batch_size", config.batchSize.toString(), "--seed", config.seed.toString(),
+                "--dataset", config.dataset, "--metric", config.metric, "--mode", config.mode, "--batch_size", config.batchSize.toString(), "--time_budget", config.timeBudget.toString(), "--seed", config.seed.toString(),
                 "--input_path", "/home/resources/automl/input/automl_input_${config.iteration}.json",
                 "--output_path", "/home/resources/automl/output/automl_output_${config.iteration}.json")
 

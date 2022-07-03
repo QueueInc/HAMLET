@@ -38,6 +38,14 @@ def parse_args():
         help="num iterations to visit",
     )
     parser.add_argument(
+        "-time_budget",
+        "--time_budget",
+        nargs="?",
+        type=int,
+        required=True,
+        help="time budget in seconds",
+    )
+    parser.add_argument(
         "-input_path",
         "--input_path",
         nargs="?",
