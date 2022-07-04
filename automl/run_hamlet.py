@@ -98,8 +98,16 @@ def parse_args():
         "--batch_size",
         nargs="?",
         type=str,
-        required=False,
+        required=True,
         help="automl confs to visit",
+    )
+    parser.add_argument(
+        "-time_budget",
+        "--time_budget",
+        nargs="?",
+        type=str,
+        required=True,
+        help="budget in seconds",
     )
     parser.add_argument(
         "-version",
