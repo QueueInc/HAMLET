@@ -39,6 +39,7 @@ def get_commands(data, args):
                         {args.metric} \
                         {args.mode} \
                         {args.batch_size} \
+                        {args.time_budget} \
                         42 \
                         false \
                         {input_path}"""
