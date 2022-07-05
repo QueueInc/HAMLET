@@ -1,0 +1,82 @@
+step(discretization).
+step(normalization).
+step(features).
+step(imputation).
+step(rebalancing).
+
+step(classification).
+
+
+operator(discretization, kbins).
+operator(discretization, binarizer).
+operator(normalization, power_transformer).
+operator(normalization, robust_scaler).
+operator(normalization, standard).
+operator(normalization, minmax).
+operator(features, select_k_best).
+operator(features, pca).
+operator(imputation, simple_imputer).
+operator(imputation, iterative_imputer).
+operator(rebalancing, near_miss).
+operator(rebalancing, smote).
+
+operator(classification, knn).
+operator(classification, naive_bayes).
+operator(classification, rf).
+
+
+hyperparameter(kbins, n_bins, chioce).
+hyperparameter(kbins, encode, choice).
+hyperparameter(kbins, strategy, choice).
+hyperparameter(binarizer, threshold, choice).
+hyperparameter(robust_scaler, with_centering, choice).
+hyperparameter(robust_scaler, with_scaling, choice).
+hyperparameter(standard, with_mean, choice).
+hyperparameter(standard, with_std, choice).
+hyperparameter(select_k_best, k, randint).
+hyperparameter(pca, n_components, randint).
+hyperparameter(simple_imputer, strategy, choice).
+hyperparameter(iterative_imputer, initial_strategy, choice).
+hyperparameter(iterative_imputer, imputation_order, choice).
+hyperparameter(near_miss, n_neighbors, randint).
+hyperparameter(smote, k_neighbors, randint).
+
+hyperparameter(knn, n_neighbors, choice).
+hyperparameter(knn, weights, choice).
+hyperparameter(knn, metric, choice).
+hyperparameter(rf, n_estimators, choice).
+hyperparameter(rf, max_depth, randint).
+hyperparameter(rf, max_features, randint).
+hyperparameter(rf, min_samples_split, randint).
+hyperparameter(rf, max_leaf_nodes, randint).
+hyperparameter(rf, bootstrap, choice).
+hyperparameter(rf, criterion, choice).
+hyperparameter(naive_bayes, var_smoothing, choice).
+
+domain(kbins, n_bins, [3, 5, 7]).
+domain(kbins, encode, ["ordinal"]).
+domain(kbins, strategy, ["uniform", "quantile", "kmeans"]).
+domain(binarizer, threshold, [0.0, 0.5, 2.0, 5.0]).
+domain(robust_scaler, with_centering, [true, false]).
+domain(robust_scaler, with_scaling, [true, false]).
+domain(standard, with_mean, [true, false]).
+domain(standard, with_std, [true, false]).
+domain(select_k_best, k, [1, 5]).
+domain(pca, n_components, [1, 5]).
+domain(simple_imputer, strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, initial_strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, imputation_order, ["ascending", "descending", "roman", "arabic", "random"]).
+domain(near_miss, n_neighbors,  [1, 4]).
+domain(smote, k_neighbors,  [5, 8]).
+
+domain(knn, n_neighbors, [3, 5, 7, 9, 11, 13, 15, 17, 19]).
+domain(knn, weights, ["uniform", "distance"]).
+domain(knn, metric, ["minkowski", "euclidean", "manhattan"]).
+domain(rf, n_estimators, [10, 25, 50, 75, 100]).
+domain(rf, max_depth, [1, 5]).
+domain(rf, max_features, [1, 4]).
+domain(rf, min_samples_split, [2, 6]).
+domain(rf, max_leaf_nodes, [2, 6]).
+domain(rf, bootstrap, [true, false]).
+domain(rf, criterion, ["gini", "entropy"]).
+domain(naive_bayes, var_smoothing, [0.000000000001, 0.00000000001, 0.0000000001, 0.000000001, 0.00000001, 0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]).

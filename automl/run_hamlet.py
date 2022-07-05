@@ -2,6 +2,7 @@ import subprocess
 import openml
 import os
 import argparse
+import pandas as pd
 
 from multiprocessing import Pool
 from tqdm import tqdm
@@ -9,7 +10,7 @@ from tqdm import tqdm
 
 def get_input(iteration, dataset_path):
     if iteration == 0:
-        return "$(pwd)/resources/complete_kb_5_steps.txt", lambda: None
+        return "$(pwd)/resources/restricted_kb_5_steps.txt", lambda: None
 
     input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
 
@@ -145,9 +146,22 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def get_filtered_datasets(suite):
+    df = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
+    df = df.loc[df["did"].isin(suite)]
+    df = df.loc[
+        df["NumberOfMissingValues"] / (df["NumberOfInstances"] * df["NumberOfFeatures"])
+        < 0.1
+    ]
+    df = df.loc[
+        df["NumberOfInstancesWithMissingValues"] / df["NumberOfInstances"] < 0.1
+    ]
+    df = df.loc[df["NumberOfInstances"] * df["NumberOfFeatures"] < 5000000]
+    df = df["did"]
+    return df.values.flatten().tolist()
 
 args = parse_args()
-data = openml.study.get_suite("OpenML-CC18").data
+data = get_filtered_datasets(openml.study.get_suite("OpenML-CC18").data)
 data = data[args.range : args.range + int(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
