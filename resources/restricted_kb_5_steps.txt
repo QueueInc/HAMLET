@@ -25,7 +25,7 @@ operator(classification, naive_bayes).
 operator(classification, rf).
 
 
-hyperparameter(kbins, n_bins, chioce).
+hyperparameter(kbins, n_bins, choice).
 hyperparameter(kbins, encode, choice).
 hyperparameter(kbins, strategy, choice).
 hyperparameter(binarizer, threshold, choice).
@@ -79,4 +79,4 @@ domain(rf, min_samples_split, [2, 6]).
 domain(rf, max_leaf_nodes, [2, 6]).
 domain(rf, bootstrap, [true, false]).
 domain(rf, criterion, ["gini", "entropy"]).
-domain(naive_bayes, var_smoothing, [1e-12, 1e-11, 1e-10, 1e-09, 1e-08, 1e-07, 1e-06, 1e-05, 1e-04, 1e-03, 1e-02, 1e-01, 1.0]).
+domain(naive_bayes, var_smoothing, [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]).
