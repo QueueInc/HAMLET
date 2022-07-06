@@ -13,7 +13,7 @@ def get_best_in(target, evaluated_rewards):
     return max(filtered)
 
 
-def plot(baseline, other):
+def plot(baseline, other, limit):
     data = {}
     path = os.path.join("/", "home", "results")
     for approach in [baseline] + other:
@@ -24,11 +24,12 @@ def plot(baseline, other):
                 elif dataset not in data:
                     continue
 
-                # data[dataset][approach] = result["best_config"]["balanced_accuracy"]
-
-                data[dataset][approach] = round(
-                    (get_best_in(1000, result["evaluated_rewards"]) * 100), 2
+                temp = (
+                    result["best_config"]["balanced_accuracy"]
+                    if limit is None
+                    else get_best_in(limit, result["evaluated_rewards"])
                 )
+                data[dataset][approach] = round(temp * 100, 2)
 
                 if approach != baseline:
                     data[dataset][f"delta_{approach}"] = round(
@@ -65,5 +66,5 @@ def plot(baseline, other):
     df.to_csv(os.path.join(path, "summary.csv"))
 
 
-# plot("baseline_5000", ["hamlet_250", "hamlet_150"])
-plot("baseline_7200s", ["hamlet_1800s"])
+# plot("baseline_5000", ["hamlet_250", "hamlet_150"], None)
+plot("baseline_7200s", ["hamlet_1800s"], None)

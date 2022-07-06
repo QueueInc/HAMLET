@@ -1,6 +1,7 @@
 import json
 import time
 import warnings
+import sys
 
 warnings.filterwarnings("ignore")
 
@@ -48,14 +49,14 @@ def main(args):
         config=space,
         metric=args.metric,
         mode=args.mode,
-        num_samples=args.batch_size + len(points_to_evaluate)
+        num_samples=(args.batch_size + len(points_to_evaluate))
         if args.batch_size > 0
         else -1,
         time_budget_s=args.time_budget if args.time_budget > 0 else None,
         points_to_evaluate=points_to_evaluate,
         # evaluated_rewards=evaluated_rewards,
         verbose=0,
-        max_failure=args.batch_size + len(points_to_evaluate),
+        max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
     )
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
