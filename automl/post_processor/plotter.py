@@ -13,48 +13,57 @@ def get_best_in(target, evaluated_rewards):
     return max(filtered)
 
 
-data = {}
-path = os.path.join("/", "home", "results")
-for approach in ["baseline_5000", "hamlet_250", "hamlet_150"]:
-    with open(os.path.join(path, approach, "summary.json")) as f:
-        for dataset, result in json.load(f).items():
-            if dataset not in data:
-                data[dataset] = {}
-            # data[dataset][approach] = result["best_config"]["balanced_accuracy"]
-            data[dataset][approach] = round(
-                (get_best_in(1000, result["evaluated_rewards"]) * 100), 2
-            )
+def plot(baseline, other):
+    data = {}
+    path = os.path.join("/", "home", "results")
+    for approach in [baseline] + other:
+        with open(os.path.join(path, approach, "summary.json")) as f:
+            for dataset, result in json.load(f).items():
+                if approach == baseline:
+                    data[dataset] = {}
+                elif dataset not in data:
+                    continue
 
-            if approach != "baseline_5000":
-                data[dataset][f"delta_{approach}"] = round(
-                    (data[dataset][approach] - data[dataset]["baseline_5000"]), 2
-                )
-                data[dataset][f"normalized_distance_{approach}"] = round(
-                    (
-                        data[dataset][f"delta_{approach}"]
-                        / (1 - data[dataset]["baseline_5000"])
-                    ),
-                    2,
-                )
-            else:
-                import datetime
+                # data[dataset][approach] = result["best_config"]["balanced_accuracy"]
 
-                data[dataset]["iterations"] = len(result["evaluated_rewards"])
-                data[dataset]["time"] = str(
-                    datetime.timedelta(seconds=result["optimization_time"])
+                data[dataset][approach] = round(
+                    (get_best_in(1000, result["evaluated_rewards"]) * 100), 2
                 )
 
-df = pd.DataFrame.from_dict(data, orient="index").sort_values(
-    "delta_hamlet_250", ascending=False
-)
-# df = df[(df["baseline_5000"] <= 70) & (df["baseline_5000"] >= 30)]
+                if approach != baseline:
+                    data[dataset][f"delta_{approach}"] = round(
+                        (data[dataset][approach] - data[dataset][baseline]), 2
+                    )
+                    data[dataset][f"normalized_distance_{approach}"] = round(
+                        (
+                            data[dataset][f"delta_{approach}"]
+                            / (1 - data[dataset][baseline])
+                        ),
+                        2,
+                    )
+                else:
+                    import datetime
 
-f = plt.figure()
-df.boxplot(["delta_hamlet_250", "delta_hamlet_150"])
-f.savefig(os.path.join(path, "boxplot_delta.png"))
+                    data[dataset]["iterations"] = len(result["evaluated_rewards"])
+                    data[dataset]["time"] = str(
+                        datetime.timedelta(seconds=result["optimization_time"])
+                    )
 
-f = plt.figure()
-df.boxplot(["normalized_distance_hamlet_250", "normalized_distance_hamlet_150"])
-f.savefig(os.path.join(path, "boxplot_nd.png"))
+    df = pd.DataFrame.from_dict(data, orient="index").sort_values(
+        [f"delta_{x}" for x in other], ascending=False
+    )
+    # df = df[(df["baseline_5000"] <= 70) & (df["baseline_5000"] >= 30)]
 
-df.to_csv(os.path.join(path, "summary.csv"))
+    f = plt.figure()
+    df.boxplot([f"delta_{x}" for x in other])
+    f.savefig(os.path.join(path, "boxplot_delta.png"))
+
+    f = plt.figure()
+    df.boxplot([f"normalized_distance_{x}" for x in other])
+    f.savefig(os.path.join(path, "boxplot_nd.png"))
+
+    df.to_csv(os.path.join(path, "summary.csv"))
+
+
+# plot("baseline_5000", ["hamlet_250", "hamlet_150"])
+plot("baseline_7200s", ["hamlet_1800s"])

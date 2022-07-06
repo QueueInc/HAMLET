@@ -17,6 +17,9 @@ def extract_results(path, iteration):
 
 
 path = os.path.join("/", "home", "results")
-extract_results(os.path.join(path, "baseline_5000"), 1)
-extract_results(os.path.join(path, "hamlet_250"), 4)
-extract_results(os.path.join(path, "hamlet_150"), 6)
+# extract_results(os.path.join(path, "baseline_5000"), 1)
+# extract_results(os.path.join(path, "hamlet_250"), 4)
+# extract_results(os.path.join(path, "hamlet_150"), 6)
+
+extract_results(os.path.join(path, "baseline_7200s"), 1)
+extract_results(os.path.join(path, "hamlet_1800s"), 4)
