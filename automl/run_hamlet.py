@@ -8,15 +8,43 @@ from multiprocessing import Pool
 from tqdm import tqdm
 
 
-def get_input(iteration, dataset_path):
-    if iteration == 0:
-        return "$(pwd)/resources/restricted_kb_5_steps.txt", lambda: None
-
-    input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
+def get_input(iteration, dataset_path, dataset):
+    """
+    MinorityClassPercentage < ((1 / NumberOfClasses) / 1.5)
+    NumberOfMissingValues > 0
+    NumberOfFeatures > 10
+    """
 
     def read_content(path):
         with open(path, "r") as file:
             return file.read()
+
+    if iteration == 0:
+        df = pd.read_csv(
+            os.path.join("resources", "extended_meta_features_openml_cc_18.csv")
+        )
+        my_constraints = ""
+        if df["MinorityClassPercentage"].at[dataset] < (
+            0.666 / df["NumberOfClasses"].at[dataset]
+        ):
+            my_constraints += "mc0 :=> unbalanced_dataset.\n"
+        if df["NumberOfMissingValues"].at[dataset] > 0:
+            my_constraints += "mc1 :=> missing_values.\n"
+        if df["NumberOfFeatures"].at[dataset] > 10:
+            my_constraints += "mc2 :=> high_dimensionality.\n"
+        rules = read_content(
+            os.path.join(
+                os.getcwd(), "resources", "complete_kb_5_steps_with_knowledge.txt"
+            )
+        )
+        guards_path = os.path.join(
+            create_directory(dataset_path, "resources"), "guards.txt"
+        )
+        with open(guards_path, "w+") as file:
+            file.write(rules + "\n" + my_constraints + "\n")
+        return guards_path, lambda: None
+
+    input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
 
     def execute():
         kb = read_content(f"{dataset_path}/argumentation/kb_{iteration}.txt")
@@ -33,7 +61,7 @@ def get_commands(data, args):
         for iteration in range(0, args.iterations):
             dataset_path = os.path.join(os.getcwd(), args.workspace, str(dataset))
             log_path = create_directory(dataset_path, "logs")
-            input_path, before_execute = get_input(iteration, dataset_path)
+            input_path, before_execute = get_input(iteration, dataset_path, dataset)
             cmd = f"""java -jar hamlet-{args.version}-all.jar \
                         {dataset_path} \
                         {dataset} \
@@ -146,6 +174,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def get_filtered_datasets(suite):
     df = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
     df = df.loc[df["did"].isin(suite)]
@@ -159,6 +188,7 @@ def get_filtered_datasets(suite):
     df = df.loc[df["NumberOfInstances"] * df["NumberOfFeatures"] < 5000000]
     df = df["did"]
     return df.values.flatten().tolist()
+
 
 args = parse_args()
 data = get_filtered_datasets(openml.study.get_suite("OpenML-CC18").data)

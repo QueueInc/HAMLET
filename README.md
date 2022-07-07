@@ -33,8 +33,8 @@ sudo ./scripts/run_baseline.sh results/baseline_5000 balanced_accuracy max 5000 
 sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
 sudo chmod 777 scripts/run_hamlet.sh
-sudo ./scripts/run_hamlet.sh results/baseline_7200s balanced_accuracy max 1000000000 7200 0.2.6 0 4 1
-sudo ./scripts/run_hamlet.sh results/hamlet_1800s balanced_accuracy max 1000000000 1800 0.2.6 0 4 4
+sudo ./scripts/run_hamlet.sh results/baseline_5000 balanced_accuracy max 5000 7200 0.2.7 0 4 1
+sudo ./scripts/run_hamlet.sh results/hamlet_250 balanced_accuracy max 250 1800 0.2.7 0 4 4
 
 # MINING LIBRARY
 
