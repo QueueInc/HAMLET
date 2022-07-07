@@ -30,7 +30,7 @@ def get_input(iteration, dataset_path, dataset):
             my_constraints += "mc0 :=> unbalanced_dataset.\n"
         if df["NumberOfMissingValues"].at[dataset] > 0:
             my_constraints += "mc1 :=> missing_values.\n"
-        if df["NumberOfFeatures"].at[dataset] > 10:
+        if df["NumberOfFeatures"].at[dataset] > 25:
             my_constraints += "mc2 :=> high_dimensionality.\n"
         rules = read_content(
             os.path.join(
