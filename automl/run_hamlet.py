@@ -23,14 +23,15 @@ def get_input(iteration, dataset_path, dataset):
         df = pd.read_csv(
             os.path.join("resources", "extended_meta_features_openml_cc_18.csv")
         )
+        df = df[df["ID"] == dataset]
         my_constraints = ""
-        if df["MinorityClassPercentage"].at[dataset] < (
-            0.666 / df["NumberOfClasses"].at[dataset]
+        if df["MinorityClassPercentage"].values[0] < (
+            0.666 / df["NumberOfClasses"].values[0]
         ):
             my_constraints += "mc0 :=> unbalanced_dataset.\n"
-        if df["NumberOfMissingValues"].at[dataset] > 0:
+        if df["NumberOfMissingValues"].values[0] > 0:
             my_constraints += "mc1 :=> missing_values.\n"
-        if df["NumberOfFeatures"].at[dataset] > 25:
+        if df["NumberOfFeatures"].values[0] > 25:
             my_constraints += "mc2 :=> high_dimensionality.\n"
         rules = read_content(
             os.path.join(
@@ -191,7 +192,7 @@ def get_filtered_datasets(suite):
 
 
 args = parse_args()
-data = get_filtered_datasets(openml.study.get_suite("OpenML-CC18").data)
+data = openml.study.get_suite("OpenML-CC18").data
 data = data[args.range : args.range + int(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
