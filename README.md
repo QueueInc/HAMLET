@@ -35,7 +35,7 @@ cd HAMLET
 sudo chmod 777 scripts/run_hamlet.sh
 sudo ./scripts/run_hamlet.sh results/baseline_1000_kb balanced_accuracy max 1000 7200 0.2.8 0 6 1
 sudo ./scripts/run_hamlet.sh results/hamlet_250_kb balanced_accuracy max 250 1800 0.2.8 0 3 4
-sudo ./scripts/run_hamlet.sh results/hamlet_250_kb2 balanced_accuracy max 250 1800 0.2.8 0 3 4
+sudo ./scripts/run_hamlet.sh results/hamlet_250_kb2 balanced_accuracy max 250 1800 0.2.9 0 3 4
 
 # MINING LIBRARY
 
