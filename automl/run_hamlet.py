@@ -35,7 +35,7 @@ def get_input(iteration, dataset_path, dataset):
             my_constraints += "mc2 :=> high_dimensionality.\n"
         rules = read_content(
             os.path.join(
-                os.getcwd(), "resources", "complete_kb_5_steps_with_knowledge.txt"
+                os.getcwd(), "resources", "complete_kb_5_steps_with_knowledge2.txt"
             )
         )
         guards_path = os.path.join(
