@@ -53,6 +53,10 @@ def plot(baseline, other, limit):
     df = pd.DataFrame.from_dict(data, orient="index").sort_values(
         [f"delta_{x}" for x in other], ascending=False
     )
+    mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
+    mf = mf[(mf["NumberOfInstances"] >= 1000) & (mf["NumberOfFeatures"] >= 50)]
+    mf = mf.set_index("did")
+    df = pd.concat([df, mf], axis=1, join="inner")
     # df = df[(df["baseline_5000"] <= 70) & (df["baseline_5000"] >= 30)]
 
     f = plt.figure()
