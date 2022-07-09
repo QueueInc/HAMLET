@@ -208,19 +208,19 @@ class Miner:
             metric_stat=metric_stat, support_stat=support_stat, mode="mandatory"
         )
         rules += mandatory_rules
-        # rules += [
-        #     forbidden_rule
-        #     for forbidden_rule in self._get_presence_rules(
-        #         metric_stat=metric_stat, support_stat=support_stat, mode="forbidden"
-        #     )
-        #     if not any(
-        #         [
-        #             all(
-        #                 elem in mandatory_rule["rule"]
-        #                 for elem in forbidden_rule["rule"]
-        #             )
-        #             for mandatory_rule in mandatory_rules
-        #         ]
-        #     )
-        # ]
+        rules += [
+            forbidden_rule
+            for forbidden_rule in self._get_presence_rules(
+                metric_stat=metric_stat, support_stat=support_stat, mode="forbidden"
+            )
+            if not any(
+                [
+                    all(
+                        elem in mandatory_rule["rule"]
+                        for elem in forbidden_rule["rule"]
+                    )
+                    for mandatory_rule in mandatory_rules
+                ]
+            )
+        ]
         return rules

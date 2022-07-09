@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from tqdm import tqdm
 
 
-def get_input(iteration, dataset_path, dataset):
+def get_input(iteration, dataset_path, dataset, kb):
     """
     MinorityClassPercentage < ((1 / NumberOfClasses) / 1.5)
     NumberOfMissingValues > 0
@@ -23,25 +23,27 @@ def get_input(iteration, dataset_path, dataset):
         df = pd.read_csv(
             os.path.join("resources", "extended_meta_features_openml_cc_18.csv")
         )
-        my_constraints = ""
-        if df["MinorityClassPercentage"].at[dataset] < (
-            0.666 / df["NumberOfClasses"].at[dataset]
-        ):
-            my_constraints += "mc0 :=> unbalanced_dataset.\n"
-        if df["NumberOfMissingValues"].at[dataset] > 0:
-            my_constraints += "mc1 :=> missing_values.\n"
-        if df["NumberOfFeatures"].at[dataset] > 10:
-            my_constraints += "mc2 :=> high_dimensionality.\n"
-        rules = read_content(
-            os.path.join(
-                os.getcwd(), "resources", "complete_kb_5_steps_with_knowledge.txt"
+        df = df[df["ID"] == dataset]
+        if not df.empty:
+            my_constraints = ""
+            if df["MinorityClassPercentage"].values[0] < (
+                0.666 / df["NumberOfClasses"].values[0]
+            ):
+                my_constraints += "mc0 :=> unbalanced_dataset.\n"
+            if df["NumberOfMissingValues"].values[0] > 0:
+                my_constraints += "mc1 :=> missing_values.\n"
+            else:
+                my_constraints += "mc1 :=> -missing_values.\n"
+            if df["NumberOfFeatures"].values[0] > 25:
+                my_constraints += "mc2 :=> high_dimensionality.\n"
+            rules = read_content(kb)
+            guards_path = os.path.join(
+                create_directory(dataset_path, "resources"), "guards.txt"
             )
-        )
-        guards_path = os.path.join(
-            create_directory(dataset_path, "resources"), "guards.txt"
-        )
-        with open(guards_path, "w+") as file:
-            file.write(rules + "\n" + my_constraints + "\n")
+            with open(guards_path, "w+") as file:
+                file.write(rules + "\n" + my_constraints + "\n")
+        else:
+            guards_path = kb
         return guards_path, lambda: None
 
     input = f"{dataset_path}/argumentation/complete_kb_{iteration}.txt"
@@ -61,7 +63,9 @@ def get_commands(data, args):
         for iteration in range(0, args.iterations):
             dataset_path = os.path.join(os.getcwd(), args.workspace, str(dataset))
             log_path = create_directory(dataset_path, "logs")
-            input_path, before_execute = get_input(iteration, dataset_path, dataset)
+            input_path, before_execute = get_input(
+                iteration, dataset_path, dataset, args.kb
+            )
             cmd = f"""java -jar hamlet-{args.version}-all.jar \
                         {dataset_path} \
                         {dataset} \
@@ -171,6 +175,22 @@ def parse_args():
         required=True,
         help="number of opimization iterations to perform",
     )
+    parser.add_argument(
+        "-kb",
+        "--kb",
+        nargs="?",
+        type=str,
+        required=True,
+        help="the file with the kb",
+    )
+    parser.add_argument(
+        "-study",
+        "--study",
+        nargs="?",
+        type=int,
+        required=True,
+        help="the openml study to use",
+    )
     args = parser.parse_args()
     return args
 
@@ -191,7 +211,7 @@ def get_filtered_datasets(suite):
 
 
 args = parse_args()
-data = get_filtered_datasets(openml.study.get_suite("OpenML-CC18").data)
+data = openml.study.get_suite(args.study).data
 data = data[args.range : args.range + int(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
