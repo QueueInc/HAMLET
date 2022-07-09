@@ -24,6 +24,22 @@ def get_position(target, evaluated_rewards):
     return next((i for i, x in enumerate(filtered) if x >= target), -1)
 
 
+def print_data(df, mode, other, path):
+    f = plt.figure()
+    df.boxplot([f"delta_{x}" for x in other])
+    f.savefig(os.path.join(path, f"{mode}_boxplot_delta.png"))
+
+    f = plt.figure()
+    df.boxplot([f"delta_iteration_{x}" for x in other])
+    f.savefig(os.path.join(path, f"{mode}_boxplot_delta_iteration.png"))
+
+    # f = plt.figure()
+    # df.boxplot([f"normalized_distance_{x}" for x in other])
+    # f.savefig(os.path.join(path, "boxplot_nd.png"))
+
+    df.to_csv(os.path.join(path, f"{mode}_summary.csv"))
+
+
 def plot(baseline, other, limit):
     data = {}
     path = os.path.join("/", "home", "results")
@@ -78,26 +94,19 @@ def plot(baseline, other, limit):
     df = pd.DataFrame.from_dict(data, orient="index").sort_values(
         [f"delta_{x}" for x in other], ascending=False
     )
+
     mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
     mf = mf[(mf["NumberOfInstances"] >= 1000) & (mf["NumberOfFeatures"] >= 50)]
+    mf["did"] = mf["did"].astype("str")
     mf = mf.set_index("did")
-    df = pd.concat([df, mf], axis=1, join="inner")
-    # df = df[(df["baseline_5000"] <= 70) & (df["baseline_5000"] >= 30)]
+    df1 = pd.concat([df, mf], axis=1, join="inner")
 
-    f = plt.figure()
-    df.boxplot([f"delta_{x}" for x in other])
-    f.savefig(os.path.join(path, "boxplot_delta.png"))
-
-    f = plt.figure()
-    df.boxplot([f"delta_iteration_{x}" for x in other])
-    f.savefig(os.path.join(path, "boxplot_delta_iteration.png"))
-
-    # f = plt.figure()
-    # df.boxplot([f"normalized_distance_{x}" for x in other])
-    # f.savefig(os.path.join(path, "boxplot_nd.png"))
-
-    df.to_csv(os.path.join(path, "summary.csv"))
+    df2 = df.loc[["40983", "40499", "1485", "300", "1590", "554"]]
+    print_data(df, f"full_{baseline}", other, path)
+    print_data(df1, f"medium_{baseline}", other, path)
+    print_data(df2, f"small_{baseline}", other, path)
 
 
-plot("baseline_5000", ["hamlet_250_kb2", "hamlet_250"], 1000)
+plot("baseline_5000", ["hamlet_250_kb2", "hamlet_250", "baseline_1000_kb"], 1000)
+# plot("baseline_1000_218", [], 1000)
 # plot("baseline_7200s", ["hamlet_250_new"], 1000)
