@@ -39,9 +39,9 @@ def plot_matplotlib(df, mode, other, path):
     width = 0.25  # the width of the bars
 
     fig, ax = plt.subplots()
-    ax.bar(x - width, df["delta_baseline_1000_kb3"], width, label="s.k.b.")
-    ax.bar(x, df["delta_hamlet_250"], width, label="i.k.a.")
-    ax.bar(x + width, df["delta_hamlet_250_kb3"], width, label="s.k.b. + i.k.a")
+    ax.bar(x - width, df["delta_hamlet_1000_kb3"], width, label="PKB")
+    ax.bar(x, df["delta_hamlet_250"], width, label="IKA")
+    ax.bar(x + width, df["delta_hamlet_250_kb3_fixed"], width, label="PKB + IKA")
     ax.set_ylabel("Improvement")
     ax.set_title("Improvement of balanced accuracy w.r.t. the baseline")
     ax.set_xticks(x, labels)
@@ -53,15 +53,13 @@ def plot_matplotlib(df, mode, other, path):
     x = np.arange(len(labels))  # the label locations
     width = 0.25  # the width of the bars
     fig, ax = plt.subplots()
-    ax.bar(
-        x - width, abs(df["delta_iteration_baseline_1000_kb3"]), width, label="s.k.b."
-    )
-    ax.bar(x, abs(df["delta_iteration_hamlet_250"]), width, label="i.k.a.")
+    ax.bar(x - width, abs(df["delta_iteration_hamlet_1000_kb3"]), width, label="PKB")
+    ax.bar(x, abs(df["delta_iteration_hamlet_250"]), width, label="IKA")
     ax.bar(
         x + width,
-        abs(df["delta_iteration_hamlet_250_kb3"]),
+        abs(df["delta_iteration_hamlet_250_kb3_fixed"]),
         width,
-        label="s.k.b. + i.k.a",
+        label="PKB + IKA",
     )
     ax.set_ylabel("Iterations")
     ax.set_title(
@@ -80,13 +78,13 @@ df = df.set_index("id")
 plot_pd(
     df,
     "small_baseline_5000",
-    ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
+    ["hamlet_250", "hamlet_1000_kb3", "hamlet_250_kb3_fixed"],
     path,
 )
 plot_matplotlib(
     df,
     "small_baseline_5000",
-    ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
+    ["hamlet_250", "hamlet_1000_kb3", "hamlet_250_kb3_fixed"],
     path,
 )
 # plot("baseline_1000_218", [], 1000)

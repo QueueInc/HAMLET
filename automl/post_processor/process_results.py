@@ -106,6 +106,9 @@ def summarize(baseline, other, exhaustive, limit):
     )
     mode = f"small_{baseline}"
     # TODO: rename unnamed to id
+    df = df.loc[["40983", "40499", "1485", "1478", "1590"]]  # "554"
+    df.index.names = ["id"]
+    df = df.reset_index()
     df.to_csv(os.path.join(path, f"{mode}_summary.csv"), index=False)
 
     ## mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
@@ -114,7 +117,6 @@ def summarize(baseline, other, exhaustive, limit):
     ## mf = mf.set_index("did")
     ## df1 = pd.concat([df, mf], axis=1, join="inner")
 
-    # df2 = df.loc[["40983", "40499", "1485", "1478", "1590"]]  # "554"
     ## print_data(df, f"full_{baseline}", other, path)
     ## print_data(df1, f"medium_{baseline}", other, path)
     # print_data(df2, f"small_{baseline}", other, path)
@@ -122,13 +124,15 @@ def summarize(baseline, other, exhaustive, limit):
 
 path = os.path.join("/", "home", "results")
 extract_results(os.path.join(path, "baseline_5000"), 1)
-extract_results(os.path.join(path, "baseline_1000_kb"), 1)
+# extract_results(os.path.join(path, "baseline_1000_kb"), 1)
 extract_results(os.path.join(path, "hamlet_250"), 4)
-extract_results(os.path.join(path, "hamlet_250_kb2"), 4)
-extract_results(os.path.join(path, "baseline_1000_218"), 1)
-extract_results(os.path.join(path, "baseline_1000_kb3"), 1)
-extract_results(os.path.join(path, "hamlet_250_kb3"), 4)
-extract_results(os.path.join(path, "exhaustive"), 1)
+# extract_results(os.path.join(path, "hamlet_250_kb2"), 4)
+# extract_results(os.path.join(path, "baseline_1000_218"), 1)
+# extract_results(os.path.join(path, "baseline_1000_kb3"), 1)
+# extract_results(os.path.join(path, "hamlet_250_kb3"), 4)
+# extract_results(os.path.join(path, "exhaustive"), 1)
+extract_results(os.path.join(path, "hamlet_1000_kb3"), 1)
+extract_results(os.path.join(path, "hamlet_250_kb3_fixed"), 4)
 # extract_results(os.path.join(path, "hamlet_150"), 6)
 
 # extract_results(os.path.join(path, "baseline_7200s"), 1)
@@ -136,7 +140,7 @@ extract_results(os.path.join(path, "exhaustive"), 1)
 
 summarize(
     "baseline_5000",
-    ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
+    ["hamlet_250", "hamlet_1000_kb3", "hamlet_250_kb3_fixed"],
     "exhaustive",
     1000,
 )
