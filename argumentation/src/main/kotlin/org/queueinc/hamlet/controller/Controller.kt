@@ -90,7 +90,8 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                     val a = it?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
                     ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
                         otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
-                            argumentLabellingMode = "grounded_hash").create().content()),
+                            argumentLabellingMode = "grounded_hash", graphExtensions = emptyList()
+                        ).create().content()),
                         staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators()).plus(Theory.of(a)),
                     )
                 }.first()
