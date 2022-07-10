@@ -33,17 +33,29 @@ def print_data(df, mode, other, path):
     df.boxplot([f"delta_iteration_{x}" for x in other])
     f.savefig(os.path.join(path, f"{mode}_boxplot_delta_iteration.png"))
 
-    # f = plt.figure()
-    # df.boxplot([f"normalized_distance_{x}" for x in other])
-    # f.savefig(os.path.join(path, "boxplot_nd.png"))
+    df[[f"delta_iteration_{x}" for x in other]].plot.bar().get_figure().savefig(
+        os.path.join(path, f"{mode}_barchart_delta_iteration.png")
+    )
+
+    df[[f"norm_iteration_{x}" for x in other]].plot.bar().get_figure().savefig(
+        os.path.join(path, f"{mode}_barchart_norm_iteration.png")
+    )
+
+    df[[f"delta_{x}" for x in other]].plot.bar().get_figure().savefig(
+        os.path.join(path, f"{mode}_barchart_delta.png")
+    )
+
+    df[[f"norm_{x}" for x in other]].plot.bar().get_figure().savefig(
+        os.path.join(path, f"{mode}_barchart_norm_delta.png")
+    )
 
     df.to_csv(os.path.join(path, f"{mode}_summary.csv"))
 
 
-def plot(baseline, other, limit):
+def plot(baseline, other, exhaustive, limit):
     data = {}
     path = os.path.join("/", "home", "results")
-    for approach in [baseline] + other:
+    for approach in [baseline, exhaustive] + other:
         with open(os.path.join(path, approach, "summary.json")) as f:
             for dataset, result in json.load(f).items():
                 if approach == baseline:
@@ -53,7 +65,7 @@ def plot(baseline, other, limit):
 
                 temp = (
                     result["best_config"]["balanced_accuracy"]
-                    if limit is None
+                    if limit is None or approach == exhaustive
                     else get_best_in(limit, result["evaluated_rewards"])
                 )
                 data[dataset][approach] = round(temp * 100, 2)
@@ -61,33 +73,47 @@ def plot(baseline, other, limit):
                     temp, result["evaluated_rewards"]
                 )
 
-                if approach != baseline:
+                data[dataset][f"tot_iteration_{approach}"] = len(
+                    [
+                        x
+                        for x in result["evaluated_rewards"]
+                        if x["status"] != "previous_constraint"
+                    ]
+                )
 
-                    data[dataset][f"iteration_even_{approach}"] = get_position(
-                        (data[dataset][baseline] - 2) / 100, result["evaluated_rewards"]
-                    )
+                if approach != baseline and approach != exhaustive:
 
-                    # if data[dataset][f"iteration_even_{approach}"] != -1:
                     data[dataset][f"delta_iteration_{approach}"] = (
                         data[dataset][f"iteration_{approach}"]
                         - data[dataset][f"iteration_{baseline}"]
                     )
 
+                    data[dataset][f"norm_iteration_{approach}"] = round(
+                        data[dataset][f"delta_iteration_{approach}"]
+                        / min(1000, data[dataset][f"tot_iteration_{baseline}"]),
+                        2,
+                    )
+
                     data[dataset][f"delta_{approach}"] = round(
                         (data[dataset][approach] - data[dataset][baseline]), 2
                     )
-                    # data[dataset][f"normalized_distance_{approach}"] = round(
-                    #     (
-                    #         data[dataset][f"delta_{approach}"]
-                    #         / (1 - data[dataset][baseline])
-                    #     ),
-                    #     2,
-                    # )
+
+                    if exhaustive in data[dataset]:
+                        data[dataset][f"norm_{approach}"] = round(
+                            (
+                                (
+                                    data[dataset][f"delta_{approach}"]
+                                    if abs(data[dataset][f"delta_{approach}"]) > 2
+                                    else 0.0
+                                )
+                                / (data[dataset][exhaustive] - data[dataset][baseline])
+                            ),
+                            2,
+                        )
                 else:
                     import datetime
 
-                    data[dataset]["iterations"] = len(result["evaluated_rewards"])
-                    data[dataset]["time"] = str(
+                    data[dataset][f"time_{approach}"] = str(
                         datetime.timedelta(seconds=result["optimization_time"])
                     )
 
@@ -95,18 +121,23 @@ def plot(baseline, other, limit):
         [f"delta_{x}" for x in other], ascending=False
     )
 
-    mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
-    mf = mf[(mf["NumberOfInstances"] >= 1000) & (mf["NumberOfFeatures"] >= 50)]
-    mf["did"] = mf["did"].astype("str")
-    mf = mf.set_index("did")
-    df1 = pd.concat([df, mf], axis=1, join="inner")
+    # mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
+    # mf = mf[(mf["NumberOfInstances"] >= 1000) & (mf["NumberOfFeatures"] >= 50)]
+    # mf["did"] = mf["did"].astype("str")
+    # mf = mf.set_index("did")
+    # df1 = pd.concat([df, mf], axis=1, join="inner")
 
-    df2 = df.loc[["40983", "40499", "1485", "300", "1590", "554"]]
-    print_data(df, f"full_{baseline}", other, path)
-    print_data(df1, f"medium_{baseline}", other, path)
+    df2 = df.loc[["40983", "40499", "1485", "1478", "1590"]]  # "554"
+    # print_data(df, f"full_{baseline}", other, path)
+    # print_data(df1, f"medium_{baseline}", other, path)
     print_data(df2, f"small_{baseline}", other, path)
 
 
-plot("baseline_5000", ["hamlet_250_kb2", "hamlet_250", "baseline_1000_kb"], 1000)
+plot(
+    "baseline_5000",
+    ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
+    "exhaustive",
+    1000,
+)
 # plot("baseline_1000_218", [], 1000)
 # plot("baseline_7200s", ["hamlet_250_new"], 1000)
