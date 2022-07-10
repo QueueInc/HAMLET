@@ -1,5 +1,6 @@
 import subprocess
 import openml
+import math
 import os
 import argparse
 import pandas as pd
@@ -211,8 +212,9 @@ def get_filtered_datasets(suite):
 
 
 args = parse_args()
-data = openml.study.get_suite(args.study).data
-data = data[args.range : args.range + int(len(data) / args.num_tasks)]
+# data = openml.study.get_suite(args.study).data
+data = ["40983", "40499", "1485", "1478", "1590"]
+data = data[args.range : args.range + math.ceil(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
 
