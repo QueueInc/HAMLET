@@ -33,9 +33,13 @@ sudo ./scripts/run_baseline.sh results/baseline_5000 balanced_accuracy max 5000 
 sudo git clone https://github.com/QueueInc/HAMLET.git
 cd HAMLET
 sudo chmod 777 scripts/run_hamlet.sh
-sudo ./scripts/run_hamlet.sh results/baseline_1000_kb balanced_accuracy max 1000 7200 0.2.8 0 6 1
-sudo ./scripts/run_hamlet.sh results/hamlet_250_kb balanced_accuracy max 250 1800 0.2.8 0 3 4
-sudo ./scripts/run_hamlet.sh results/hamlet_250_kb2 balanced_accuracy max 250 1800 0.2.9 0 3 4
+sudo ./scripts/run_hamlet.sh results/hamlet_1000_kb3 balanced_accuracy max 1000 7200 0.2.10 0 3 1 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+sudo ./scripts/run_hamlet.sh results/hamlet_1000_kb3 balanced_accuracy max 1000 7200 0.2.10 2 3 1 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+sudo ./scripts/run_hamlet.sh results/hamlet_1000_kb3 balanced_accuracy max 1000 7200 0.2.10 4 3 1 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+
+sudo ./scripts/run_hamlet.sh results/hamlet_250_kb3 balanced_accuracy max 250 1800 0.2.10 0 3 4 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+sudo ./scripts/run_hamlet.sh results/hamlet_250_kb3 balanced_accuracy max 250 1800 0.2.10 2 3 4 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+sudo ./scripts/run_hamlet.sh results/hamlet_250_kb3 balanced_accuracy max 250 1800 0.2.10 4 3 4 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
 
 # MINING LIBRARY
 
