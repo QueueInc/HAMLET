@@ -127,22 +127,10 @@ c1 :=> mandatory_order([imputation, normalization], classification).
 c2 :=> mandatory_order([imputation, discretization], classification).
 c3 :=> mandatory_order([imputation, rebalancing], classification).
 c4 :=> mandatory_order([imputation, features], classification).
-% c5 :=> mandatory_order([normalization, features], classification).
-% c6 :=> mandatory_order([discretization, features], classification).
-% c7 :=> forbidden([normalization, discretization], classification).
-% c7 :=> mandatory_order([normalization, discretization], classification).
 
 c8 :=> mandatory([discretization], dt).
-% c9 :=> forbidden([normalization], dt).
 c10 :=> forbidden([features], dt).
 
-% c11 :=> mandatory([discretization], rf).
-% c12 :=> forbidden([normalization], rf).
-% c13 :=> forbidden([features], rf).
-
-% c14 :=> mandatory([discretization], ada_boost).
-% c15 :=> forbidden([normalization], ada_boost).
-% c16 :=> forbidden([features], ada_boost).
 
 c17 :=> mandatory([normalization, features], knn).
 
@@ -153,13 +141,4 @@ c19 :=> mandatory([normalization], svm).
 % if missing values
 c20 : missing_values => mandatory([imputation], classification).
 c21 : -missing_values => forbidden([imputation], classification).
-% if high variance
-% c22 : high_variance => mandatory([normalization], classification).
-% if lots of features
-% c23 : high_dimensionality => mandatory([features], classification).
-% if minority class size << 50%
 c24 : unbalanced_dataset => mandatory([rebalancing], classification).
-
-% sup(c10, c23).
-% sup(c13, c23).
-% sup(c16, c23).
