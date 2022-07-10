@@ -2,29 +2,11 @@ from importlib.resources import path
 import json
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_best_in(target, evaluated_rewards):
-    filtered = [
-        x["balanced_accuracy"] if x["balanced_accuracy"] != "-inf" else 0
-        for x in evaluated_rewards[:target]
-    ]
-    return max(filtered)
-
-
-def get_position(target, evaluated_rewards):
-    if target == 0:
-        return -1
-    filtered = [
-        x["balanced_accuracy"] if x["balanced_accuracy"] != "-inf" else 0
-        for x in evaluated_rewards
-        if x["status"] != "previous_constraint"
-    ]
-    return next((i for i, x in enumerate(filtered) if x >= target), -1)
-
-
-def print_data(df, mode, other, path):
+def plot_pd(df, mode, other, path):
     f = plt.figure()
     df.boxplot([f"delta_{x}" for x in other])
     f.savefig(os.path.join(path, f"{mode}_boxplot_delta.png"))
@@ -49,95 +31,63 @@ def print_data(df, mode, other, path):
         os.path.join(path, f"{mode}_barchart_norm_delta.png")
     )
 
-    df.to_csv(os.path.join(path, f"{mode}_summary.csv"))
 
+def plot_matplotlib(df, mode, other, path):
 
-def plot(baseline, other, exhaustive, limit):
-    data = {}
-    path = os.path.join("/", "home", "results")
-    for approach in [baseline, exhaustive] + other:
-        with open(os.path.join(path, approach, "summary.json")) as f:
-            for dataset, result in json.load(f).items():
-                if approach == baseline:
-                    data[dataset] = {}
-                elif dataset not in data:
-                    continue
+    labels = list(df.index)
+    x = np.arange(len(labels))  # the label locations
+    width = 0.25  # the width of the bars
 
-                temp = (
-                    result["best_config"]["balanced_accuracy"]
-                    if limit is None or approach == exhaustive
-                    else get_best_in(limit, result["evaluated_rewards"])
-                )
-                data[dataset][approach] = round(temp * 100, 2)
-                data[dataset][f"iteration_{approach}"] = get_position(
-                    temp, result["evaluated_rewards"]
-                )
+    fig, ax = plt.subplots()
+    ax.bar(x - width, df["delta_baseline_1000_kb3"], width, label="s.k.b.")
+    ax.bar(x, df["delta_hamlet_250"], width, label="i.k.a.")
+    ax.bar(x + width, df["delta_hamlet_250_kb3"], width, label="s.k.b. + i.k.a")
+    ax.set_ylabel("Improvement")
+    ax.set_title("Improvement of balanced accuracy w.r.t. the baseline")
+    ax.set_xticks(x, labels)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(os.path.join(path, f"barchart_delta.png"))
 
-                data[dataset][f"tot_iteration_{approach}"] = len(
-                    [
-                        x
-                        for x in result["evaluated_rewards"]
-                        if x["status"] != "previous_constraint"
-                    ]
-                )
-
-                if approach != baseline and approach != exhaustive:
-
-                    data[dataset][f"delta_iteration_{approach}"] = (
-                        data[dataset][f"iteration_{approach}"]
-                        - data[dataset][f"iteration_{baseline}"]
-                    )
-
-                    data[dataset][f"norm_iteration_{approach}"] = round(
-                        data[dataset][f"delta_iteration_{approach}"]
-                        / min(1000, data[dataset][f"tot_iteration_{baseline}"]),
-                        2,
-                    )
-
-                    data[dataset][f"delta_{approach}"] = round(
-                        (data[dataset][approach] - data[dataset][baseline]), 2
-                    )
-
-                    if exhaustive in data[dataset]:
-                        data[dataset][f"norm_{approach}"] = round(
-                            (
-                                (
-                                    data[dataset][f"delta_{approach}"]
-                                    if abs(data[dataset][f"delta_{approach}"]) > 2
-                                    else 0.0
-                                )
-                                / (data[dataset][exhaustive] - data[dataset][baseline])
-                            ),
-                            2,
-                        )
-                else:
-                    import datetime
-
-                    data[dataset][f"time_{approach}"] = str(
-                        datetime.timedelta(seconds=result["optimization_time"])
-                    )
-
-    df = pd.DataFrame.from_dict(data, orient="index").sort_values(
-        [f"delta_{x}" for x in other], ascending=False
+    labels = list(df.index)
+    x = np.arange(len(labels))  # the label locations
+    width = 0.25  # the width of the bars
+    fig, ax = plt.subplots()
+    ax.bar(
+        x - width, abs(df["delta_iteration_baseline_1000_kb3"]), width, label="s.k.b."
     )
+    ax.bar(x, abs(df["delta_iteration_hamlet_250"]), width, label="i.k.a.")
+    ax.bar(
+        x + width,
+        abs(df["delta_iteration_hamlet_250_kb3"]),
+        width,
+        label="s.k.b. + i.k.a",
+    )
+    ax.set_ylabel("Iterations")
+    ax.set_title(
+        "Number of configurations ahead to find\nthe best result w.r.t. the baseline"
+    )
+    ax.set_xticks(x, labels)
+    ax.legend()
 
-    # mf = pd.read_csv(os.path.join("resources", "dataset-meta-features.csv"))
-    # mf = mf[(mf["NumberOfInstances"] >= 1000) & (mf["NumberOfFeatures"] >= 50)]
-    # mf["did"] = mf["did"].astype("str")
-    # mf = mf.set_index("did")
-    # df1 = pd.concat([df, mf], axis=1, join="inner")
-
-    df2 = df.loc[["40983", "40499", "1485", "1478", "1590"]]  # "554"
-    # print_data(df, f"full_{baseline}", other, path)
-    # print_data(df1, f"medium_{baseline}", other, path)
-    print_data(df2, f"small_{baseline}", other, path)
+    fig.tight_layout()
+    fig.savefig(os.path.join(path, f"barchart_delta_iteration.png"))
 
 
-plot(
-    "baseline_5000",
+path = os.path.join("/", "home", "results")
+df = pd.read_csv(os.path.join(path, "small_baseline_5000_summary.csv"))
+df = df.set_index("id")
+plot_pd(
+    df,
+    "small_baseline_5000",
     ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
-    "exhaustive",
-    1000,
+    path,
+)
+plot_matplotlib(
+    df,
+    "small_baseline_5000",
+    ["hamlet_250", "baseline_1000_kb3", "hamlet_250_kb3"],
+    path,
 )
 # plot("baseline_1000_218", [], 1000)
 # plot("baseline_7200s", ["hamlet_250_new"], 1000)
