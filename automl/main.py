@@ -73,6 +73,7 @@ def main(args):
     rules = miner.get_rules()
 
     automl_output = {
+        "start_time": start_time,
         "graph_generation_time": buffer.loader.get_graph_generation_time(),
         "space_generation_time": buffer.loader.get_space_generation_time(),
         "optimization_time": end_time - start_time,
