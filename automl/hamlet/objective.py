@@ -1,5 +1,6 @@
 # Scikit-learn provides a set of machine learning techniques
 import traceback
+import time
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
@@ -145,7 +146,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
-    result = {metric: float("-inf"), "status": "fail"}
+    result = {metric: float("-inf"), "status": "fail", "time": 0}
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
     if is_point_to_evaluate:
@@ -179,6 +180,7 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             result[metric] = float("-inf")
             raise Exception(f"The result for {config} was")
         result["status"] = "success"
+        result["time"] = time.time()
 
     except Exception as e:
         print(
