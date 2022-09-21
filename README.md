@@ -1,64 +1,43 @@
-# TODO
+# REQUIREMENTS
+- Docker
+- Python >=3.7
+- Java >=11.0
 
-- Provare run_hamlet con iterations = 1 per simulare baseline
-- aggiungere parametro budget in secondi
-- Esperimenti:
-  - baseline 1000 con spazio ridotto
-  - hamlet 250 con spazio ridotto
-  - hamlet 250 con kb a priori (scegliere spazio ridotto o no)
-- Graficare iterazione in cui il max è stato raggiunto per ogni dataset
-  - Normalized distance ma senza exhaustive = applichiamo un peso alla distanza fta hamlet e la baseline basata sulla velocità della baseline nel trovare il max (prossimità baseline a 0)
-    - impact = ((it(baseline) - it(hamlet)) * (it(baseline) / tot_it(baseline))) / tot_it(baseline)
+# RUN HAMLET
 
-    <!-- - accuracy = ((it(hamlet) - it(baseline)) * ((100 - it(baseline)) / 100)) / 100 -->
+    java -jar hamlet-0.2.10-all.jar [workspace_path] [dataset_id] [optimization_metric] [optimization_mode] [n_configurations] [time_budget] [optimization_seed] [debug_mode] [knowledge_base_path]
+
+- **[workspace_path]**: file system folder cotaining the workspace (if it does not exist, a new workspace is created; otherwise, the previous run is resumed).
+- **[dataset_id]**: OpenML id of the dataset to analyze.
+- **[optimization_metric]**: a string of the metric name to optimize (choose among the [scikit-learn metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter)).
+- **[optimization_mode]**: a string in ['min', 'max'] to specify the objective as minimization or maximization.
+- **[n_configurations]**: an integer of the number of configurations to try in the optimization.
+- **[time_budget]**: the time budget in seconds given to the optimization.
+- **[optimization_seed]**: seed for reproducibility.
+- **[debug_mode]**: a string in ['true', 'false'] to specify HAMLET execution in debug or release mode. In debug mode, the Docker container is built from the local sources; otherwise the released Docker image is downloaded.
+- **[knowledge_base_path]** (OPTIONAL): file system path to an HAMLET knowledge base. If provided, HAMLET is run in console (with no GUI) mode and the theory is leveraged; otherwise HAMLET GUI is launched.
 
 
-# RUN_EXPERIMENTS CONFIGURATION
+# REPRODUCING PAPER EXPERIMENTS
 
-choose metric between these ones: https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
+- Clone the repository and give permission
 
-## RUN
+      sudo git clone https://github.com/QueueInc/HAMLET.git
+      cd HAMLET
+      sudo chmod 777 scripts/run_hamlet.sh
 
-        java -jar hamlet-0.1.4-all.jar /resources vehicle accuracy max 25 42 true
+- Run the baseline (AutoML explores 1000 configurations in a single run with a time budget of 7200 seconds).
 
-## BASELINE EXPERIMENTS
+      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 1000 7200 0.2.10 1 $(pwd)/resources/kb.txt
 
-sudo git clone https://github.com/QueueInc/HAMLET.git
-cd HAMLET
-sudo chmod 777 scripts/run_baseline.sh
-sudo ./scripts/run_baseline.sh results/baseline_5000 balanced_accuracy max 5000 0.2.1 0 4
+- Run HAMLET with PKB (Preliminary Knowledge Base) settings, HAMLET starts with a preliminary LogicalKB constraining the search space from the first iteration, and no rule mining is applied.
 
-## HAMLET EXPERIMENTS
+      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 1000 7200 0.2.10 1 $(pwd)/resources/pkb.txt
 
-sudo git clone https://github.com/QueueInc/HAMLET.git
-cd HAMLET
-sudo chmod 777 scripts/run_hamlet.sh
-sudo ./scripts/run_hamlet.sh results/baseline_time_7200 balanced_accuracy max 0 7200 0.2.11 0 1 1 $(pwd)/resources/complete_kb_5_steps.txt 218
-sudo ./scripts/run_hamlet.sh results/hamlet_time_1800 balanced_accuracy max 0 1800 0.2.11 0 1 4 $(pwd)/resources/complete_kb_5_steps.txt 218
-sudo ./scripts/run_hamlet.sh results/baseline_time_7200_kb balanced_accuracy max 0 7200 0.2.11 0 1 1 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
-sudo ./scripts/run_hamlet.sh results/hamlet_time_1800_kb balanced_accuracy max 0 1800 0.2.11 0 1 4 $(pwd)/resources/complete_kb_5_steps_with_knowledge2.txt 218
+- Run HAMLET with IKA (Iterative Knowledge Augmentation) settings, HAMLET starts with an empty LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-# MINING LIBRARY
+      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/kb.txt
 
-Libreria per frequent seq mining: https://github.com/fidelity/seq2pat
+- Run HAMLET with PKB + IKA settings, HAMLET starts with a preliminary LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-# MINING NOTES
-
-Mining su ordinamenti (vincoli non implementati)
-- prendo i prototype dei config e tolgo gli step con FunctionTransformer
-- prendo le config con accuracy > x
-- considero il supporto y (y = 90 sarebbe il 90% del numero di pipeline con accuracy > x)
-- itero abbassando prima y, poi x
---> se compare una sequenza, quella è vincente (voglio quell'ordine tra quelle trasformazioni --> oppure non voglio l'ordine inverso, cos'è meglio?)
-        --> per quanto riguarda argumentation, i vincoli sull'ordine dovranno essere di lunghezza 2? direi proprio di sì perchè è più atomico
---> se lo faccio con accuracy < x, quella è perdente (non voglio quell'ordine tra quelle trasformazioni)
-
-Libreria per frequent itemset mining: coming soon
-
-Mining su mandatory e forbidden
-- prendo i prototype dei config e considero solo gli step con FunctionTransformer
-- prendo le config con accuracy > x
-- considero il supporto y (y = 90 sarebbe il 90% del numero di pipeline con accuracy > x)
-- itero abbassando prima y, poi x
---> se compare un set, le trasformazioni in quel set sono forbidden
---> se lo faccio con accuracy < x, le trasformazioni in quel set sono mandatory (perchè ho brutte performance quando quelle mancano)
+      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/pkb.txt
