@@ -153,22 +153,6 @@ def parse_args():
         help="hamlet version to run",
     )
     parser.add_argument(
-        "-range",
-        "--range",
-        nargs="?",
-        type=int,
-        required=False,
-        help="which index of the suite to start",
-    )
-    parser.add_argument(
-        "-num_tasks",
-        "--num_tasks",
-        nargs="?",
-        type=int,
-        required=False,
-        help="which index of the suite to start",
-    )
-    parser.add_argument(
         "-iterations",
         "--iterations",
         nargs="?",
@@ -183,14 +167,6 @@ def parse_args():
         type=str,
         required=True,
         help="the file with the kb",
-    )
-    parser.add_argument(
-        "-study",
-        "--study",
-        nargs="?",
-        type=int,
-        required=True,
-        help="the openml study to use",
     )
     args = parser.parse_args()
     return args
@@ -213,7 +189,7 @@ def get_filtered_datasets(suite):
 
 args = parse_args()
 # data = openml.study.get_suite(args.study).data
-data = ["40983", "40499", "1485", "1478", "1590", "300"]
+data = ["40983", "40499", "1485", "1478", "1590"]
 # data = data[args.range : args.range + math.ceil(len(data) / args.num_tasks)]
 commands = get_commands(data, args)
 
