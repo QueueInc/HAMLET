@@ -30,7 +30,7 @@ def get_commands(dataset_ids):
     path = create_directory(os.path.join("resources", "auto-sklearn"))
     return [
         (
-            f"python automl/autosklearn_main.py --id {id}",
+            f"python automl/auto_sklearn/main.py --id {id}",
             os.path.join(
                 create_directory(
                     os.path.join(path, openml.datasets.get_dataset(id).name)

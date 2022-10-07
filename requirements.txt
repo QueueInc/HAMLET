@@ -1,3 +1,4 @@
+auto-sklearn
 numpy
 pandas
 flaml[blendsearch]
