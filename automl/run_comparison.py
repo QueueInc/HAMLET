@@ -26,11 +26,11 @@ def create_directory(directory):
     return directory
 
 
-def get_commands(dataset_ids):
-    path = create_directory(os.path.join("resources", "auto-sklearn"))
+def get_commands(dataset_ids, args):
+    path = create_directory(os.path.join("resources", args.tool))
     return [
         (
-            f"python automl/auto_sklearn/main.py --id {id}",
+            f"python automl/{args.tool}/main.py --id {id}",
             os.path.join(
                 create_directory(
                     os.path.join(path, openml.datasets.get_dataset(id).name)
@@ -62,8 +62,25 @@ def run_cmd(cmd, stdout_path, stderr_path):
             subprocess.call(cmd, stdout=log_out, stderr=log_err, bufsize=0, shell=True)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Automated Machine Learning Workflow creation and configuration"
+    )
+    parser.add_argument(
+        "-tool",
+        "--tool",
+        nargs="?",
+        type=str,
+        required=True,
+        help="Tool to test",
+    )
+    args = parser.parse_args()
+    return args
+
+
+args = parse_args()
 dataset_ids = ["40983", "40499", "1485", "1478", "1590"]
-commands = get_commands(dataset_ids)
+commands = get_commands(dataset_ids, args)
 
 with tqdm(total=len(dataset_ids)) as pbar:
     with Pool(len(dataset_ids)) as pool:

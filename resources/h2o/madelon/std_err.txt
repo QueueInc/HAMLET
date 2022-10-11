@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/h2o/h2o.py", line 270, in init
+    h2oconn = H2OConnection.open(url=url, ip=ip, port=port, name=name, https=https,
+  File "/usr/local/lib/python3.9/site-packages/h2o/backend/connection.py", line 406, in open
+    conn._cluster = conn._test_connection(retries, messages=msgs)
+  File "/usr/local/lib/python3.9/site-packages/h2o/backend/connection.py", line 712, in _test_connection
+    raise H2OConnectionError("Could not establish link to the H2O cloud %s after %d retries\n%s"
+h2o.exceptions.H2OConnectionError: Could not establish link to the H2O cloud http://localhost:54321 after 5 retries
+[06:45.30] H2OConnectionError: Unexpected HTTP error: HTTPConnectionPool(host='localhost', port=54321): Max retries exceeded with url: /3/Metadata/schemas/CloudV3 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f490343ad90>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[06:45.51] H2OConnectionError: Unexpected HTTP error: HTTPConnectionPool(host='localhost', port=54321): Max retries exceeded with url: /3/Metadata/schemas/CloudV3 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f490343ad00>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[06:45.72] H2OConnectionError: Unexpected HTTP error: HTTPConnectionPool(host='localhost', port=54321): Max retries exceeded with url: /3/Metadata/schemas/CloudV3 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f49033ab640>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[06:45.92] H2OConnectionError: Unexpected HTTP error: HTTPConnectionPool(host='localhost', port=54321): Max retries exceeded with url: /3/Metadata/schemas/CloudV3 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f49033abe50>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[06:46.13] H2OConnectionError: Unexpected HTTP error: HTTPConnectionPool(host='localhost', port=54321): Max retries exceeded with url: /3/Metadata/schemas/CloudV3 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f49033bb6a0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/automl/h2o/main.py", line 41, in <module>
+    h2o.init()
+  File "/usr/local/lib/python3.9/site-packages/h2o/h2o.py", line 287, in init
+    hs = H2OLocalServer.start(nthreads=nthreads, enable_assertions=enable_assertions, max_mem_size=mmax,
+  File "/usr/local/lib/python3.9/site-packages/h2o/backend/server.py", line 140, in start
+    hs._launch_server(port=port, baseport=baseport, nthreads=int(nthreads), ea=enable_assertions,
+  File "/usr/local/lib/python3.9/site-packages/h2o/backend/server.py", line 272, in _launch_server
+    java = self._find_java()
+  File "/usr/local/lib/python3.9/site-packages/h2o/backend/server.py", line 444, in _find_java
+    raise H2OStartupError("Cannot find Java. Please install the latest JRE from\n"
+h2o.exceptions.H2OStartupError: Cannot find Java. Please install the latest JRE from
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/welcome.html#java-requirements

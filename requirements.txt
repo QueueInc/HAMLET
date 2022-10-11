@@ -1,4 +1,5 @@
 auto-sklearn
+h2o
 numpy
 pandas
 flaml[blendsearch]
