@@ -68,11 +68,11 @@ class MyAdaboostClassifier(AutoSklearnClassificationAlgorithm):
         cs = ConfigurationSpace()
 
         n_estimators = CategoricalHyperparameter(
-            name="n_estimators", choice=[10, 50, 100, 500]
+            name="n_estimators", choices=[10, 50, 100, 500]
         )
 
         learning_rate = CategoricalHyperparameter(
-            name="learning_rate", choice=[0.0001, 0.001, 0.01, 0.1, 1.0]
+            name="learning_rate", choices=[0.0001, 0.001, 0.01, 0.1, 1.0]
         )
 
         cs.add_hyperparameters([n_estimators, learning_rate])

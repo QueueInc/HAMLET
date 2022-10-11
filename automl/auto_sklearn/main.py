@@ -13,8 +13,26 @@ from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold
 from smac.optimizer.smbo import SMBO
 from smac.runhistory.runhistory import RunInfo, RunValue
+from classifiers.MyAdaboostClassifier import MyAdaboostClassifier
+from classifiers.MyDecisionTreeClassifier import (
+    MyDecisionTreeClassifier,
+)
+from classifiers.MyGaussianNaiveBayesClassifier import (
+    MyGaussianNaiveBayesClassifier,
+)
 
-from automl.auto_sklearn.classifiers import *
+from classifiers.MyKNearestNeighborsClassifier import (
+    MyKNearestNeighborsClassifier,
+)
+from classifiers.MyMultiLayerPerceptronClassifier import (
+    MyMultiLayerPerceptronClassifier,
+)
+from classifiers.MyRandomForestClassifier import (
+    MyRandomForestClassifier,
+)
+from classifiers.MySupportVectorClassifier import (
+    MySupportVectorClassifier,
+)
 
 i = 0
 
@@ -61,7 +79,8 @@ X, y, _, _ = dataset.get_data(
 autosklearn.pipeline.components.classification.add_classifier(
     MyKNearestNeighborsClassifier
 )
-autosklearn.pipeline.components.classification.add_classifier(MyAdaBoostClassifier)
+autosklearn.pipeline.components.classification.add_classifier(MyAdaboostClassifier)
+
 autosklearn.pipeline.components.classification.add_classifier(
     MyGaussianNaiveBayesClassifier
 )
@@ -78,7 +97,7 @@ for name in ClassifierChoice.get_components():
     print(name)
 
 cls = autosklearn.classification.AutoSklearnClassifier(
-    time_left_for_this_task=30,
+    time_left_for_this_task=7200,
     resampling_strategy=StratifiedKFold(n_splits=10),
     metric=autosklearn.metrics.balanced_accuracy,
     get_trials_callback=callback,
@@ -94,7 +113,6 @@ cls = autosklearn.classification.AutoSklearnClassifier(
             "MySupportVectorClassifier",
         ],
         "feature_preprocessor": ["no_preprocessing"],
-        "data_preprocessor": [],
     },
 )
 
