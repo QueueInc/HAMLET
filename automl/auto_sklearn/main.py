@@ -102,18 +102,6 @@ cls = autosklearn.classification.AutoSklearnClassifier(
     metric=autosklearn.metrics.balanced_accuracy,
     get_trials_callback=callback,
     seed=42,
-    include={
-        "classifier": [
-            "MyKNearestNeighborsClassifier",
-            "MyGaussianNaiveBayesClassifier",
-            "MyAdaboostClassifier",
-            "MyDecisionTreeClassifier",
-            "MyMultiLayerPerceptronClassifier",
-            "MyRandomForestClassifier",
-            "MySupportVectorClassifier",
-        ],
-        "feature_preprocessor": ["no_preprocessing"],
-    },
 )
 
 cls.fit(X.copy(), y.copy(), dataset_name=dataset.name)
