@@ -88,9 +88,11 @@ except Exception as e:
 try:
     # Calculate balanced accuracy
     cv_results = aml.leader.cross_validation_holdout_predictions().as_data_frame()
+    cv_results.to_csv(os.path.join(path, "raw_cv_results.csv"))
     cv_results["class"] = df[y.name]
+    cv_results.to_csv(os.path.join(path, "raw_cv_results.csv"))
     cv_results["fold"] = df.index.map(lambda row: fold_map[row])
-    cv_results.to_csv("cv_results.csv")
+    cv_results.to_csv(os.path.join(path, "raw_cv_results.csv"))
     print(
         cv_results.groupby(by="fold")
         .apply(lambda x: balanced_accuracy_score(x["class"].astype(int), x["predict"]))
