@@ -70,8 +70,8 @@ print(data)
 # Instantiate AutoML Classifier
 aml = H2OAutoML(
     keep_cross_validation_predictions=True,
-    max_runtime_secs=30,
-    max_models=20,
+    max_runtime_secs=7200,
+    max_models=1000,
     seed=42,
 )
 
