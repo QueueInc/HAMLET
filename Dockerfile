@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.9
 RUN apt-get update && \
     apt-get install -y git --no-install-recommends && \
-    apt install default-jre && \   
+    sudo apt install -y default-jre && \   
     apt-get install -y openjdk-8-jre-headless  
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip && \
