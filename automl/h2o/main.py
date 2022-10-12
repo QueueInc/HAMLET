@@ -63,8 +63,8 @@ df["fold"] = df.index.map(lambda row: fold_map[row])
 data = h2o.H2OFrame(df)
 
 # For binary classification, response should be a factor
-if data[y.name].unique().shape[0] == 2:
-    data[y.name] = data[y.name].asfactor()
+# if data[y.name].unique().shape[0] == 2:
+data[y.name] = data[y.name].asfactor()
 print(data)
 
 # Instantiate AutoML Classifier
