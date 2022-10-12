@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.9
-RUN apt-get update && apt-get install -y git --no-install-recommends
+RUN apt-get update && \
+    apt-get install -y git --no-install-recommends && \
+    apt install default-jre      
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip && \
     pip install black && \
