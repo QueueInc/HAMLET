@@ -8,31 +8,9 @@ import autosklearn.classification
 
 import pandas as pd
 
-from tqdm import tqdm
-from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold
 from smac.optimizer.smbo import SMBO
 from smac.runhistory.runhistory import RunInfo, RunValue
-from classifiers.MyAdaboostClassifier import MyAdaboostClassifier
-from classifiers.MyDecisionTreeClassifier import (
-    MyDecisionTreeClassifier,
-)
-from classifiers.MyGaussianNaiveBayesClassifier import (
-    MyGaussianNaiveBayesClassifier,
-)
-
-from classifiers.MyKNearestNeighborsClassifier import (
-    MyKNearestNeighborsClassifier,
-)
-from classifiers.MyMultiLayerPerceptronClassifier import (
-    MyMultiLayerPerceptronClassifier,
-)
-from classifiers.MyRandomForestClassifier import (
-    MyRandomForestClassifier,
-)
-from classifiers.MySupportVectorClassifier import (
-    MySupportVectorClassifier,
-)
 
 i = 0
 
@@ -87,6 +65,11 @@ cls = autosklearn.classification.AutoSklearnClassifier(
 cls.fit(X.copy(), y.copy(), dataset_name=dataset.name)
 
 try:
+    pd.DataFrame(cls.cv_results_).to_csv(os.path.join(path, "cv_results.csv"))
+except Exception as e:
+    print(e)
+    
+try:
     score = round(
         pd.DataFrame(cls.cv_results_)
         .sort_values("rank_test_scores")
@@ -100,11 +83,6 @@ except Exception as e:
 
 try:
     pd.DataFrame(cls.show_models()).T.to_csv(os.path.join(path, "models_details.csv"))
-except Exception as e:
-    print(e)
-    
-try:
-    pd.DataFrame(cls.cv_results_).to_csv(os.path.join(path, "cv_results.csv"))
 except Exception as e:
     print(e)
     
