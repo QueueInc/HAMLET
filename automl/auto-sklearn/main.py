@@ -59,6 +59,7 @@ cls = autosklearn.classification.AutoSklearnClassifier(
     resampling_strategy=StratifiedKFold(n_splits=10),
     metric=autosklearn.metrics.balanced_accuracy,
     get_trials_callback=callback,
+    memory_limit=None,
     seed=42,
 )
 
@@ -68,7 +69,7 @@ try:
     pd.DataFrame(cls.cv_results_).to_csv(os.path.join(path, "cv_results.csv"))
 except Exception as e:
     print(e)
-    
+
 try:
     score = round(
         pd.DataFrame(cls.cv_results_)
