@@ -76,26 +76,6 @@ X, y, _, _ = dataset.get_data(
     dataset_format="array", target=dataset.default_target_attribute
 )
 
-autosklearn.pipeline.components.classification.add_classifier(
-    MyKNearestNeighborsClassifier
-)
-autosklearn.pipeline.components.classification.add_classifier(MyAdaboostClassifier)
-
-autosklearn.pipeline.components.classification.add_classifier(
-    MyGaussianNaiveBayesClassifier
-)
-autosklearn.pipeline.components.classification.add_classifier(
-    MyMultiLayerPerceptronClassifier
-)
-autosklearn.pipeline.components.classification.add_classifier(MyRandomForestClassifier)
-autosklearn.pipeline.components.classification.add_classifier(MySupportVectorClassifier)
-autosklearn.pipeline.components.classification.add_classifier(MyDecisionTreeClassifier)
-
-from autosklearn.pipeline.components.classification import ClassifierChoice
-
-for name in ClassifierChoice.get_components():
-    print(name)
-
 cls = autosklearn.classification.AutoSklearnClassifier(
     time_left_for_this_task=7200,
     resampling_strategy=StratifiedKFold(n_splits=10),
@@ -115,12 +95,28 @@ try:
         2,
     )
     print(score)
+except Exception as e:
+    print(e)
+
+try:
     pd.DataFrame(cls.show_models()).T.to_csv(os.path.join(path, "models_details.csv"))
+except Exception as e:
+    print(e)
+    
+try:
     pd.DataFrame(cls.cv_results_).to_csv(os.path.join(path, "cv_results.csv"))
+except Exception as e:
+    print(e)
+    
+try:
     pd.DataFrame(cls.performance_over_time_).to_csv(
         os.path.join(path, "performance_over_time.csv")
     )
 except Exception as e:
     print(e)
-else:
+    
+try:
     print(cls.sprint_statistics())
+except Exception as e:
+    print(e)
+    
