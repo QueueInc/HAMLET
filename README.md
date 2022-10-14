@@ -32,12 +32,12 @@
 
 - Run HAMLET with PKB (Preliminary Knowledge Base) settings, HAMLET starts with a preliminary LogicalKB constraining the search space from the first iteration, and no rule mining is applied.
 
-      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 1000 7200 0.2.10 1 $(pwd)/resources/pkb.txt
+      sudo ./scripts/run_hamlet.sh results/pkb balanced_accuracy max 1000 7200 0.2.10 1 $(pwd)/resources/pkb.txt
 
 - Run HAMLET with IKA (Iterative Knowledge Augmentation) settings, HAMLET starts with an empty LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/kb.txt
+      sudo ./scripts/run_hamlet.sh results/ika balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/kb.txt
 
 - Run HAMLET with PKB + IKA settings, HAMLET starts with a preliminary LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/baseline balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/pkb.txt
+      sudo ./scripts/run_hamlet.sh results/pkb_ika balanced_accuracy max 250 1800 0.2.10 4 $(pwd)/resources/pkb.txt
