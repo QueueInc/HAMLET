@@ -36,8 +36,8 @@
 
 - Run HAMLET with IKA (Iterative Knowledge Augmentation) settings, HAMLET starts with an empty LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/ika_500 balanced_accuracy max 125 9000 0.2.11 4 $(pwd)/resources/kb.txt
+      sudo ./scripts/run_hamlet.sh results/ika_500 balanced_accuracy max 125 900 0.2.11 4 $(pwd)/resources/kb.txt
 
 - Run HAMLET with PKB + IKA settings, HAMLET starts with a preliminary LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/pkb_ika_500 balanced_accuracy max 125 9000 0.2.11 4 $(pwd)/resources/pkb.txt
+      sudo ./scripts/run_hamlet.sh results/pkb_ika_500 balanced_accuracy max 125 900 0.2.11 4 $(pwd)/resources/pkb.txt
