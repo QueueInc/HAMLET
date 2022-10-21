@@ -55,10 +55,10 @@ def plot_matplotlib(df, mode, other, path):
     width = 0.2  # the width of the bars
 
     fig, ax = plt.subplots()
-    ax.bar(x - (width / 2 * 3), df["baseline_5000"], width, label="baseline")
-    ax.bar(x - width / 2, df["hamlet_1000_kb3"], width, label="PKB")
-    ax.bar(x + width / 2, df["hamlet_250"], width, label="IKA")
-    ax.bar(x + (width / 2 * 3), df["hamlet_250_kb3_fixed"], width, label="PKB + IKA")
+    ax.bar(x - (width / 2 * 3), df["baseline_500"], width, label="baseline")
+    ax.bar(x - width / 2, df["pkb_500"], width, label="PKB")
+    ax.bar(x + width / 2, df["ika_500"], width, label="IKA")
+    ax.bar(x + (width / 2 * 3), df["pkb_ika_500"], width, label="PKB + IKA")
     ax.set_ylabel("Balanced accuracy", labelpad=10)
     # ax.set_title("Balanced accuracy achieved by the approaches")
     ax.set_xticks(x, labels)
@@ -86,12 +86,12 @@ def plot_matplotlib(df, mode, other, path):
     x = np.arange(len(labels))  # the label locations
     width = 0.2  # the width of the bars
     fig, ax = plt.subplots()
-    ax.bar(x - (width / 2 * 3), df["iteration_baseline_5000"], width, label="baseline")
-    ax.bar(x - width / 2, df["iteration_hamlet_1000_kb3"], width, label="PKB")
-    ax.bar(x + width / 2, df["iteration_hamlet_250"], width, label="IKA")
+    ax.bar(x - (width / 2 * 3), df["iteration_baseline_500"], width, label="baseline")
+    ax.bar(x - width / 2, df["iteration_pkb_500"], width, label="PKB")
+    ax.bar(x + width / 2, df["iteration_ika_500"], width, label="IKA")
     ax.bar(
         x + (width / 2 * 3),
-        df["iteration_hamlet_250_kb3_fixed"],
+        df["iteration_pkb_ika_500"],
         width,
         label="PKB + IKA",
     )
@@ -119,7 +119,7 @@ def plot_matplotlib(df, mode, other, path):
 
 
 path = os.path.join("/", "home", "results")
-df = pd.read_csv(os.path.join(path, "small_baseline_5000_summary.csv"))
+df = pd.read_csv(os.path.join(path, "small_baseline_500_summary.csv"))
 df = df.set_index("id")
 # plot_pd(
 #     df,
@@ -129,8 +129,8 @@ df = df.set_index("id")
 # )
 plot_matplotlib(
     df,
-    "small_baseline_5000",
-    ["hamlet_250", "hamlet_1000_kb3", "hamlet_250_kb3_fixed"],
+    "baseline_500",
+    ["pkb_500", "ika_500", "pkb_ika_500"],
     path,
 )
 # plot("baseline_1000_218", [], 1000)

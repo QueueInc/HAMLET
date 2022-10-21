@@ -162,24 +162,14 @@ def summarize(baseline, other, exhaustive, limit):
 
 
 path = os.path.join("/", "home", "results")
-extract_results(os.path.join(path, "baseline_5000"), 1)
-# extract_results(os.path.join(path, "baseline_1000_kb"), 1)
-extract_results(os.path.join(path, "hamlet_250"), 4)
-# extract_results(os.path.join(path, "hamlet_250_kb2"), 4)
-# extract_results(os.path.join(path, "baseline_1000_218"), 1)
-# extract_results(os.path.join(path, "baseline_1000_kb3"), 1)
-# extract_results(os.path.join(path, "hamlet_250_kb3"), 4)
-extract_results(os.path.join(path, "exhaustive"), 1)
-extract_results(os.path.join(path, "hamlet_1000_kb3"), 1)
-extract_results(os.path.join(path, "hamlet_250_kb3_fixed"), 4)
-# extract_results(os.path.join(path, "hamlet_150"), 6)
-
-# extract_results(os.path.join(path, "baseline_7200s"), 1)
-# extract_results(os.path.join(path, "hamlet_250_new"), 4)
+extract_results(os.path.join(path, "baseline_500"), 1)
+extract_results(os.path.join(path, "pkb_500"), 1)
+extract_results(os.path.join(path, "ika_500"), 4)
+extract_results(os.path.join(path, "pkb_ika_500"), 4)
 
 summarize(
-    "baseline_5000",
-    ["hamlet_250", "hamlet_1000_kb3", "hamlet_250_kb3_fixed"],
+    "baseline_500",
+    ["pkb_500", "ika_500", "pkb_ika_500"],
     "exhaustive",
-    1000,
+    500,
 )
