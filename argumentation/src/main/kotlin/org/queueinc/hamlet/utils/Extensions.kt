@@ -5,6 +5,9 @@ import java.io.File
 
 val dictionary = mapOf(
     "dt" to "DecisionTreeClassifier",
+    "xgboost" to "XGBClassifier",
+    "lightboost" to "LGBMClassifier",
+    "catboost" to "CatBoostClassifier",
     "knn" to "KNeighborsClassifier",
     "naive_bayes" to "GaussianNB",
     "nn" to "MLPClassifier",

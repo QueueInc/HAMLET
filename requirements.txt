@@ -7,3 +7,6 @@ matplotlib
 seq2pat
 mlxtend
 imbalanced-learn
+xgboost
+lightgbm
+catboost
