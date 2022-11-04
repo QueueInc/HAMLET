@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.queueinc"
-version = "0.2.15"
+version = "0.2.17"
 
 repositories {
     mavenCentral()
