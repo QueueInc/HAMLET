@@ -1,0 +1,128 @@
+step(discretization).
+step(normalization).
+step(features).
+step(imputation).
+step(rebalancing).
+
+step(classification).
+
+
+operator(discretization, kbins).
+operator(discretization, binarizer).
+operator(normalization, power_transformer).
+operator(normalization, robust_scaler).
+operator(normalization, standard).
+operator(normalization, minmax).
+operator(features, select_k_best).
+operator(features, pca).
+operator(imputation, simple_imputer).
+operator(imputation, iterative_imputer).
+operator(rebalancing, near_miss).
+operator(rebalancing, smote).
+
+
+operator(classification, rf).
+operator(classification, xgboost).
+operator(classification, lightboost).
+operator(classification, catboost).
+operator(classification, extra_trees).
+operator(classification, lr).
+
+
+hyperparameter(kbins, n_bins, randint).
+hyperparameter(kbins, encode, choice).
+hyperparameter(kbins, strategy, choice).
+hyperparameter(binarizer, threshold, choice).
+hyperparameter(robust_scaler, with_centering, choice).
+hyperparameter(robust_scaler, with_scaling, choice).
+hyperparameter(standard, with_mean, choice).
+hyperparameter(standard, with_std, choice).
+hyperparameter(select_k_best, k, randint).
+hyperparameter(pca, n_components, randint).
+hyperparameter(simple_imputer, strategy, choice).
+hyperparameter(iterative_imputer, initial_strategy, choice).
+hyperparameter(iterative_imputer, imputation_order, choice).
+hyperparameter(near_miss, n_neighbors, randint).
+hyperparameter(smote, k_neighbors, randint).
+
+
+hyperparameter(rf, n_estimators, choice).
+hyperparameter(rf, max_depth, randint).
+hyperparameter(rf, max_features, uniform).
+hyperparameter(rf, min_samples_split, randint).
+hyperparameter(rf, max_leaf_nodes, randint).
+hyperparameter(rf, bootstrap, choice).
+hyperparameter(rf, criterion, choice).
+hyperparameter(xgboost, n_estimators, randint).
+hyperparameter(xgboost, max_leaves, randint).
+hyperparameter(xgboost, min_child_weight, uniform).
+hyperparameter(xgboost, learning_rate, uniform).
+hyperparameter(xgboost, subsample, uniform).
+hyperparameter(xgboost, reg_alpha, uniform).
+hyperparameter(xgboost, reg_lambda, uniform).
+hyperparameter(xgboost, colsample_bylevel, uniform).
+hyperparameter(xgboost, colsample_bytree, uniform).
+hyperparameter(lightboost, n_estimators, randint).
+hyperparameter(lightboost, num_leaves, randint).
+hyperparameter(lightboost, min_child_weight, uniform).
+hyperparameter(lightboost, learning_rate, uniform).
+hyperparameter(lightboost, subsample, uniform).
+hyperparameter(lightboost, reg_alpha, uniform).
+hyperparameter(lightboost, reg_lambda, uniform).
+hyperparameter(lightboost, subsample_for_bin, randint).
+hyperparameter(lightboost, colsample_bytree, uniform).
+hyperparameter(catboost, early_stopping_rounds, randint).
+hyperparameter(catboost, learning_rate, uniform).
+hyperparameter(extra_trees, n_estimators, randint).
+hyperparameter(extra_trees, max_features, uniform).
+hyperparameter(extra_trees, criterion, choice).
+hyperparameter(lr, "C", uniform).
+
+domain(kbins, n_bins, [3, 8]).
+domain(kbins, encode, ["ordinal"]).
+domain(kbins, strategy, ["uniform", "quantile", "kmeans"]).
+domain(binarizer, threshold, [0.0, 0.5, 2.0, 5.0]).
+domain(robust_scaler, with_centering, [true, false]).
+domain(robust_scaler, with_scaling, [true, false]).
+domain(standard, with_mean, [true, false]).
+domain(standard, with_std, [true, false]).
+domain(select_k_best, k, [1, 10]).
+domain(pca, n_components, [1, 8]).
+domain(simple_imputer, strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, initial_strategy, ["most_frequent", "constant"]).
+domain(iterative_imputer, imputation_order, ["ascending", "descending", "roman", "arabic", "random"]).
+domain(near_miss, n_neighbors,  [1, 4]).
+domain(smote, k_neighbors,  [5, 8]).
+
+
+domain(rf, n_estimators, [10, 50, 100, 500, 1000, 1500, 2000]).
+domain(rf, max_depth, [1, 5]).
+domain(rf, max_features, [0.1, 1]).
+domain(rf, min_samples_split, [2, 6]).
+domain(rf, max_leaf_nodes, [2, 6]).
+domain(rf, bootstrap, [true, false]).
+domain(rf, criterion, ["gini", "entropy"]).
+domain(xgboost, n_estimators, [4, 2600]).
+domain(xgboost, max_leaves, [4, 2600]).
+domain(xgboost, min_child_weight, [0.01, 20]).
+domain(xgboost, learning_rate, [0.01, 1]).
+domain(xgboost, subsample, [0.6, 1]).
+domain(xgboost, reg_alpha, [0.0000000001, 1]).
+domain(xgboost, reg_lambda, [0.0000000001, 1]).
+domain(xgboost, colsample_bylevel, [0.6, 1]).
+domain(xgboost, colsample_bytree, [0.7, 1]).
+domain(lightboost, n_estimators, [4, 2600]).
+domain(lightboost, num_leaves, [4, 2600]).
+domain(lightboost, min_child_weight, [0.01, 20]).
+domain(lightboost, learning_rate, [0.01, 1]).
+domain(lightboost, subsample, [0.6, 1]).
+domain(lightboost, reg_alpha, [0.0000000001, 1]).
+domain(lightboost, reg_lambda, [0.0000000001, 1]).
+domain(lightboost, subsample_for_bin, [7, 1023]).
+domain(lightboost, colsample_bytree, [0.7, 1]).
+domain(catboost, early_stopping_rounds, [10, 150]).
+domain(catboost, learning_rate, [0.005, 0.2]).
+domain(extra_trees, n_estimators, [4, 2600]).
+domain(extra_trees, max_features, [0.1, 1]).
+domain(extra_trees, criterion, ["gini", "entropy"]).
+domain(lr, "C", [0.03215, 32768]).
