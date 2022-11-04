@@ -8,6 +8,8 @@ val dictionary = mapOf(
     "xgboost" to "XGBClassifier",
     "lightboost" to "LGBMClassifier",
     "catboost" to "CatBoostClassifier",
+    "extra_trees" to "ExtraTreesClassifier",
+    "lr" to "LogisticRegression",
     "knn" to "KNeighborsClassifier",
     "naive_bayes" to "GaussianNB",
     "nn" to "MLPClassifier",
