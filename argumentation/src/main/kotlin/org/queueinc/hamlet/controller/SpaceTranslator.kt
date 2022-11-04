@@ -14,8 +14,13 @@ import org.queueinc.hamlet.toSklearnClass
 object SpaceTranslator {
 
     private fun translateList(terms: List<Term>) =
-        if (terms.any { it.isTrue || it.isNumber || it.isFail }) terms.toString()
-        else terms.map { "\"$it\"".replace("'", "") }.toString()
+        terms.map {
+            when {
+                it.isReal -> it.castToReal().value.toPlainString()
+                it.isTrue || it.isNumber || it.isFail -> it
+                else -> "\"$it\"".replace("'", "")
+            }
+    }.toString()
 
     @JvmStatic
     private fun translateSpace(space: Term) =
@@ -36,7 +41,7 @@ object SpaceTranslator {
                                 unifier2[B]!!.castToList().toList().joinToString(",\n") { hyper ->
                                     Unificator.default.mgu(hyper, tupleOf(C, D, E)).let { unifier3 ->
                                         """
-                                            "${unifier3[C]}" : {
+                                            "${unifier3[C].toString().replace("'", "")}" : {
                                                "${unifier3[D]}" : ${translateList(unifier3[E]!!.castToList().toList())}
                                             }
                                             """
