@@ -107,8 +107,8 @@ domain(xgboost, max_leaves, [4, 2600]).
 domain(xgboost, min_child_weight, [0.01, 20]).
 domain(xgboost, learning_rate, [0.01, 1]).
 domain(xgboost, subsample, [0.6, 1]).
-domain(xgboost, reg_alpha, [0.0000000001, 1]).
-domain(xgboost, reg_lambda, [0.0000000001, 1]).
+domain(xgboost, reg_alpha, [0.000001, 1]).
+domain(xgboost, reg_lambda, [0.000001, 1]).
 domain(xgboost, colsample_bylevel, [0.6, 1]).
 domain(xgboost, colsample_bytree, [0.7, 1]).
 domain(lightboost, n_estimators, [4, 2600]).
@@ -116,8 +116,8 @@ domain(lightboost, num_leaves, [4, 2600]).
 domain(lightboost, min_child_weight, [0.01, 20]).
 domain(lightboost, learning_rate, [0.01, 1]).
 domain(lightboost, subsample, [0.6, 1]).
-domain(lightboost, reg_alpha, [0.0000000001, 1]).
-domain(lightboost, reg_lambda, [0.0000000001, 1]).
+domain(lightboost, reg_alpha, [0.000001, 1]).
+domain(lightboost, reg_lambda, [0.000001, 1]).
 domain(lightboost, subsample_for_bin, [7, 1023]).
 domain(lightboost, colsample_bytree, [0.7, 1]).
 domain(catboost, early_stopping_rounds, [10, 150]).
