@@ -183,14 +183,16 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         result[metric] = np.mean(scores["test_" + metric])
         if np.isnan(result[metric]):
             result[metric] = float("-inf")
-            raise Exception(f"The result for {config} was")
+            raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
         result["time"] = time.time()
 
     except Exception as e:
         print(
             f"""
-            BEGIN EXCEPTION {e}
+            BEGIN EXCEPTION
+            {"_"*100}
+            {e}
             {"_"*100}
             {traceback.print_exc()}
             {"_"*100}
