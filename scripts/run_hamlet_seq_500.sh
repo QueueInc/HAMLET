@@ -1,6 +1,5 @@
 #!/bin/bash
-sudo chmod 777 scripts/*
-# sudo ./scripts/run_hamlet.sh results/baseline_1000_ext balanced_accuracy max 500 3600 0.2.18 1 $(pwd)/resources/kb_extended.txt
-# sudo ./scripts/run_hamlet.sh results/pkb_1000_ext balanced_accuracy max 500 3600 0.2.18 1 $(pwd)/resources/pkb_extended.txt
-sudo ./scripts/run_hamlet.sh results/ika_1000_ext balanced_accuracy max 125 900 0.2.18 4 $(pwd)/resources/kb_extended.txt
-sudo ./scripts/run_hamlet.sh results/pkb_ika_1000_ext balanced_accuracy max 125 900 0.2.18 4 $(pwd)/resources/pkb_extended.txt
+# sudo ./scripts/run_hamlet.sh results/baseline_500_ext balanced_accuracy max 1000 7200 0.2.19 1 $(pwd)/resources/kb_extended.txt
+# sudo ./scripts/run_hamlet.sh results/pkb_500_ext balanced_accuracy max 1000 7200 0.2.19 1 $(pwd)/resources/pkb_extended.txt
+sudo ./scripts/run_hamlet.sh results/ika_500_ext balanced_accuracy max 250 1800 0.2.19 4 $(pwd)/resources/kb_extended.txt
+sudo ./scripts/run_hamlet.sh results/pkb_ika_500_ext balanced_accuracy max 250 1800 0.2.19 4 $(pwd)/resources/pkb_extended.txt
