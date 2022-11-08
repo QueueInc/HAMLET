@@ -65,7 +65,7 @@ def get_commands(data, args):
             input_path, before_execute = get_input(
                 iteration, dataset_path, dataset, args.kb
             )
-            cmd = f"""java -jar hamlet-{args.version}-all.jar \
+            cmd = f"""java -Xss128M -jar hamlet-{args.version}-all.jar \
                         {dataset_path} \
                         {dataset} \
                         {args.metric} \
