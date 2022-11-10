@@ -27,7 +27,7 @@ def create_directory(directory):
 
 
 def get_commands(dataset_ids, args):
-    path = create_directory(os.path.join("resources", args.tool))
+    path = create_directory(args.output_folder)
     return [
         (
             f"python automl/{args.tool}/main.py --id {id} --budget {args.budget}",
@@ -73,6 +73,14 @@ def parse_args():
     parser.add_argument(
         "-budget",
         "--budget",
+        nargs="?",
+        type=int,
+        required=True,
+        help="Time busget",
+    )
+    parser.add_argument(
+        "-output_folder",
+        "--output_folder",
         nargs="?",
         type=int,
         required=True,
