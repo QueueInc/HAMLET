@@ -32,15 +32,11 @@ def get_commands(dataset_ids, args):
         (
             f"python automl/{args.tool}/main.py --id {id} --budget {args.budget}",
             os.path.join(
-                create_directory(
-                    os.path.join(path, openml.datasets.get_dataset(id).name)
-                ),
+                create_directory(os.path.join(path, id)),
                 f"std_out.txt",
             ),
             os.path.join(
-                create_directory(
-                    os.path.join(path, openml.datasets.get_dataset(id).name)
-                ),
+                create_directory(os.path.join(path, id)),
                 f"std_err.txt",
             ),
         )
