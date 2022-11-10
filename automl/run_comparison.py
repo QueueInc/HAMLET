@@ -82,7 +82,7 @@ def parse_args():
         "-output_folder",
         "--output_folder",
         nargs="?",
-        type=int,
+        type=str,
         required=True,
         help="Time busget",
     )
