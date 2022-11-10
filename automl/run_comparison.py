@@ -30,7 +30,7 @@ def get_commands(dataset_ids, args):
     path = create_directory(os.path.join("resources", args.tool))
     return [
         (
-            f"python automl/{args.tool}/main.py --id {id}",
+            f"python automl/{args.tool}/main.py --id {id} --budget {args.budget}",
             os.path.join(
                 create_directory(
                     os.path.join(path, openml.datasets.get_dataset(id).name)
@@ -74,6 +74,14 @@ def parse_args():
         required=True,
         help="Tool to test",
     )
+    parser.add_argument(
+        "-budget",
+        "--budget",
+        nargs="?",
+        type=int,
+        required=True,
+        help="Time busget",
+    )
     args = parser.parse_args()
     return args
 
@@ -83,7 +91,7 @@ dataset_ids = ["40983", "40499", "1485", "1478", "1590"]
 commands = get_commands(dataset_ids, args)
 
 with tqdm(total=len(dataset_ids)) as pbar:
-    with Pool(len(dataset_ids)) as pool:
-        # Assign the commands (tasks) to the pool, and run it
-        for _ in pool.istarmap(run_cmd, commands):
-            pbar.update()
+    for cmd, stdout_path, stderr_path in commands:
+        print(cmd)
+        run_cmd(cmd, stdout_path, stderr_path)
+        pbar.update()

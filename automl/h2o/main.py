@@ -24,6 +24,13 @@ def parse_args():
         type=str,
         required=False,
     )
+    parser.add_argument(
+        "-budget",
+        "--budget",
+        nargs="?",
+        type=int,
+        required=False,
+    )
     args = parser.parse_args()
     return args
 
@@ -41,7 +48,7 @@ args = parse_args()
 h2o.init()
 
 dataset = openml.datasets.get_dataset(args.id)
-path = create_directory(os.path.join("resources", "h2o", dataset.name))
+path = create_directory(os.path.join("resources", "h2o", args.id))
 
 # Load dataset
 print(dataset.name)
@@ -70,8 +77,8 @@ print(data)
 # Instantiate AutoML Classifier
 aml = H2OAutoML(
     keep_cross_validation_predictions=True,
-    max_runtime_secs=7200,
-    max_models=1000,
+    max_runtime_secs=args.budget,
+    max_models=1000 if args.budget == 7200 else 500,
     seed=42,
 )
 

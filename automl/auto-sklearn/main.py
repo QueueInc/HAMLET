@@ -26,6 +26,13 @@ def parse_args():
         type=str,
         required=False,
     )
+    parser.add_argument(
+        "-budget",
+        "--budget",
+        nargs="?",
+        type=int,
+        required=False,
+    )
     args = parser.parse_args()
     return args
 
@@ -45,7 +52,7 @@ def create_directory(directory):
 
 args = parse_args()
 dataset = openml.datasets.get_dataset(args.id)
-path = create_directory(os.path.join("resources", "auto-sklearn", dataset.name))
+path = create_directory(os.path.join("resources", "auto-sklearn", args.id))
 
 print(dataset.name)
 print()
@@ -55,7 +62,10 @@ X, y, _, _ = dataset.get_data(
 )
 
 cls = autosklearn.classification.AutoSklearnClassifier(
-    time_left_for_this_task=7200,
+    ensemble_size=1,
+    initial_configurations_via_metalearning=0,
+    allow_string_features=False,
+    time_left_for_this_task=args.budget,
     resampling_strategy=StratifiedKFold(n_splits=10),
     metric=autosklearn.metrics.balanced_accuracy,
     get_trials_callback=callback,
@@ -86,16 +96,15 @@ try:
     pd.DataFrame(cls.show_models()).T.to_csv(os.path.join(path, "models_details.csv"))
 except Exception as e:
     print(e)
-    
+
 try:
     pd.DataFrame(cls.performance_over_time_).to_csv(
         os.path.join(path, "performance_over_time.csv")
     )
 except Exception as e:
     print(e)
-    
+
 try:
     print(cls.sprint_statistics())
 except Exception as e:
     print(e)
-    
