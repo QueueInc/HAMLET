@@ -1,5 +1,6 @@
 import os
 import json
+from numpy import int32
 import pandas as pd
 
 
@@ -42,6 +43,28 @@ def extract_results(path, iteration):
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
+
+
+def extract_comparison_results(path):
+    results = {}
+    for root, dirs, files in os.walk(path):
+
+        if "cv_results.csv" in files:
+            dataset_id = root.split("/")[-1]
+            cv_results = pd.read_csv(os.path.join(root, "cv_results.csv")).sort_values(
+                "rank_test_scores"
+            )
+            accuracy = cv_results.iloc[0]["mean_test_score"]
+            iteration = int(cv_results.iloc[0]["Unnamed: 0"])
+            results[dataset_id] = {
+                "accuracy": accuracy,
+                "iteration": iteration,
+            }
+    with open(os.path.join(path, "summary.json"), "w") as outfile:
+        json.dump(results, outfile, indent=4)
+    pd.DataFrame(results).T.reset_index().rename(columns={"index": "id"}).to_csv(
+        os.path.join(path, "summary.csv"), index=False
+    )
 
 
 def get_best_in(target, evaluated_rewards):
