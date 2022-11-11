@@ -47,21 +47,23 @@ def plot_matplotlib(df, baseline, others, path):
     plt.rc("figure", titlesize=MEDIUM_SIZE)  # fontsize of the figure title
 
     df[
-        [f"argumentation_time_{x}" for x in others]
-        + [f"automl_time_{x}" for x in others]
+        [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
+        + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
     ].plot.bar().get_figure().savefig(os.path.join(path, f"time.png"))
 
     labels = df["name"]
     x = np.arange(len(labels))  # the label locations
-    width = 0.2  # the width of the bars
+    width = 0.1  # the width of the bars
 
     fig, ax = plt.subplots()
     all_series = [baseline] + others
     paddings = [
+        x - (width / 2 * 5),
         x - (width / 2 * 3),
         x - (width / 2),
         x + (width / 2),
         x + (width / 2 * 3),
+        x + (width / 2 * 5),
     ]
     for i in range(len(all_series)):
         label = (
@@ -95,7 +97,7 @@ def plot_matplotlib(df, baseline, others, path):
 
     labels = df["name"]
     x = np.arange(len(labels))  # the label locations
-    width = 0.2  # the width of the bars
+    width = 0.1  # the width of the bars
     fig, ax = plt.subplots()
     for i in range(len(all_series)):
         label = (

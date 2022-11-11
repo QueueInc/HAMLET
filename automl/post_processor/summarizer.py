@@ -45,7 +45,7 @@ def extract_results(path, iteration):
         json.dump(results, outfile, indent=4)
 
 
-def extract_comparison_results(path):
+def extract_comparison_results(path, label):
     results = {}
     for root, dirs, files in os.walk(path):
 
@@ -57,8 +57,8 @@ def extract_comparison_results(path):
             accuracy = cv_results.iloc[0]["mean_test_score"]
             iteration = int(cv_results.iloc[0]["Unnamed: 0"])
             results[dataset_id] = {
-                "accuracy": accuracy,
-                "iteration": iteration,
+                label: accuracy,
+                f"iteration_{label}": iteration,
             }
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
