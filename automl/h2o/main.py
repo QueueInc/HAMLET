@@ -31,6 +31,13 @@ def parse_args():
         type=int,
         required=False,
     )
+    parser.add_argument(
+        "-path",
+        "--path",
+        nargs="?",
+        type=str,
+        required=False,
+    )
     args = parser.parse_args()
     return args
 
@@ -48,7 +55,7 @@ args = parse_args()
 h2o.init()
 
 dataset = openml.datasets.get_dataset(args.id)
-path = create_directory(os.path.join("resources", "h2o", args.id))
+path = create_directory(os.path.join(args.path, args.id))
 
 # Load dataset
 print(dataset.name)
