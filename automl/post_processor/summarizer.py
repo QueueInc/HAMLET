@@ -2,6 +2,7 @@ import os
 import json
 from numpy import int32
 import pandas as pd
+from sklearn.metrics import balanced_accuracy_score
 
 
 def extract_results(path, iteration):
@@ -47,19 +48,30 @@ def extract_results(path, iteration):
 
 def extract_comparison_results(path, label):
     results = {}
+    csv_file_name = (
+        "cv_results.csv" if label.startswith("auto_sklearn") else "raw_cv_results.csv"
+    )
     for root, dirs, files in os.walk(path):
 
-        if "cv_results.csv" in files:
+        if csv_file_name in files:
             dataset_id = root.split("/")[-1]
-            cv_results = pd.read_csv(os.path.join(root, "cv_results.csv")).sort_values(
-                "rank_test_scores"
-            )
-            accuracy = cv_results.iloc[0]["mean_test_score"]
-            iteration = int(cv_results.iloc[0]["Unnamed: 0"])
+            cv_results = pd.read_csv(os.path.join(root, csv_file_name))
+            if label.startswith("auto_sklearn"):
+                cv_results = cv_results.sort_values("rank_test_scores")
+                accuracy = cv_results.iloc[0]["mean_test_score"]
+                iteration = int(cv_results.iloc[0]["Unnamed: 0"])
+            else:
+                accuracy = (
+                    cv_results.groupby(by="fold")
+                    .apply(lambda x: balanced_accuracy_score(x["class"], x["predict"]))
+                    .mean()
+                )
+                iteration = 0
             results[dataset_id] = {
                 label: accuracy,
                 f"iteration_{label}": iteration,
             }
+
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
     pd.DataFrame(results).T.reset_index().rename(columns={"index": "id"}).to_csv(
