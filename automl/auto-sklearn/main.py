@@ -78,7 +78,7 @@ cls = autosklearn.classification.AutoSklearnClassifier(
     time_left_for_this_task=args.budget,
     resampling_strategy=StratifiedKFold(n_splits=10),
     metric=autosklearn.metrics.balanced_accuracy,
-    get_trials_callback=partial(callback, 1000 if args.budget == 7200 else 500),
+    get_trials_callback=callback,
     memory_limit=30720,
     seed=42,
 )
