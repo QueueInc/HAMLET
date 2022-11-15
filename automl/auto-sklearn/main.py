@@ -8,6 +8,7 @@ import autosklearn.classification
 
 import pandas as pd
 
+from functools import partial
 from sklearn.model_selection import StratifiedKFold
 from smac.optimizer.smbo import SMBO
 from smac.runhistory.runhistory import RunInfo, RunValue
@@ -33,14 +34,23 @@ def parse_args():
         type=int,
         required=False,
     )
+    parser.add_argument(
+        "-path",
+        "--path",
+        nargs="?",
+        type=str,
+        required=False,
+    )
     args = parser.parse_args()
     return args
 
 
-def callback(smbo: SMBO, run_info: RunInfo, result: RunValue, time_left: float) -> bool:
+def callback(
+    smbo: SMBO, run_info: RunInfo, result: RunValue, time_left: float, budget
+) -> bool:
     global i
     i += 1
-    return i <= 1000
+    return i <= budget
 
 
 def create_directory(directory):
@@ -52,7 +62,7 @@ def create_directory(directory):
 
 args = parse_args()
 dataset = openml.datasets.get_dataset(args.id)
-path = create_directory(os.path.join("resources", "auto-sklearn", args.id))
+path = create_directory(os.path.join(args.path, args.id))
 
 print(dataset.name)
 print()
@@ -68,7 +78,7 @@ cls = autosklearn.classification.AutoSklearnClassifier(
     time_left_for_this_task=args.budget,
     resampling_strategy=StratifiedKFold(n_splits=10),
     metric=autosklearn.metrics.balanced_accuracy,
-    get_trials_callback=callback,
+    get_trials_callback=partial(callback, 1000 if args.budget == 7200 else 500),
     memory_limit=30720,
     seed=42,
 )
