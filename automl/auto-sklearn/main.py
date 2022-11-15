@@ -45,12 +45,13 @@ def parse_args():
     return args
 
 
-def callback(
-    smbo: SMBO, run_info: RunInfo, result: RunValue, time_left: float, budget
-) -> bool:
+args = parse_args()
+
+
+def callback(smbo: SMBO, run_info: RunInfo, result: RunValue, time_left: float) -> bool:
     global i
     i += 1
-    return i <= budget
+    return i <= args.budget
 
 
 def create_directory(directory):
@@ -60,7 +61,6 @@ def create_directory(directory):
     return directory
 
 
-args = parse_args()
 dataset = openml.datasets.get_dataset(args.id)
 path = create_directory(os.path.join(args.path, args.id))
 
