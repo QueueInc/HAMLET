@@ -98,7 +98,7 @@ def get_position(target, evaluated_rewards):
     return next((i for i, x in enumerate(filtered) if x >= target), -1)
 
 
-def summarize(baseline, other, limit, path):
+def summarize_results(baseline, other, limit, path):
     data = {}
     for approach in [baseline] + other:
         with open(os.path.join(path, approach, "summary.json")) as f:
