@@ -87,6 +87,7 @@ aml = H2OAutoML(
     max_runtime_secs=args.budget,
     max_models=1000 if args.budget == 7200 else 500,
     seed=42,
+    exclude_algos = ["StackedEnsemble"]
 )
 
 # Train AutoML Classifier
