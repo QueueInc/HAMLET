@@ -73,7 +73,7 @@ def summarize(budget, path, hamlet_path):
 
 def main(args):
     path = os.path.join("/", "home", "results")
-    hamlet_path = os.path.join(path, f"{args.budget}_{args.mode}")
+    hamlet_path = os.path.join(path, f"{args.mode}_{args.budget}")
 
     extract(args.budget, path, hamlet_path)
     summary = summarize(args.budget, path, hamlet_path)
