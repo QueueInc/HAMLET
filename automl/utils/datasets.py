@@ -1,5 +1,7 @@
 # OpenML provides several benchmark datasets
 import openml
+import os
+
 import pandas as pd
 import numpy as np
 
@@ -40,4 +42,24 @@ def load_dataset_from_openml(id):
     # Xt[cat_features] = Xt[cat_features].replace("-1", np.nan)
     # Xt = Xt.to_numpy()
     # return Xt, y, categorical_indicator
+    return X, y, categorical_indicator
+
+def load_from_csv(id, input_path = os.path.join("resources", "datasets")):
+    """Load a dataset given its id on OpenML from resources/datasets.
+
+    Args:
+        id: id of the dataset.
+
+    Returns:
+        numpy.array: data items (X) of the dataset.
+        numpy.array: target (y) of the dataset.
+        list: mask that indicates categorical features.
+    """
+    import pandas as pd
+    import json
+    df = pd.read_csv(os.path.join(input_path, f"{id}.csv"))
+    with open(os.path.join(input_path, "categorical_indicators.json")) as f:
+        categorical_indicators = json.load(f)
+    categorical_indicator = categorical_indicators[str(id)]   
+    X, y = df.iloc[:, :-1].to_numpy(), df.iloc[:, -1].to_numpy()
     return X, y, categorical_indicator
