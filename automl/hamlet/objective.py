@@ -162,6 +162,8 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         Buffer().add_evaluation(config=config, result=result)
         return result
 
+    print(config)
+
     try:
         prototype = get_prototype(config)
 
