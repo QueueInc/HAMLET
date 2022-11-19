@@ -44,7 +44,8 @@ def load_dataset_from_openml(id):
     # return Xt, y, categorical_indicator
     return X, y, categorical_indicator
 
-def load_from_csv(id, input_path = os.path.join("resources", "datasets")):
+
+def load_from_csv(id, input_path=os.path.join("/home", "resources", "datasets")):
     """Load a dataset given its id on OpenML from resources/datasets.
 
     Args:
@@ -57,9 +58,10 @@ def load_from_csv(id, input_path = os.path.join("resources", "datasets")):
     """
     import pandas as pd
     import json
+
     df = pd.read_csv(os.path.join(input_path, f"{id}.csv"))
     with open(os.path.join(input_path, "categorical_indicators.json")) as f:
         categorical_indicators = json.load(f)
-    categorical_indicator = categorical_indicators[str(id)]   
+    categorical_indicator = categorical_indicators[str(id)]
     X, y = df.iloc[:, :-1].to_numpy(), df.iloc[:, -1].to_numpy()
     return X, y, categorical_indicator
