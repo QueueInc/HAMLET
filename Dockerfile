@@ -13,5 +13,5 @@ RUN pip install --upgrade pip && \
     pip install -f http://h2o-release.s3.amazonaws.com/h2o/latest_stable_Py.html h2o && \
     rm requirements.txt
 COPY automl /home/automl
-COPY resources/datasets /home/datasets
+COPY resources/datasets /home/resources/datasets
 WORKDIR /home
