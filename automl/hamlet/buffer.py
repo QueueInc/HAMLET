@@ -83,6 +83,8 @@ class Buffer:
             print(
                 f"{self._current_point_to_evaluate} out of {self._max_points_to_evaluates}"
             )
+        if self._num_points_to_consider == 659:
+            return True, 0
         if self._current_point_to_evaluate < self._max_points_to_evaluates:
             self._configs[self._current_point_to_evaluate] = config
             to_return = self._results[self._current_point_to_evaluate]
