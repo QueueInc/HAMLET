@@ -44,7 +44,7 @@ def load_dataset_from_openml(id):
     # return Xt, y, categorical_indicator
     return X, y, categorical_indicator
 
-def load_from_csv(id, input_path = os.path.join("/", "home", "resources", "datasets")):
+def load_from_csv(id, input_path = os.path.join("resources", "datasets")):
     """Load a dataset given its id on OpenML from resources/datasets.
 
     Args:
