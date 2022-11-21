@@ -153,7 +153,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 def objective(X, y, categorical_indicator, metric, seed, config):
     result = {metric: float("-inf"), "status": "fail", "time": 0}
 
-    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
+    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
         return reward
 
@@ -192,7 +192,6 @@ def objective(X, y, categorical_indicator, metric, seed, config):
 
     except:
         print("Something wrong happened")
-
 
     Buffer().add_evaluation(config=config, result=result)
     return result
