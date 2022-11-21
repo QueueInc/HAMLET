@@ -52,7 +52,7 @@ class Buffer:
     def add_evaluation(self, config, result):
         self._configs.append(config)
         self._results.append(result)
-        print(len(self._configs))
+        # print(len(self._configs))
 
     def get_evaluations(self):
         return self._configs.copy(), self._results.copy()
@@ -65,9 +65,9 @@ class Buffer:
 
     def check_points_to_evaluate(self):
         if self._current_point_to_evaluate < self._num_previous_evaluated_points:
-            print(
-                f"{self._current_point_to_evaluate} out of {self._num_previous_evaluated_points}"
-            )
+            # print(
+            #     f"{self._current_point_to_evaluate} out of {self._num_previous_evaluated_points}"
+            # )
             self._current_point_to_evaluate += 1
             if self._current_point_to_evaluate < len(self._results):
                 return True, self._results[self._current_point_to_evaluate]
