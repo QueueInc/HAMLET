@@ -10,13 +10,14 @@ import it.unibo.tuprolog.solve.SolveOptions
 import it.unibo.tuprolog.solve.TimeDuration
 import it.unibo.tuprolog.unify.Unificator
 import org.queueinc.hamlet.toSklearnClass
+import java.math.BigDecimal
 
 object SpaceTranslator {
 
     private fun translateList(terms: List<Term>) =
         terms.map {
             when {
-                it.isReal -> it.castToReal().value.toPlainString()
+                it.isReal -> it.castToReal().value.toDouble().toBigDecimal().toPlainString()
                 it.isTrue || it.isNumber || it.isFail -> it
                 else -> "\"$it\"".replace("'", "")
             }
