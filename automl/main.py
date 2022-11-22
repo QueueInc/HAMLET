@@ -67,8 +67,9 @@ def main(args):
         max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
     )
 
-    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
+    print("AutoML: optimization done.")
 
+    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miner = Miner(
         points_to_evaluate=points_to_evaluate,
         evaluated_rewards=evaluated_rewards,
@@ -76,8 +77,10 @@ def main(args):
         mode=args.mode,
     )
     end_time = time.time()
-    rules = miner.get_rules()
 
+    print("AutoML: miner done.")
+
+    rules = miner.get_rules()
     automl_output = {
         "start_time": start_time,
         "graph_generation_time": graph_generation_time,
@@ -98,6 +101,8 @@ def main(args):
         json.dump(automl_output, outfile)
 
     json_to_csv(automl_output=automl_output.copy(), args=args)
+
+    print("AutoML: export done.")
 
     # results_df = pd.concat(
     #     [
