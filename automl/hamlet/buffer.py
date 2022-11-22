@@ -52,7 +52,7 @@ class Buffer:
     def add_evaluation(self, config, result):
         self._configs.append(config)
         self._results.append(result)
-        # print(len(self._configs))
+        print(len(self._configs))
 
     def get_evaluations(self):
         return self._configs.copy(), self._results.copy()
