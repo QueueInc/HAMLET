@@ -169,13 +169,14 @@ def objective(X, y, categorical_indicator, metric, seed, config):
     Buffer().printflush(config)
 
     try:
-        prototype = get_prototype(config)
+        start_time = time.time()
 
         X_copy = X.copy()
         y_copy = y.copy()
         X_copy_ii = X.copy()
         y_copy_ii = y.copy()
 
+        prototype = get_prototype(config)
         pipeline = instantiate_pipeline(
             prototype, categorical_indicator, X_copy, y_copy, seed, config
         )
@@ -203,7 +204,12 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             print(f"The result for {config} was NaN")
             raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
-        result["time"] = time.time()
+        if "fit_time" in scores:
+            result["fit_time"] = scores["fit_time"]
+        if "score_time" in scores:
+            result["score_time"] = scores["score_time"]
+
+        result["total_time"] = time.time() - start_time
 
     except TimeException:
         Buffer().printflush("Timeout")
@@ -215,7 +221,8 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         del X_copy_ii
         del y_copy
         del y_copy_ii
-        del pipeline
+        if pipeline:
+            del pipeline
 
         gc.collect()
 
