@@ -221,8 +221,6 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         del X_copy_ii
         del y_copy
         del y_copy_ii
-        if pipeline:
-            del pipeline
 
         gc.collect()
 
