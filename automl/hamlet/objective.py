@@ -1,6 +1,7 @@
 # Scikit-learn provides a set of machine learning techniques
 import traceback
 import time
+import sys
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
@@ -149,6 +150,11 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
     return Pipeline(pipeline)
 
 
+def printflush(st):
+    print(st)
+    sys.stdout.flush()
+
+
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
     result = {metric: float("-inf"), "status": "fail", "time": 0}
@@ -162,25 +168,44 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         Buffer().add_evaluation(config=config, result=result)
         return result
 
-    print(config)
+    printflush(config)
 
     try:
         prototype = get_prototype(config)
 
+        X_copy = X.copy()
+        y_copy = y.copy()
+        X_copy_ii = X.copy()
+        y_copy_ii = y.copy()
+
         pipeline = instantiate_pipeline(
-            prototype, categorical_indicator, X, y, seed, config
+            prototype, categorical_indicator, X_copy, y_copy, seed, config
         )
+
+        printflush("opt")
 
         scores = cross_validate(
             pipeline,
-            X.copy(),
-            y.copy(),
+            X_copy_ii,
+            y_copy_ii,
             scoring=[metric],
             cv=10,
             return_estimator=False,
             return_train_score=False,
             verbose=0,
         )
+
+        printflush("end opt")
+
+        del X_copy
+        del X_copy_ii
+        del y_copy
+        del y_copy_ii
+        del pipeline
+
+        import gc
+
+        gc.collect()
 
         result[metric] = np.mean(scores["test_" + metric])
         if np.isnan(result[metric]):
@@ -191,7 +216,7 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         result["time"] = time.time()
 
     except:
-        print("Something wrong happened")
+        printflush("Something wrong happened")
 
     Buffer().add_evaluation(config=config, result=result)
     return result
