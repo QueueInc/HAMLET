@@ -41,3 +41,28 @@
 - Run HAMLET with PKB + IKA settings, HAMLET starts with a preliminary LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
       sudo ./scripts/run_hamlet.sh results/pkb_ika_500 balanced_accuracy max 125 900 0.2.11 4 $(pwd)/resources/pkb.txt
+
+
+
+
+COMPARISON:
+- pkb_1000 (52)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_comparison.sh auto-sklearn 3600 results/auto_sklearn_500
+- pkb_ika_1000 (53)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_comparison.sh h2o 3600 results/h2o_500
+- auto_sklearn_500 (55)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_comparison.sh auto-sklearn 7200 results/auto_sklearn_1000
+- h2o_1000 (57)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_comparison.sh h2o 7200 results/h2o_1000
+
+HAMLET:
+- pkb (52)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb balanced_accuracy max 500 3600 0.3.1 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb balanced_accuracy max 1000 7200 0.3.1 1 $(pwd)/resources/pkb.txt
+- pkb_ika (53)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb_ika balanced_accuracy max 125 900 0.3.1 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb_ika balanced_accuracy max 250 1800 0.3.1 4 $(pwd)/resources/pkb.txt
+- ika (55)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/ika balanced_accuracy max 125 900 0.3.1 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/ika balanced_accuracy max 250 1800 0.3.1 4 $(pwd)/resources/kb.txt
+- baseline (57)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/baseline balanced_accuracy max 500 3600 0.3.1 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/baseline balanced_accuracy max 1000 7200 0.3.1 1 $(pwd)/resources/kb.txt
+
+
