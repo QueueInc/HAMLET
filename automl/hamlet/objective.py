@@ -1,8 +1,10 @@
 # Scikit-learn provides a set of machine learning techniques
-import traceback
-import time
 import sys
+import time
+import gc
+
 import numpy as np
+
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
 from sklearn.preprocessing import FunctionTransformer
@@ -150,11 +152,6 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
     return Pipeline(pipeline)
 
 
-def printflush(st):
-    print(st)
-    sys.stdout.flush()
-
-
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
     result = {metric: float("-inf"), "status": "fail", "time": 0}
@@ -168,7 +165,7 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         Buffer().add_evaluation(config=config, result=result)
         return result
 
-    printflush(config)
+    Buffer().printflush(config)
 
     try:
         prototype = get_prototype(config)
@@ -182,20 +179,25 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             prototype, categorical_indicator, X_copy, y_copy, seed, config
         )
 
-        printflush("opt")
+        Buffer().printflush("opt")
+        Buffer().attach_timer(1)
 
-        scores = cross_validate(
-            pipeline,
-            X_copy_ii,
-            y_copy_ii,
-            scoring=[metric],
-            cv=10,
-            return_estimator=False,
-            return_train_score=False,
-            verbose=0,
-        )
+        try:
+            scores = cross_validate(
+                pipeline,
+                X_copy_ii,
+                y_copy_ii,
+                scoring=[metric],
+                cv=10,
+                return_estimator=False,
+                return_train_score=False,
+                verbose=0,
+            )
+        except:
+            Buffer().printflush("Forever is over")
 
-        printflush("end opt")
+        Buffer().detach_timer()
+        Buffer().printflush("end opt")
 
         del X_copy
         del X_copy_ii
@@ -203,20 +205,18 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         del y_copy_ii
         del pipeline
 
-        import gc
-
         gc.collect()
 
         result[metric] = np.mean(scores["test_" + metric])
         if np.isnan(result[metric]):
             result[metric] = float("-inf")
-            print("The result for {config} was NaN")
+            print(f"The result for {config} was NaN")
             raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
         result["time"] = time.time()
 
     except:
-        printflush("Something wrong happened")
+        Buffer().printflush("Something wrong happened")
 
     Buffer().add_evaluation(config=config, result=result)
     return result

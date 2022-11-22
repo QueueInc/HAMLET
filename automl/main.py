@@ -28,6 +28,7 @@ def main(args):
     X, y, categorical_indicator = load_from_csv(args.dataset)
     loader = Loader(args.input_path)
     buffer = Buffer(metric=args.metric, loader=loader)
+    Buffer().attach_handler()
     space = loader.get_space()
 
     # print(
@@ -67,7 +68,7 @@ def main(args):
         max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
     )
 
-    print("AutoML: optimization done.")
+    Buffer().printflush("AutoML: optimization done.")
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miner = Miner(
@@ -78,7 +79,7 @@ def main(args):
     )
     end_time = time.time()
 
-    print("AutoML: miner done.")
+    Buffer().printflush("AutoML: miner done.")
 
     rules = miner.get_rules()
     automl_output = {
@@ -102,7 +103,7 @@ def main(args):
 
     json_to_csv(automl_output=automl_output.copy(), args=args)
 
-    print("AutoML: export done.")
+    Buffer().printflush("AutoML: export done.")
 
     # results_df = pd.concat(
     #     [

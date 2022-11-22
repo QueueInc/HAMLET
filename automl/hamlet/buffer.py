@@ -1,3 +1,7 @@
+import signal
+import sys
+
+
 class Buffer:
     _instance = None
 
@@ -52,7 +56,7 @@ class Buffer:
     def add_evaluation(self, config, result):
         self._configs.append(config)
         self._results.append(result)
-        print(len(self._configs))
+        self.printflush(len(self._configs))
 
     def get_evaluations(self):
         return self._configs.copy(), self._results.copy()
@@ -73,3 +77,20 @@ class Buffer:
                 return True, self._results[self._current_point_to_evaluate]
             return True, {self._metric: float("-inf"), "status": "previous_constraint"}
         return False, 0
+
+    def printflush(self, message):
+        print(message)
+        sys.stdout.flush()
+
+    def attach_handler(self):
+        def handler(signum, frame):
+            # cls._instance.printflush("Forever is over!")
+            raise Exception("end of time")
+
+        signal.signal(signal.SIGALRM, handler)
+
+    def attach_timer(self, time_in_s):
+        signal.alarm(time_in_s)
+
+    def detach_timer(self):
+        signal.alarm(0)
