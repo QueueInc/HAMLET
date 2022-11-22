@@ -155,7 +155,13 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
 
-    result = {metric: float("-inf"), "status": "fail", "time": 0}
+    result = {
+        metric: float("-inf"),
+        "status": "fail",
+        "total_time": 0,
+        "fit_time": 0,
+        "score_time": 0,
+    }
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
@@ -204,12 +210,12 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             print(f"The result for {config} was NaN")
             raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
-        if "fit_time" in scores:
-            result["fit_time"] = scores["fit_time"]
-        if "score_time" in scores:
-            result["score_time"] = scores["score_time"]
-
         result["total_time"] = time.time() - start_time
+
+        if "fit_time" in scores:
+            result["fit_time"] = np.mean(scores["fit_time"])
+        if "score_time" in scores:
+            result["score_time"] = np.mean(scores["score_time"])
 
     except TimeException:
         Buffer().printflush("Timeout")
