@@ -46,7 +46,7 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
-from .buffer import Buffer
+from .buffer import Buffer, TimeException
 
 
 def get_prototype(config):
@@ -154,6 +154,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
+
     result = {metric: float("-inf"), "status": "fail", "time": 0}
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
@@ -180,32 +181,21 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         )
 
         Buffer().printflush("opt")
-        Buffer().attach_timer(1)
+        Buffer().attach_timer(900)
 
-        try:
-            scores = cross_validate(
-                pipeline,
-                X_copy_ii,
-                y_copy_ii,
-                scoring=[metric],
-                cv=10,
-                return_estimator=False,
-                return_train_score=False,
-                verbose=0,
-            )
-        except:
-            Buffer().printflush("Forever is over")
+        scores = cross_validate(
+            pipeline,
+            X_copy_ii,
+            y_copy_ii,
+            scoring=[metric],
+            cv=10,
+            return_estimator=False,
+            return_train_score=False,
+            verbose=0,
+        )
 
         Buffer().detach_timer()
         Buffer().printflush("end opt")
-
-        del X_copy
-        del X_copy_ii
-        del y_copy
-        del y_copy_ii
-        del pipeline
-
-        gc.collect()
 
         result[metric] = np.mean(scores["test_" + metric])
         if np.isnan(result[metric]):
@@ -215,8 +205,19 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         result["status"] = "success"
         result["time"] = time.time()
 
+    except TimeException:
+        Buffer().printflush("Timeout")
     except:
-        Buffer().printflush("Something wrong happened")
+        Buffer().detach_timer()
+        Buffer().printflush("Something went wrong")
+    finally:
+        del X_copy
+        del X_copy_ii
+        del y_copy
+        del y_copy_ii
+        del pipeline
+
+        gc.collect()
 
     Buffer().add_evaluation(config=config, result=result)
     return result

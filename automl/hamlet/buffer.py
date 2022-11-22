@@ -2,6 +2,10 @@ import signal
 import sys
 
 
+class TimeException(BaseException):
+    pass
+
+
 class Buffer:
     _instance = None
 
@@ -84,8 +88,7 @@ class Buffer:
 
     def attach_handler(self):
         def handler(signum, frame):
-            # cls._instance.printflush("Forever is over!")
-            raise Exception("end of time")
+            raise TimeException("Timeout Exception")
 
         signal.signal(signal.SIGALRM, handler)
 
