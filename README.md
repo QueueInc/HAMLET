@@ -57,12 +57,12 @@ git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_c
 
 HAMLET:
 - pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb balanced_accuracy max 500 3600 0.3.3 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb balanced_accuracy max 1000 7200 0.3.3 1 $(pwd)/resources/pkb.txt
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb balanced_accuracy max 500 3600 0.3.3 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb balanced_accuracy max 1000 7200 0.3.3 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_comparison.sh auto-sklearn 3600 results/auto_sklearn_500
 - pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb_ika balanced_accuracy max 125 900 0.3.3 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb_ika balanced_accuracy max 250 1800 0.3.3 4 $(pwd)/resources/pkb.txt
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/pkb_ika balanced_accuracy max 125 900 0.3.3 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/pkb_ika balanced_accuracy max 250 1800 0.3.3 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_comparison.sh h2o 3600 results/h2o_500
 - ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/ika balanced_accuracy max 125 900 0.3.3 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/ika balanced_accuracy max 250 1800 0.3.3 4 $(pwd)/resources/kb.txt
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/ika balanced_accuracy max 125 900 0.3.3 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/ika balanced_accuracy max 250 1800 0.3.3 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_comparison.sh auto-sklearn 7200 results/auto_sklearn_1000
 - baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/baseline balanced_accuracy max 500 3600 0.3.3 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/baseline balanced_accuracy max 1000 7200 0.3.3 1 $(pwd)/resources/kb.txt
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo rm -rf results/ && sudo ./scripts/run_hamlet.sh results/plain_500/baseline balanced_accuracy max 500 3600 0.3.3 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results/plain_1000/baseline balanced_accuracy max 1000 7200 0.3.3 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_comparison.sh h2o 7200 results/h2o_1000
 
 
