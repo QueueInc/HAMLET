@@ -81,6 +81,12 @@ def main(args):
 
     Buffer().printflush("AutoML: miner done.")
 
+    best_config = {}
+    try:
+        best_config = analysis.best_trial.last_result
+    except:
+        Buffer().printflush("Apparently no results are available")
+
     rules = miner.get_rules()
     automl_output = {
         "start_time": start_time,
@@ -88,7 +94,7 @@ def main(args):
         "space_generation_time": space_generation_time,
         "optimization_time": end_time - start_time,
         "mining_time": time.time() - end_time,
-        "best_config": analysis.best_trial.last_result,
+        "best_config": best_config,
         "rules": rules,
         "points_to_evaluate": points_to_evaluate,
         # "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
