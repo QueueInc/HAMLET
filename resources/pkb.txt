@@ -125,8 +125,6 @@ c17 :=> mandatory([normalization, features], knn).
 
 c18 :=> mandatory([normalization], nn).
 
-c19 :=> mandatory([normalization], svm).
-
 % if missing values
 c20 : missing_values => mandatory([imputation], classification).
 c21 : -missing_values => forbidden([imputation], classification).
