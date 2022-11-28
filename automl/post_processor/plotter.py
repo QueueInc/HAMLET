@@ -75,7 +75,7 @@ def plot_matplotlib(df, baseline, others, path):
     ax.set_ylabel("Balanced accuracy", labelpad=10)
     # ax.set_title("Balanced accuracy achieved by the approaches")
     ax.set_xticks(x, labels)
-    ax.set_ylim([0.6, 1])
+    ax.set_ylim([0.75, 1])
     # ax.legend()
 
     handles, labels = plt.gca().get_legend_handles_labels()
