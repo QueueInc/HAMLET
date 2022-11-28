@@ -87,9 +87,16 @@ object SpaceTranslator {
                 target.castToList().toList().map { template ->
                     Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                         unifier[A]!!.castToList().toList().mapIndexed { i, step ->
-                            """
-                                "$step" : {${if (type) "\"type\": {" else ""}"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())} ${if (type) "}" else ""}}
+                            if (type || i == 0) {
                                 """
+                                    "$step" : {${if (type) "\"type\": {" else ""}"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())} ${if (type) "}" else ""}}
+                                """
+                            }
+                            else {
+                                """
+                                    "$step" : { "type": { "neq": "${Term.parse("function_transformer").toSklearnClass()}" }}
+                                """
+                            }
                         }.joinToString(",\n").let {
                             """
                                 {

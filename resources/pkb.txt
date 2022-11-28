@@ -127,5 +127,5 @@ c18 :=> mandatory([normalization], nn).
 
 % if missing values
 c20 : missing_values => mandatory([imputation], classification).
-c21 : -missing_values => forbidden([imputation], classification).
+% c21 : -missing_values => forbidden([imputation], classification).
 c24 : unbalanced_dataset => mandatory([rebalancing], classification).
