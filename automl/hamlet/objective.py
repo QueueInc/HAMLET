@@ -211,6 +211,7 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
         result["total_time"] = time.time() - start_time
+        result["absolute_time"] = time.time()
 
         if "fit_time" in scores:
             result["fit_time"] = np.mean(scores["fit_time"])
