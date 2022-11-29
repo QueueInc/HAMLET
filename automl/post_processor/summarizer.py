@@ -1,22 +1,38 @@
 import os
+import datetime
 import json
 from numpy import int32
 import pandas as pd
 from sklearn.metrics import balanced_accuracy_score
 
 
+def merge_results(results, current_json):
+    def common_elements(list1, list2):
+        return [element for element in list1 if element in list2]
+
+    results["start_time"] = min(results["start_time"], current_json["start_time"])
+    results["graph_generation_time"] += current_json["graph_generation_time"]
+    results["space_generation_time"] += current_json["space_generation_time"]
+    results["optimization_time"] += current_json["optimization_time"]
+    results["mining_time"] += current_json["mining_time"]
+    results["best_config"] = current_json["best_config"]
+    results["rules"] += current_json["rules"]
+    common_elements = common_elements(
+        results["points_to_evaluate"], current_json["points_to_evaluate"]
+    )
+    start_index = current_json["points_to_evaluate"].index(common_elements[-1]) + 1
+    for i in range(start_index, len(current_json["points_to_evaluate"])):
+        results["points_to_evaluate"].append(current_json["points_to_evaluate"][i])
+        results["evaluated_rewards"].append(current_json["evaluated_rewards"][i])
+    return results
+
+
 def extract_results(path, iteration):
     results = {}
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
 
         if f"automl_output_{iteration}.json" in files:
             dataset_id = root.split("/")[-3]
-            results[dataset_id] = {
-                "graph_generation_time": 0,
-                "space_generation_time": 0,
-                "optimization_time": 0,
-                "mining_time": 0,
-            }
             for it in range(1, iteration + 1):
                 if f"automl_output_{it}.json" in files:
                     # Opening JSON file
@@ -24,23 +40,13 @@ def extract_results(path, iteration):
                         os.path.join(root, f"automl_output_{it}.json")
                     ) as json_file:
                         loaded = json.load(json_file)
-                        if it == iteration:
-                            current_json = results[dataset_id]
-                            results[dataset_id] = loaded
-                        else:
-                            current_json = loaded
-                        results[dataset_id]["graph_generation_time"] += current_json[
-                            "graph_generation_time"
-                        ]
-                        results[dataset_id]["space_generation_time"] += current_json[
-                            "space_generation_time"
-                        ]
-                        results[dataset_id]["optimization_time"] += current_json[
-                            "optimization_time"
-                        ]
-                        results[dataset_id]["mining_time"] += current_json[
-                            "mining_time"
-                        ]
+                    if it == 1:
+                        results[dataset_id] = loaded
+                    else:
+                        results[dataset_id] = merge_results(
+                            results=results[dataset_id],
+                            current_json=loaded,
+                        )
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
@@ -144,8 +150,6 @@ def summarize_results(baseline, other, limit, path):
                     )
 
                 else:
-                    import datetime
-
                     data[dataset][f"time_{approach}"] = str(
                         datetime.timedelta(seconds=result["optimization_time"])
                     )
