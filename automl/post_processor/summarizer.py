@@ -7,7 +7,9 @@ import pandas as pd
 from sklearn.metrics import balanced_accuracy_score
 
 
-def merge_results(current_iteration, results, current_json, threshold):
+def merge_results(
+    current_iteration, results, current_json, threshold, mode, dataset, tot_iterations
+):
     def common_elements(list1, list2):
         return [element for element in list1 if element in list2]
 
@@ -38,39 +40,79 @@ def merge_results(current_iteration, results, current_json, threshold):
         results["points_to_evaluate"] += current_json["points_to_evaluate"][start:]
         results["evaluated_rewards"] += current_json["evaluated_rewards"][start:]
     # I take the index of the elements to keep (based on the time filtering)
-    temp_list = [
-        (index, elem)
-        for index, elem in enumerate(results["evaluated_rewards"])
-        if "absolute_time" in elem
-        and elem["absolute_time"] - results["start_time"] < threshold
-    ]
-    # I filter the evaluated rewards
-    results["evaluated_rewards"] = [elem for _, elem in temp_list]
-    if temp_list:
-        # If temp list is not empty, I filter the points to evaluate
-        results["points_to_evaluate"] = list(
-            itemgetter(*[index for index, _ in temp_list])(
-                results["points_to_evaluate"]
-            )
-        )
-        # I transform the evaluated rewards that are -inf to float
-        for d in results["evaluated_rewards"]:
-            d.update(
-                (k, float(v))
-                for k, v in d.items()
-                if k == "balanced_accuracy" and isinstance(v, str) and v == "-inf"
-            )
-        # I calculate the index of the best config among the evaluaed rewards
-        best_index = max(
-            range(len(results["evaluated_rewards"])),
-            key=lambda index: results["evaluated_rewards"][index]["balanced_accuracy"],
-        )
-        # I put tat config as the best one
-        results["best_config"] = results["evaluated_rewards"][best_index].copy()
-        results["best_config"]["config"] = results["points_to_evaluate"][best_index]
-    else:
-        results["points_to_evaluate"].clear()
+
+    if current_iteration < tot_iterations:
+        return results
+
+    cut_off_index = next(
+        (
+            index
+            for index, elem in enumerate(results["evaluated_rewards"])
+            if (elem["absolute_time"] if "absolute_time" in elem else float("-inf"))
+            - results["start_time"]
+            >= threshold
+        ),
+        len(results["evaluated_rewards"]) - 1,
+    )
+
+    results["evaluated_rewards"] = results["evaluated_rewards"][:cut_off_index]
+    results["points_to_evaluate"] = results["points_to_evaluate"][:cut_off_index]
+
+    # if mode == "ika" and dataset == "40499":
+    #     print(results["evaluated_rewards"])
+
+    # I calculate the index of the best config among the evaluaed rewards
+    best_index = max(
+        range(len(results["evaluated_rewards"])),
+        key=lambda index: float(
+            results["evaluated_rewards"][index]["balanced_accuracy"]
+        ),
+    )
+
+    # if mode == "ika" and dataset == "40499":
+    #     print(results["evaluated_rewards"][best_index])
+
+    # I put tat config as the best one
+    results["best_config"] = results["evaluated_rewards"][best_index].copy()
+    results["best_config"]["config"] = results["points_to_evaluate"][best_index]
+
+    # print(f"{mode} {dataset}: {results['best_config']}")
     return results
+    # temp_list = [
+    #     (index, elem)
+    #     for index, elem in enumerate(results["evaluated_rewards"])
+    #     if "absolute_time" in elem
+    #     and elem["absolute_time"] - results["start_time"] < threshold
+    # ]
+
+    # I filter the evaluated rewards
+    # results["evaluated_rewards"] = [elem for _, elem in temp_list]
+    # if temp_list:
+    #     # If temp list is not empty, I filter the points to evaluate
+    #     results["points_to_evaluate"] = list(
+    #         itemgetter(*[index for index, _ in temp_list])(
+    #             results["points_to_evaluate"]
+    #         )
+    #     )
+    #     # I transform the evaluated rewards that are -inf to float
+    #     for d in results["evaluated_rewards"]:
+    #         d.update(
+    #             (k, float(v))
+    #             for k, v in d.items()
+    #             if k == "balanced_accuracy" and isinstance(v, str) and v == "-inf"
+    #         )
+    #     # I calculate the index of the best config among the evaluaed rewards
+    #     best_index = max(
+    #         range(len(results["evaluated_rewards"])),
+    #         key=lambda index: results["evaluated_rewards"][index]["balanced_accuracy"],
+    #     )
+    #     print(f"dataset: {dataset}, mode: {mode}, index: {best_index}")
+    #     # I put tat config as the best one
+    #     results["best_config"] = results["evaluated_rewards"][best_index].copy()
+    #     results["best_config"]["config"] = results["points_to_evaluate"][best_index]
+    # else:
+    #     results["points_to_evaluate"].clear()
+    # return results
 
 
 def extract_results(budget, path, input_folder, output_folder, mode):
@@ -99,6 +141,9 @@ def extract_results(budget, path, input_folder, output_folder, mode):
                         results=results[dataset_id],
                         current_json=loaded,
                         threshold=threshold,
+                        mode=mode,
+                        dataset=dataset_id,
+                        tot_iterations=iteration,
                     )
 
     with open(os.path.join(path, output_folder, mode, "summary.json"), "w") as outfile:
