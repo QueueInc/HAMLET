@@ -2,35 +2,74 @@ import os
 import datetime
 import json
 from numpy import int32
+from operator import itemgetter
 import pandas as pd
 from sklearn.metrics import balanced_accuracy_score
 
 
-def merge_results(results, current_json, threshold):
+def merge_results(current_iteration, results, current_json, threshold):
     def common_elements(list1, list2):
         return [element for element in list1 if element in list2]
 
-    results["start_time"] = min(results["start_time"], current_json["start_time"])
-    results["graph_generation_time"] += current_json["graph_generation_time"]
-    results["space_generation_time"] += current_json["space_generation_time"]
-    results["optimization_time"] += current_json["optimization_time"]
-    results["mining_time"] += current_json["mining_time"]
-    results["best_config"] = current_json["best_config"]
-    results["rules"] += [
-        rule for rule in current_json["rules"] if rule not in results["rules"]
+    if current_iteration == 1:
+        # If it is the first iteration I instantiate the results (w/ the laoded json, filtering afterwards)
+        results = current_json
+    else:
+        # Otherwise, I start by summing the timing
+        results["graph_generation_time"] += current_json["graph_generation_time"]
+        results["space_generation_time"] += current_json["space_generation_time"]
+        results["optimization_time"] += current_json["optimization_time"]
+        results["mining_time"] += current_json["mining_time"]
+        # I take the distinct set of all the generated rules (I think I cannot do better than this)
+        results["rules"] += [
+            rule for rule in current_json["rules"] if rule not in results["rules"]
+        ]
+        # I find the common elements between the visisted confs
+        common_elems = common_elements(
+            results["points_to_evaluate"], current_json["points_to_evaluate"]
+        )
+        if common_elems:
+            # If there are some, the index from which I should start copying is the index of the last common element
+            start = current_json["points_to_evaluate"].index(common_elems[-1]) + 1
+        else:
+            # Otherwise, I copy everything
+            start = 0
+        # I copy everything in that range
+        results["points_to_evaluate"] += current_json["points_to_evaluate"][start:]
+        results["evaluated_rewards"] += current_json["evaluated_rewards"][start:]
+    # I take the index of the elements to keep (based on the time filtering)
+    temp_list = [
+        (index, elem)
+        for index, elem in enumerate(results["evaluated_rewards"])
+        if "absolute_time" in elem
+        and elem["absolute_time"] - results["start_time"] < threshold
     ]
-    common_elems = common_elements(
-        results["points_to_evaluate"], current_json["points_to_evaluate"]
-    )
-    start_index = current_json["points_to_evaluate"].index(common_elems[-1]) + 1
-    for i in range(start_index, len(current_json["points_to_evaluate"])):
-        if "absolute_time" in current_json["evaluated_rewards"][i] and (
-            current_json["evaluated_rewards"][i]["absolute_time"]
-            - results["start_time"]
-            < threshold
-        ):
-            results["points_to_evaluate"].append(current_json["points_to_evaluate"][i])
-            results["evaluated_rewards"].append(current_json["evaluated_rewards"][i])
+    # I filter the evaluated rewards
+    results["evaluated_rewards"] = [elem for _, elem in temp_list]
+    if temp_list:
+        # If temp list is not empty, I filter the points to evaluate
+        results["points_to_evaluate"] = list(
+            itemgetter(*[index for index, _ in temp_list])(
+                results["points_to_evaluate"]
+            )
+        )
+        # I transform the evaluated rewards that are -inf to float
+        for d in results["evaluated_rewards"]:
+            d.update(
+                (k, float(v))
+                for k, v in d.items()
+                if k == "balanced_accuracy" and isinstance(v, str) and v == "-inf"
+            )
+        # I calculate the index of the best config among the evaluaed rewards
+        best_index = max(
+            range(len(results["evaluated_rewards"])),
+            key=lambda index: results["evaluated_rewards"][index]["balanced_accuracy"],
+        )
+        # I put tat config as the best one
+        results["best_config"] = results["evaluated_rewards"][best_index].copy()
+        results["best_config"]["config"] = results["points_to_evaluate"][best_index]
+    else:
+        results["points_to_evaluate"].clear()
     return results
 
 
@@ -48,6 +87,7 @@ def extract_results(budget, path, mode):
 
         if f"automl_output_{iteration}.json" in files:
             dataset_id = root.split("/")[-3]
+            results[dataset_id] = {}
             for it in range(1, iteration + 1):
                 if f"automl_output_{it}.json" in files:
                     # Opening JSON file
@@ -55,14 +95,12 @@ def extract_results(budget, path, mode):
                         os.path.join(root, f"automl_output_{it}.json")
                     ) as json_file:
                         loaded = json.load(json_file)
-                    if it == 1:
-                        results[dataset_id] = loaded
-                    else:
-                        results[dataset_id] = merge_results(
-                            results=results[dataset_id],
-                            current_json=loaded,
-                            threshold=threshold,
-                        )
+                    results[dataset_id] = merge_results(
+                        current_iteration=it,
+                        results=results[dataset_id],
+                        current_json=loaded,
+                        threshold=threshold,
+                    )
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
