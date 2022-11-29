@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.metrics import balanced_accuracy_score
 
 
-def merge_results(results, current_json):
+def merge_results(results, current_json, threshold):
     def common_elements(list1, list2):
         return [element for element in list1 if element in list2]
 
@@ -16,19 +16,34 @@ def merge_results(results, current_json):
     results["optimization_time"] += current_json["optimization_time"]
     results["mining_time"] += current_json["mining_time"]
     results["best_config"] = current_json["best_config"]
-    results["rules"] += current_json["rules"]
-    common_elements = common_elements(
+    results["rules"] += [
+        rule for rule in current_json["rules"] if rule not in results["rules"]
+    ]
+    common_elems = common_elements(
         results["points_to_evaluate"], current_json["points_to_evaluate"]
     )
-    start_index = current_json["points_to_evaluate"].index(common_elements[-1]) + 1
+    start_index = current_json["points_to_evaluate"].index(common_elems[-1]) + 1
     for i in range(start_index, len(current_json["points_to_evaluate"])):
-        results["points_to_evaluate"].append(current_json["points_to_evaluate"][i])
-        results["evaluated_rewards"].append(current_json["evaluated_rewards"][i])
+        if "absolute_time" in current_json["evaluated_rewards"][i] and (
+            current_json["evaluated_rewards"][i]["absolute_time"]
+            - results["start_time"]
+            < threshold
+        ):
+            results["points_to_evaluate"].append(current_json["points_to_evaluate"][i])
+            results["evaluated_rewards"].append(current_json["evaluated_rewards"][i])
     return results
 
 
-def extract_results(path, iteration):
+def extract_results(budget, path, mode):
     results = {}
+    iteration = 1 if mode in ("baseline", "pkb") else (4 if budget == 500 else 8)
+    threshold = (
+        float("inf")
+        if mode in ("ika", "pkb_ika")
+        else (3600 if budget == 500 else 7200)
+    )
+    path = os.path.join(path, mode)
+
     for root, _, files in os.walk(path):
 
         if f"automl_output_{iteration}.json" in files:
@@ -46,6 +61,7 @@ def extract_results(path, iteration):
                         results[dataset_id] = merge_results(
                             results=results[dataset_id],
                             current_json=loaded,
+                            threshold=threshold,
                         )
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:

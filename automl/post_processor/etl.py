@@ -31,10 +31,10 @@ def parse_args():
 
 
 def extract(budget, path, hamlet_path):
-    extract_results(os.path.join(hamlet_path, "baseline"), 1)
-    extract_results(os.path.join(hamlet_path, "pkb"), 1)
-    extract_results(os.path.join(hamlet_path, "ika"), 4)
-    extract_results(os.path.join(hamlet_path, "pkb_ika"), 4)
+    extract_results(budget, hamlet_path, "baseline")
+    extract_results(budget, hamlet_path, "pkb")
+    extract_results(budget, hamlet_path, "ika")
+    extract_results(budget, hamlet_path, "pkb_ika")
 
     extract_comparison_results(
         os.path.join(path, f"auto_sklearn_{budget}"), "auto_sklearn"
@@ -73,7 +73,7 @@ def summarize(budget, path, hamlet_path):
 
 def main(args):
     path = os.path.join("/", "home", "results")
-    hamlet_path = os.path.join(path, f"{args.mode}_{args.budget}")
+    hamlet_path = os.path.join(path, f"{args.mode}")
 
     extract(args.budget, path, hamlet_path)
     summary = summarize(args.budget, path, hamlet_path)
