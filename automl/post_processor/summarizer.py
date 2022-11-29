@@ -73,7 +73,7 @@ def merge_results(current_iteration, results, current_json, threshold):
     return results
 
 
-def extract_results(budget, path, mode):
+def extract_results(budget, path, input_folder, output_folder, mode):
     results = {}
     iteration = 1 if mode in ("baseline", "pkb") else (4 if budget == 500 else 8)
     threshold = (
@@ -81,9 +81,8 @@ def extract_results(budget, path, mode):
         if mode in ("ika", "pkb_ika")
         else (3600 if budget == 500 else 7200)
     )
-    path = os.path.join(path, mode)
 
-    for root, _, files in os.walk(path):
+    for root, _, files in os.walk(os.path.join(path, input_folder, mode)):
 
         if f"automl_output_{iteration}.json" in files:
             dataset_id = root.split("/")[-3]
@@ -102,7 +101,7 @@ def extract_results(budget, path, mode):
                         threshold=threshold,
                     )
 
-    with open(os.path.join(path, "summary.json"), "w") as outfile:
+    with open(os.path.join(path, output_folder, mode, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
 
 
@@ -158,10 +157,10 @@ def get_position(target, evaluated_rewards):
     return next((i for i, x in enumerate(filtered) if x >= target), -1)
 
 
-def summarize_results(baseline, other, limit, path):
+def summarize_results(baseline, other, limit, output_path):
     data = {}
     for approach in [baseline] + other:
-        with open(os.path.join(path, approach, "summary.json")) as f:
+        with open(os.path.join(output_path, approach, "summary.json")) as f:
             for dataset, result in json.load(f).items():
                 if approach == baseline:
                     data[dataset] = {}
@@ -219,4 +218,4 @@ def summarize_results(baseline, other, limit, path):
     df = df.loc[["40983", "40499", "1485", "1478", "1590"]]  # "554"
     df.index.names = ["id"]
     df = df.reset_index()
-    df.to_csv(os.path.join(path, "summary.csv"), index=False)
+    df.to_csv(os.path.join(output_path, "summary.csv"), index=False)

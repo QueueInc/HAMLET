@@ -19,8 +19,16 @@ def parse_args():
         help="iteration budget",
     )
     parser.add_argument(
-        "-mode",
-        "--mode",
+        "-input-folder",
+        "--input-folder",
+        nargs="?",
+        type=str,
+        required=True,
+        help="mode of the experiments",
+    )
+    parser.add_argument(
+        "-output-folder",
+        "--output-folder",
         nargs="?",
         type=str,
         required=True,
@@ -30,11 +38,11 @@ def parse_args():
     return args
 
 
-def extract(budget, path, hamlet_path):
-    extract_results(budget, hamlet_path, "baseline")
-    extract_results(budget, hamlet_path, "pkb")
-    extract_results(budget, hamlet_path, "ika")
-    extract_results(budget, hamlet_path, "pkb_ika")
+def extract(budget, path, input_folder, output_folder):
+    extract_results(budget, path, input_folder, output_folder, "baseline")
+    extract_results(budget, path, input_folder, output_folder, "pkb")
+    extract_results(budget, path, input_folder, output_folder, "ika")
+    extract_results(budget, path, input_folder, output_folder, "pkb_ika")
 
     extract_comparison_results(
         os.path.join(path, f"auto_sklearn_{budget}"), "auto_sklearn"
@@ -45,10 +53,12 @@ def extract(budget, path, hamlet_path):
     extract_comparison_results(os.path.join(path, f"h2o_{budget}"), "h2o")
 
 
-def summarize(budget, path, hamlet_path):
-    summarize_results("baseline", ["pkb", "ika", "pkb_ika"], budget, hamlet_path)
+def summarize(budget, path, output_folder):
+    summarize_results(
+        "baseline", ["pkb", "ika", "pkb_ika"], budget, os.path.join(path, output_folder)
+    )
 
-    df = pd.read_csv(os.path.join(hamlet_path, "summary.csv")).set_index("id")
+    df = pd.read_csv(os.path.join(path, output_folder, "summary.csv")).set_index("id")
     df_auto_sklearn = pd.read_csv(
         os.path.join(path, f"auto_sklearn_{budget}", "summary.csv")
     ).set_index("id")
@@ -73,10 +83,9 @@ def summarize(budget, path, hamlet_path):
 
 def main(args):
     path = os.path.join("/", "home", "results")
-    hamlet_path = os.path.join(path, f"{args.mode}")
 
-    extract(args.budget, path, hamlet_path)
-    summary = summarize(args.budget, path, hamlet_path)
+    extract(args.budget, path, args.input_folder, args.output_folder)
+    summary = summarize(args.budget, path, args.output_folder)
 
     plot_matplotlib(
         summary,
@@ -89,7 +98,7 @@ def main(args):
             # "auto_sklearn_pro",
             "h2o",
         ],
-        hamlet_path,
+        os.path.join(path, args.output_folder),
     )
 
 
