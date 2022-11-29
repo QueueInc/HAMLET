@@ -40,21 +40,15 @@ class Buffer:
         return cls._instance
 
     def _filter_previous_results(self, points_to_evaluate, evaluated_rewards, metric):
-        new_points_to_evaluate, new_evaluated_rewards = [], []
-        for i, point_to_evaluate in enumerate(points_to_evaluate):
-            new_points_to_evaluate.append(point_to_evaluate)
+        new_points_to_evaluate = points_to_evaluate.copy()
+        new_evaluated_rewards = evaluated_rewards.copy()
+        for i, point_to_evaluate in enumerate(new_points_to_evaluate):
             if self.check_template_constraints(point_to_evaluate):
-                new_evaluated_rewards.append(
-                    {metric: float("-inf"), "status": "previous_constraint"}
-                )
+                new_evaluated_rewards[i][metric] = float("-inf")
+                new_evaluated_rewards[i]["status"] = "previous_constraint"
             else:
-                if evaluated_rewards[i]["status"] != "previous_constraint":
-                    new_evaluated_rewards.append(
-                        {
-                            metric: float(evaluated_rewards[i][metric]),
-                            "status": evaluated_rewards[i]["status"],
-                        }
-                    )
+                if new_evaluated_rewards[i]["status"] != "previous_constraint":
+                    new_evaluated_rewards[metric] = float(new_evaluated_rewards[metric])
         return new_points_to_evaluate, new_evaluated_rewards
 
     def add_evaluation(self, config, result):

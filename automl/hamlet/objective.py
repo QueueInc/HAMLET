@@ -161,6 +161,7 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         "total_time": 0,
         "fit_time": 0,
         "score_time": 0,
+        "absolute_time": 0,
     }
 
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
