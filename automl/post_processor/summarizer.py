@@ -1,3 +1,4 @@
+from functools import reduce
 import os
 import datetime
 import json
@@ -75,6 +76,14 @@ def merge_results(
     # I put tat config as the best one
     results["best_config"] = results["evaluated_rewards"][best_index].copy()
     results["best_config"]["config"] = results["points_to_evaluate"][best_index]
+    results["best_config"]["time"] = (
+        reduce(
+            lambda x, y: x + (y["total_time"] if "total_time" in y else 0),
+            results["evaluated_rewards"][:best_index],
+            0,
+        )
+        / 60
+    )
 
     # print(f"{mode} {dataset}: {results['best_config']}")
     return results
@@ -174,6 +183,7 @@ def extract_comparison_results(path, label):
             results[dataset_id] = {
                 label: accuracy,
                 f"iteration_{label}": iteration,
+                f"best_time_{label}": 0,
             }
 
     with open(os.path.join(path, "summary.json"), "w") as outfile:
@@ -227,6 +237,8 @@ def summarize_results(baseline, other, limit, output_path):
                 data[dataset][f"iteration_{approach}"] = get_position(
                     temp, result["evaluated_rewards"]
                 )
+
+                data[dataset][f"best_time_{approach}"] = result["best_config"]["time"]
 
                 data[dataset][f"tot_iteration_{approach}"] = len(
                     [

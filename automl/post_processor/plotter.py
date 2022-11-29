@@ -127,3 +127,36 @@ def plot_matplotlib(df, baseline, others, path):
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
+
+    labels = df["name"]
+    x = np.arange(len(labels))  # the label locations
+    width = 0.1  # the width of the bars
+    fig, ax = plt.subplots()
+    for i in range(len(all_series)):
+        label = (
+            all_series[i]
+            if "_" in all_series[i]
+            else " + ".join(all_series[i].split("_"))
+        ).upper()
+        ax.bar(paddings[i], df[f"best_time_{all_series[i]}"], width, label=label)
+    ax.set_ylabel("#optimization time (m)", labelpad=10)
+    # ax.set_title("No. configuration in which the approaches achieve the best result")
+    ax.set_xticks(x, labels)
+    # ax.legend()
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    lgd = fig.legend(
+        by_label.values(),
+        by_label.keys(),
+        loc="lower center",
+        ncol=4,
+        bbox_to_anchor=(0.5, -0.1),
+    )
+    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(path, f"best_time.png"),
+        bbox_extra_artists=(lgd, text),
+        bbox_inches="tight",
+    )
