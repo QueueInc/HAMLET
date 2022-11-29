@@ -154,6 +154,14 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
+    def set_time(result, scores, start_time):
+        result["absolute_time"] = time.time()
+        result["total_time"] = result["absolute_time"] - start_time
+
+        if scores and "fit_time" in scores:
+            result["fit_time"] = np.mean(scores["fit_time"])
+        if scores and "score_time" in scores:
+            result["score_time"] = np.mean(scores["score_time"])
 
     result = {
         metric: float("-inf"),
@@ -164,19 +172,22 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         "absolute_time": 0,
     }
 
+    start_time = time.time()
+    scores = None
+
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
         return reward
 
     if Buffer().check_template_constraints(config):
         result["status"] = "previous_constraint"
+        set_time(result, scores, start_time)
         Buffer().add_evaluation(config=config, result=result)
         return result
 
     Buffer().printflush(config)
 
     try:
-        start_time = time.time()
 
         X_copy = X.copy()
         y_copy = y.copy()
@@ -211,13 +222,6 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             print(f"The result for {config} was NaN")
             raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
-        result["total_time"] = time.time() - start_time
-        result["absolute_time"] = time.time()
-
-        if "fit_time" in scores:
-            result["fit_time"] = np.mean(scores["fit_time"])
-        if "score_time" in scores:
-            result["score_time"] = np.mean(scores["score_time"])
 
     except TimeException:
         Buffer().printflush("Timeout")
@@ -225,6 +229,9 @@ def objective(X, y, categorical_indicator, metric, seed, config):
         Buffer().detach_timer()
         Buffer().printflush("Something went wrong")
     finally:
+
+        set_time(result, scores, start_time)
+
         del X_copy
         del X_copy_ii
         del y_copy
