@@ -2,7 +2,7 @@ import os
 import argparse
 
 import pandas as pd
-from plotter import plot_matplotlib
+from plotter import plot_matplotlib, time_plot
 from summarizer import extract_comparison_results, extract_results, summarize_results
 
 
@@ -103,6 +103,7 @@ def main(args):
         ],
         os.path.join(path, args.output_folder),
     )
+    time_plot(summary, os.path.join(path, args.output_folder))
 
 
 if __name__ == "__main__":

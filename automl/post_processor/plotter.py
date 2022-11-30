@@ -160,3 +160,118 @@ def plot_matplotlib(df, baseline, others, path):
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
+
+
+def time_plot(summary, output_path):
+    approaches = ["baseline", "pkb", "ika", "pkb_ika"]
+    dataset_names = list(summary["name"])
+    dataset_ids = list(summary.index.astype(str))
+    # num_subplots = len(next(os.walk(os.path.join(output_path, approaches[0])))[1])
+
+    results = {}
+    for approach in approaches:
+        results[approach] = {}
+        with open(os.path.join(output_path, approach, "summary.json")) as f:
+            summary = json.load(f)
+            for dataset, result in summary.items():
+                current_subplot_index = dataset_ids.index(dataset)
+                timing = [
+                    reward["absolute_time"] - result["start_time"]
+                    for reward in result["evaluated_rewards"]
+                    if "absolute_time" in reward
+                ]
+                scores = [
+                    max(
+                        [
+                            float(_reward["balanced_accuracy"])
+                            for _reward in result["evaluated_rewards"][: (idx + 1)]
+                            if "balanced_accuracy" in _reward
+                        ]
+                    )
+                    for idx, reward in enumerate(result["evaluated_rewards"])
+                    if "absolute_time" in reward
+                ]
+                results[approach][dataset] = {
+                    "index": current_subplot_index,
+                    "title": dataset_names[current_subplot_index],
+                    "timing": timing[1:],
+                    "scores": scores[1:],
+                }
+                results[approach][dataset]["min_score"] = min(
+                    results[approach][dataset]["scores"]
+                )
+                results[approach][dataset]["max_score"] = max(
+                    results[approach][dataset]["scores"]
+                )
+
+    fig, axs = plt.subplots(1, 5)
+    min_time = min(
+        [
+            min([min(results[approach][dataset]["timing"]) for dataset in dataset_ids])
+            for approach in approaches
+        ]
+    )
+    max_time = max(
+        [
+            max([max(results[approach][dataset]["timing"]) for dataset in dataset_ids])
+            for approach in approaches
+        ]
+    )
+    max_absolute_score = {
+        dataset: max(
+            [max(results[approach][dataset]["scores"]) for approach in approaches]
+        )
+        for dataset in dataset_ids
+    }
+    min_absolute_score = {
+        dataset: min(
+            [min(results[approach][dataset]["scores"]) for approach in approaches]
+        )
+        for dataset in dataset_ids
+    }
+    for approach in approaches:
+        for dataset in dataset_ids:
+            axs[results[approach][dataset]["index"]].title.set_text(
+                results[approach][dataset]["title"]
+            )
+            timing = [min_time] + results[approach][dataset]["timing"] + [max_time]
+            scores = (
+                [results[approach][dataset]["min_score"]]
+                + results[approach][dataset]["scores"]
+                + [results[approach][dataset]["max_score"]]
+            )
+            scores = [
+                (score - min_absolute_score[dataset])
+                / (max_absolute_score[dataset] - min_absolute_score[dataset])
+                for score in scores
+            ]
+            axs[results[approach][dataset]["index"]].plot(
+                timing,
+                scores,
+                label=approach,
+            )
+            axs[results[approach][dataset]["index"]].set_xlabel(
+                "optimization time (s)", labelpad=10
+            )
+            axs[results[approach][dataset]["index"]].set_ylabel(
+                "balanced accuracy", labelpad=7
+            )
+            # axs[results[approach][dataset]["index"]].set_ylim([scores[5], 1])
+            axs[results[approach][dataset]["index"]].set_xlim([50, max_time])
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    lgd = fig.legend(
+        by_label.values(),
+        by_label.keys(),
+        loc="upper center",
+        ncol=4,
+        bbox_to_anchor=(0.5, -0.1),
+    )
+    text = fig.text(-0.2, 1.05, "", transform=axs[0].transAxes)
+    # fig.tight_layout()
+    fig.set_size_inches(35, 5)
+    fig.savefig(
+        os.path.join(output_path, "accuracy_time.png"),
+        bbox_extra_artists=(lgd, text),
+        bbox_inches="tight",
+    )
