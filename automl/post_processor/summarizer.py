@@ -155,6 +155,8 @@ def extract_results(budget, path, input_folder, output_folder, mode):
                         tot_iterations=iteration,
                     )
 
+    if not os.path.exists(os.path.join(path, output_folder, mode)):
+        os.makedirs(os.path.join(path, output_folder, mode))
     with open(os.path.join(path, output_folder, mode, "summary.json"), "w") as outfile:
         json.dump(results, outfile, indent=4)
 

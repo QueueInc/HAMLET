@@ -84,6 +84,9 @@ def summarize(budget, path, output_folder):
 def main(args):
     path = os.path.join("/", "home", "results")
 
+    if not os.path.exists(os.path.join(path, args.output_folder)):
+        os.makedirs(os.path.join(path, args.output_folder))
+
     extract(args.budget, path, args.input_folder, args.output_folder)
     summary = summarize(args.budget, path, args.output_folder)
 
