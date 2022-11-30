@@ -13,7 +13,7 @@ val dictionary = mapOf(
     "knn" to "KNeighborsClassifier",
     "naive_bayes" to "GaussianNB",
     "nn" to "MLPClassifier",
-    "svm" to "SVC",
+    "svm" to "LinearSVC",
     "rf" to "RandomForestClassifier",
     "ada_boost" to "AdaBoostClassifier",
     "function_transformer" to "FunctionTransformer",
