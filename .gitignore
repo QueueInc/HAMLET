@@ -158,3 +158,5 @@ vscode/
 # Specific
 .results
 results/
+.temp
+temp/
