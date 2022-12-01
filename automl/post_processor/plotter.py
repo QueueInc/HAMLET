@@ -32,11 +32,52 @@ def plot_pd(df, baseline, others, path):
     )
 
 
-def plot_matplotlib(df, baseline, others, path):
+def create_plot(
+    df, all_series, ticks, paddings, width, labels, mode, support_map, path
+):
+    fig, ax = plt.subplots()
+    for i, series in enumerate(all_series):
+        label = series if ("_" not in series) else " + ".join(series.split("_"))
+        label = label if label == "baseline" else label.upper()
+        ax.bar(
+            paddings[i],
+            df[support_map["prefix"][mode] + series],
+            width,
+            label=label,
+        )
+    ax.set_ylabel(
+        support_map["y_label"][mode],
+        labelpad=10,
+    )
+
+    # ax.set_title("Balanced accuracy achieved by the approaches")
+    ax.set_xticks(ticks, labels)
+    if mode == "accuracy":
+        ax.set_ylim([0.75, 1])
+    # ax.legend()
+
+    _handles, _labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(_labels, _handles))
+    lgd = fig.legend(
+        by_label.values(),
+        by_label.keys(),
+        loc="lower center",
+        ncol=4,
+        bbox_to_anchor=(0.5, -0.1),
+    )
+    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(path, f"{mode}.png"),
+        bbox_extra_artists=(lgd, text),
+        bbox_inches="tight",
+    )
+
+
+def plot_matplotlib(df, baseline, others, comparison, path):
 
     SMALL_SIZE = 14
     MEDIUM_SIZE = 14
-    BIGGER_SIZE = 16
 
     plt.rc("font", size=MEDIUM_SIZE)  # controls default text sizes
     plt.rc("axes", titlesize=MEDIUM_SIZE)  # fontsize of the axes title
@@ -46,123 +87,46 @@ def plot_matplotlib(df, baseline, others, path):
     plt.rc("legend", fontsize=MEDIUM_SIZE)  # legend fontsize
     plt.rc("figure", titlesize=MEDIUM_SIZE)  # fontsize of the figure title
 
+    labels = df["name"]
+    all_series = [baseline] + others
+    ticks = np.arange(len(labels))
+    width = 0.2
+    paddings = [
+        ticks - (width / 2 * 3),
+        ticks - (width / 2),
+        ticks + (width / 2),
+        ticks + (width / 2 * 3),
+    ]
+    support_map = {
+        "prefix": {
+            "accuracy": "",
+            "iterations": "iteration_",
+            "best_time": "best_time_",
+        },
+        "y_label": {
+            "accuracy": "Balanced accuracy",
+            "iterations": "#explored pipeline instances",
+            "best_time": "#optimization time (m)",
+        },
+    }
+
+    create_plot(
+        df, all_series, ticks, paddings, width, labels, "accuracy", support_map, path
+    )
+    create_plot(
+        df, all_series, ticks, paddings, width, labels, "iterations", support_map, path
+    )
+    create_plot(
+        df, all_series, ticks, paddings, width, labels, "best_time", support_map, path
+    )
+
     df[
         [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
         + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
-    ].plot.bar().get_figure().savefig(os.path.join(path, f"time.png"))
-
-    labels = df["name"]
-    x = np.arange(len(labels))  # the label locations
-    width = 0.1  # the width of the bars
-
-    fig, ax = plt.subplots()
-    all_series = [baseline] + others
-    paddings = [
-        x - (width / 2 * 5),
-        x - (width / 2 * 3),
-        x - (width / 2),
-        x + (width / 2),
-        x + (width / 2 * 3),
-        x + (width / 2 * 5),
-    ]
-    for i in range(len(all_series)):
-        label = (
-            all_series[i]
-            if "_" in all_series[i]
-            else " + ".join(all_series[i].split("_"))
-        )
-        ax.bar(paddings[i], df[all_series[i]], width, label=label)
-    ax.set_ylabel("Balanced accuracy", labelpad=10)
-    # ax.set_title("Balanced accuracy achieved by the approaches")
-    ax.set_xticks(x, labels)
-    ax.set_ylim([0.75, 1])
-    # ax.legend()
-
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    lgd = fig.legend(
-        by_label.values(),
-        by_label.keys(),
-        loc="lower center",
-        ncol=4,
-        bbox_to_anchor=(0.5, -0.1),
-    )
-    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
-    fig.tight_layout()
-    fig.savefig(
-        os.path.join(path, f"accuracy.png"),
-        bbox_extra_artists=(lgd, text),
-        bbox_inches="tight",
-    )
-
-    labels = df["name"]
-    x = np.arange(len(labels))  # the label locations
-    width = 0.1  # the width of the bars
-    fig, ax = plt.subplots()
-    for i in range(len(all_series)):
-        label = (
-            all_series[i]
-            if "_" in all_series[i]
-            else " + ".join(all_series[i].split("_"))
-        ).upper()
-        ax.bar(paddings[i], df[f"iteration_{all_series[i]}"], width, label=label)
-    ax.set_ylabel("#explored pipeline instances", labelpad=10)
-    # ax.set_title("No. configuration in which the approaches achieve the best result")
-    ax.set_xticks(x, labels)
-    # ax.legend()
-
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    lgd = fig.legend(
-        by_label.values(),
-        by_label.keys(),
-        loc="lower center",
-        ncol=4,
-        bbox_to_anchor=(0.5, -0.1),
-    )
-    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
-    fig.tight_layout()
-    fig.savefig(
-        os.path.join(path, f"iterations.png"),
-        bbox_extra_artists=(lgd, text),
-        bbox_inches="tight",
-    )
-
-    labels = df["name"]
-    x = np.arange(len(labels))  # the label locations
-    width = 0.1  # the width of the bars
-    fig, ax = plt.subplots()
-    for i in range(len(all_series)):
-        label = (
-            all_series[i]
-            if "_" in all_series[i]
-            else " + ".join(all_series[i].split("_"))
-        ).upper()
-        ax.bar(paddings[i], df[f"best_time_{all_series[i]}"], width, label=label)
-    ax.set_ylabel("#optimization time (m)", labelpad=10)
-    # ax.set_title("No. configuration in which the approaches achieve the best result")
-    ax.set_xticks(x, labels)
-    # ax.legend()
-
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    lgd = fig.legend(
-        by_label.values(),
-        by_label.keys(),
-        loc="lower center",
-        ncol=4,
-        bbox_to_anchor=(0.5, -0.1),
-    )
-    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
-    fig.tight_layout()
-    fig.savefig(
-        os.path.join(path, f"best_time.png"),
-        bbox_extra_artists=(lgd, text),
-        bbox_inches="tight",
-    )
+    ].plot.bar().get_figure().savefig(os.path.join(path, "time.png"))
 
 
-def time_plot(summary, output_path):
+def time_plot(summary, output_path, budget):
     approaches = ["baseline", "pkb", "ika", "pkb_ika"]
     dataset_names = list(summary["name"])
     dataset_ids = list(summary.index.astype(str))
@@ -183,7 +147,9 @@ def time_plot(summary, output_path):
                 scores = [
                     max(
                         [
-                            float(_reward["balanced_accuracy"])
+                            0
+                            if _reward["balanced_accuracy"] == "-inf"
+                            else _reward["balanced_accuracy"]
                             for _reward in result["evaluated_rewards"][: (idx + 1)]
                             if "balanced_accuracy" in _reward
                         ]
@@ -205,13 +171,13 @@ def time_plot(summary, output_path):
                 )
 
     fig, axs = plt.subplots(1, 5)
-    min_time = min(
+    min_absolute_time = min(
         [
             min([min(results[approach][dataset]["timing"]) for dataset in dataset_ids])
             for approach in approaches
         ]
     )
-    max_time = max(
+    max_absolute_time = max(
         [
             max([max(results[approach][dataset]["timing"]) for dataset in dataset_ids])
             for approach in approaches
@@ -229,12 +195,23 @@ def time_plot(summary, output_path):
         )
         for dataset in dataset_ids
     }
+    marker = {
+        "baseline": "o",
+        "pkb": "^",
+        "ika": "s",
+        "pkb_ika": "*",
+    }
     for approach in approaches:
         for dataset in dataset_ids:
             axs[results[approach][dataset]["index"]].title.set_text(
                 results[approach][dataset]["title"]
             )
-            timing = [min_time] + results[approach][dataset]["timing"] + [max_time]
+            timing = (
+                [min_absolute_time]
+                + results[approach][dataset]["timing"]
+                + [max_absolute_time]
+            )
+            timing = [time / 60 for time in timing]
             scores = (
                 [results[approach][dataset]["min_score"]]
                 + results[approach][dataset]["scores"]
@@ -249,15 +226,19 @@ def time_plot(summary, output_path):
                 timing,
                 scores,
                 label=approach,
+                marker=marker[approach],
+                markevery=5,
             )
             axs[results[approach][dataset]["index"]].set_xlabel(
-                "optimization time (s)", labelpad=10
+                "optimization time (m)", labelpad=10
             )
             axs[results[approach][dataset]["index"]].set_ylabel(
                 "balanced accuracy", labelpad=7
             )
-            # axs[results[approach][dataset]["index"]].set_ylim([scores[5], 1])
-            axs[results[approach][dataset]["index"]].set_xlim([50, max_time])
+            # axs[results[approach][dataset]["index"]].set_ylim([0.0, 1])
+            axs[results[approach][dataset]["index"]].set_xlim(
+                [0, 60 if budget == 500 else 120]
+            )
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     lgd = fig.legend(

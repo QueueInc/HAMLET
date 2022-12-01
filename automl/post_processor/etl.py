@@ -97,13 +97,14 @@ def main(args):
             "pkb",
             "ika",
             "pkb_ika",
+        ],
+        [
             "auto_sklearn",
-            # "auto_sklearn_pro",
             "h2o",
         ],
         os.path.join(path, args.output_folder),
     )
-    time_plot(summary, os.path.join(path, args.output_folder))
+    time_plot(summary, os.path.join(path, args.output_folder), args.budget)
 
 
 if __name__ == "__main__":
