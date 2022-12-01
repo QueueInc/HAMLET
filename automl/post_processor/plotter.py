@@ -32,7 +32,7 @@ def plot_pd(df, baseline, others, path):
     )
 
 
-def create_plot(
+def create_hamlet_plot(
     df, all_series, ticks, paddings, width, labels, mode, support_map, path
 ):
     fig, ax = plt.subplots()
@@ -74,6 +74,55 @@ def create_plot(
     )
 
 
+def create_comparison_plot(df, all_series, comparison, ticks, width, labels, path):
+    fig, ax = plt.subplots()
+    paddings = [
+        ticks,
+        ticks + width,
+    ]
+    ax.bar(
+        ticks - width,
+        list(df[all_series].max(axis=1)),
+        width,
+        label="HAMLET",
+        color="tab:cyan",
+    )
+    for i, series in enumerate(comparison):
+        ax.bar(
+            paddings[i],
+            df[series],
+            width,
+            label=series,
+            color="tab:pink" if series == "auto_sklearn" else "tab:brown",
+        )
+    ax.set_ylabel(
+        "Balanced accuracy",
+        labelpad=10,
+    )
+
+    # ax.set_title("Balanced accuracy achieved by the approaches")
+    ax.set_xticks(ticks, labels)
+    ax.set_ylim([0.75, 1])
+    # ax.legend()
+
+    _handles, _labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(_labels, _handles))
+    lgd = fig.legend(
+        by_label.values(),
+        by_label.keys(),
+        loc="lower center",
+        ncol=3,
+        bbox_to_anchor=(0.5, -0.1),
+    )
+    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(path, f"comparison.png"),
+        bbox_extra_artists=(lgd, text),
+        bbox_inches="tight",
+    )
+
+
 def plot_matplotlib(df, baseline, others, comparison, path):
 
     SMALL_SIZE = 14
@@ -110,15 +159,16 @@ def plot_matplotlib(df, baseline, others, comparison, path):
         },
     }
 
-    create_plot(
+    create_hamlet_plot(
         df, all_series, ticks, paddings, width, labels, "accuracy", support_map, path
     )
-    create_plot(
+    create_hamlet_plot(
         df, all_series, ticks, paddings, width, labels, "iterations", support_map, path
     )
-    create_plot(
+    create_hamlet_plot(
         df, all_series, ticks, paddings, width, labels, "best_time", support_map, path
     )
+    create_comparison_plot(df, all_series, comparison, ticks, width, labels, path)
 
     df[
         [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
