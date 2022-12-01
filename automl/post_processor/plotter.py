@@ -74,14 +74,12 @@ def create_hamlet_plot(
     )
 
 
-def create_comparison_plot(df, all_series, comparison, ticks, width, labels, path):
+def create_comparison_plot(
+    df, all_series, comparison, ticks, paddings, width, labels, path
+):
     fig, ax = plt.subplots()
-    paddings = [
-        ticks,
-        ticks + width,
-    ]
     ax.bar(
-        ticks - width,
+        paddings[0],
         list(df[all_series].max(axis=1)),
         width,
         label="HAMLET",
@@ -89,7 +87,7 @@ def create_comparison_plot(df, all_series, comparison, ticks, width, labels, pat
     )
     for i, series in enumerate(comparison):
         ax.bar(
-            paddings[i],
+            paddings[i + 1],
             df[series],
             width,
             label=series,
@@ -123,6 +121,65 @@ def create_comparison_plot(df, all_series, comparison, ticks, width, labels, pat
     )
 
 
+def create_time_plot(df, others, ticks, paddings, width, labels, path):
+    # df[
+    #     [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
+    #     + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
+    # ].plot.bar().get_figure().savefig(os.path.join(path, "time.png"))
+    colors = {
+        "pkb": ["gold", "tab:orange"],
+        "ika": ["lightgreen", "tab:green"],
+        "pkb_ika": ["lightcoral", "tab:red"],
+    }
+    fig, ax = plt.subplots()
+    for i, series in enumerate(others):
+        label = series if ("_" not in series) else " + ".join(series.split("_"))
+        label = label if label == "baseline" else label.upper()
+        sum = df[[f"argumentation_time_{series}", f"automl_time_{series}"]].sum(axis=1)
+        argumentation = df[f"argumentation_time_{series}"] / sum
+        automl = df[f"automl_time_{series}"] / sum
+        ax.bar(
+            paddings[i],
+            argumentation,
+            width,
+            label="argum. " + label,
+            color=colors[series][1],
+        )
+        ax.bar(
+            paddings[i],
+            automl,
+            width,
+            label="automl " + label,
+            bottom=argumentation,
+            color=colors[series][0],
+        )
+    ax.set_ylabel(
+        "Percentage of time",
+        labelpad=10,
+    )
+
+    # ax.set_title("Balanced accuracy achieved by the approaches")
+    ax.set_xticks(ticks, labels)
+    # ax.legend()
+
+    _handles, _labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(_labels, _handles))
+    lgd = fig.legend(
+        by_label.values(),
+        by_label.keys(),
+        loc="lower center",
+        ncol=3,
+        bbox_to_anchor=(0.5, -0.1),
+    )
+    text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(path, "time.png"),
+        bbox_extra_artists=(lgd, text),
+        bbox_inches="tight",
+    )
+
+
 def plot_matplotlib(df, baseline, others, comparison, path):
 
     SMALL_SIZE = 14
@@ -140,11 +197,16 @@ def plot_matplotlib(df, baseline, others, comparison, path):
     all_series = [baseline] + others
     ticks = np.arange(len(labels))
     width = 0.2
-    paddings = [
+    paddings_5 = [
         ticks - (width / 2 * 3),
         ticks - (width / 2),
         ticks + (width / 2),
         ticks + (width / 2 * 3),
+    ]
+    paddings_3 = [
+        ticks - width,
+        ticks,
+        ticks + width,
     ]
     support_map = {
         "prefix": {
@@ -160,20 +222,27 @@ def plot_matplotlib(df, baseline, others, comparison, path):
     }
 
     create_hamlet_plot(
-        df, all_series, ticks, paddings, width, labels, "accuracy", support_map, path
+        df, all_series, ticks, paddings_5, width, labels, "accuracy", support_map, path
     )
     create_hamlet_plot(
-        df, all_series, ticks, paddings, width, labels, "iterations", support_map, path
+        df,
+        all_series,
+        ticks,
+        paddings_5,
+        width,
+        labels,
+        "iterations",
+        support_map,
+        path,
     )
     create_hamlet_plot(
-        df, all_series, ticks, paddings, width, labels, "best_time", support_map, path
+        df, all_series, ticks, paddings_5, width, labels, "best_time", support_map, path
     )
-    create_comparison_plot(df, all_series, comparison, ticks, width, labels, path)
+    create_comparison_plot(
+        df, all_series, comparison, ticks, paddings_3, width, labels, path
+    )
 
-    df[
-        [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
-        + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
-    ].plot.bar().get_figure().savefig(os.path.join(path, "time.png"))
+    create_time_plot(df, others, ticks, paddings_3, width, labels, path)
 
 
 def time_plot(summary, output_path, budget):
