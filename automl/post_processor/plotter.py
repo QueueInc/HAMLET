@@ -78,29 +78,30 @@ def create_comparison_plot(
     df, all_series, comparison, ticks, paddings, width, labels, path
 ):
     fig, ax = plt.subplots()
-    ax.bar(
+    bar = ax.barh(
         paddings[0],
         list(df[all_series].max(axis=1)),
         width,
         label="HAMLET",
         color="tab:cyan",
     )
+    ax.bar_label(bar, list(df[all_series].idxmax(axis=1)), padding=-30)
     for i, series in enumerate(comparison):
-        ax.bar(
+        ax.barh(
             paddings[i + 1],
             df[series],
             width,
             label=series,
             color="tab:pink" if series == "auto_sklearn" else "tab:brown",
         )
-    ax.set_ylabel(
+    ax.set_xlabel(
         "Balanced accuracy",
         labelpad=10,
     )
 
     # ax.set_title("Balanced accuracy achieved by the approaches")
-    ax.set_xticks(ticks, labels)
-    ax.set_ylim([0.75, 1])
+    ax.set_yticks(ticks, labels)
+    ax.set_xlim([0.75, 1])
     # ax.legend()
 
     _handles, _labels = plt.gca().get_legend_handles_labels()
