@@ -72,7 +72,7 @@ def get_commands(data, args):
                         {args.mode} \
                         {args.batch_size} \
                         {args.time_budget} \
-                        42 \
+                        0 \
                         false \
                         {input_path}"""
             stdout_path = os.path.join(log_path, f"stdout_{iteration + 1}.txt")
