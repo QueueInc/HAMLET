@@ -15,10 +15,14 @@ def merge_results(
         return [element for element in list1 if element in list2]
 
     if current_iteration == 1:
+        # Add iteration and conf number in evaluated_rewards (useful to plot marker in accuracy_time)
+        for idx, reward in enumerate(current_json["evaluated_rewards"]):
+            reward["iteration"] = current_iteration
+            reward["conf_numb"] = idx
         # If it is the first iteration I instantiate the results (w/ the laoded json, filtering afterwards)
         results = current_json
     else:
-        # Otherwise, I start by summing the timing
+        # Otherwise, I start by summing the timing (useful to plot marker in accuracy_time)
         results["graph_generation_time"] += current_json["graph_generation_time"]
         results["space_generation_time"] += current_json["space_generation_time"]
         results["optimization_time"] += current_json["optimization_time"]
@@ -38,10 +42,27 @@ def merge_results(
             # Otherwise, I copy everything
             start = 0
         # I copy everything in that range
+        # Add iteration and conf number in evaluated_rewards (useful to plot marker in accuracy_time)
+        for idx, reward in enumerate(current_json["evaluated_rewards"][start:]):
+            reward["iteration"] = current_iteration
+            reward["conf_numb"] = idx
         results["points_to_evaluate"] += current_json["points_to_evaluate"][start:]
         results["evaluated_rewards"] += current_json["evaluated_rewards"][start:]
-    # I take the index of the elements to keep (based on the time filtering)
 
+    # I also take track of the time iteration by iteration
+    results[f"start_time_{current_iteration}"] = current_json["start_time"]
+    results[f"graph_generation_time_{current_iteration}"] = current_json[
+        "graph_generation_time"
+    ]
+    results[f"space_generation_time_{current_iteration}"] = current_json[
+        "space_generation_time"
+    ]
+    results[f"optimization_time_{current_iteration}"] = current_json[
+        "optimization_time"
+    ]
+    results[f"mining_time_{current_iteration}"] = current_json["mining_time"]
+
+    # I take the index of the elements to keep (based on the time filtering)
     if current_iteration < tot_iterations:
         return results
 

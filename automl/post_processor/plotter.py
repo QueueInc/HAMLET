@@ -271,7 +271,14 @@ def time_plot(summary, output_path, budget):
             for dataset, result in summary.items():
                 current_subplot_index = dataset_ids.index(dataset)
                 timing = [
-                    reward["absolute_time"] - result["start_time"]
+                    reward["absolute_time"]
+                    - result["start_time"]
+                    - (
+                        result[f"""graph_generation_time_{reward["iteration"]}"""]
+                        + result[f"""space_generation_time_{reward["iteration"]}"""]
+                        if reward["iteration"] != 1
+                        else 0
+                    )
                     # if "absolute_time" in reward
                     # else np.nan
                     for reward in result["evaluated_rewards"]
@@ -288,12 +295,8 @@ def time_plot(summary, output_path, budget):
                 scores = [
                     max(
                         [
-                            0
-                            if (
-                                _reward["balanced_accuracy"]
-                                == "-inf"
-                                # or "absolute_time" not in _reward
-                            )
+                            0 if _reward["balanced_accuracy"] == "-inf"
+                            # or "absolute_time" not in _reward
                             else _reward["balanced_accuracy"]
                             for _reward in result["evaluated_rewards"][: (idx + 1)]
                             if "balanced_accuracy" in _reward
@@ -302,11 +305,22 @@ def time_plot(summary, output_path, budget):
                     for idx, reward in enumerate(result["evaluated_rewards"])
                     if "absolute_time" in reward
                 ]
+                iterations = [
+                    reward["iteration"]
+                    for reward in result["evaluated_rewards"]
+                    if "absolute_time" in reward
+                ]
+                markers = [
+                    iterations.index(iteration)
+                    for iteration in range(max(iterations))
+                    if iteration in iterations
+                ]
                 results[approach][dataset] = {
                     "index": current_subplot_index,
                     "title": dataset_names[current_subplot_index],
                     "timing": timing[1:],
                     "scores": scores[1:],
+                    "markers": markers,
                 }
                 results[approach][dataset]["min_score"] = min(
                     results[approach][dataset]["scores"]
@@ -340,11 +354,17 @@ def time_plot(summary, output_path, budget):
         )
         for dataset in dataset_ids
     }
-    marker = {
+    markers = {
         "baseline": "o",
         "pkb": "^",
         "ika": "s",
         "pkb_ika": "*",
+    }
+    colors = {
+        "baseline": "tab:blue",
+        "pkb": "tab:orange",
+        "ika": "tab:green",
+        "pkb_ika": "tab:red",
     }
     for approach in approaches:
         for dataset in dataset_ids:
@@ -373,9 +393,19 @@ def time_plot(summary, output_path, budget):
                 timing,
                 scores,
                 label=approach,
-                marker=marker[approach],
+                marker=markers[approach],
                 markevery=len(timing) - 1,
+                markersize=9 if approach == "pkb_ika" else 6,
+                color=colors[approach],
             )
+            for idx in results[approach][dataset]["markers"]:
+                axs[results[approach][dataset]["index"]].plot(
+                    timing[idx],
+                    scores[idx],
+                    marker=markers[approach],
+                    markersize=9 if approach == "pkb_ika" else 6,
+                    color=colors[approach],
+                )
             axs[results[approach][dataset]["index"]].set_xlabel(
                 "optimization time (m)", labelpad=10
             )
