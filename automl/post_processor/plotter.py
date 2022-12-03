@@ -116,7 +116,7 @@ def create_comparison_plot(
     text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
     fig.tight_layout()
     fig.savefig(
-        os.path.join(path, f"comparison.png"),
+        os.path.join(path, "comparison.png"),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
@@ -272,14 +272,28 @@ def time_plot(summary, output_path, budget):
                 current_subplot_index = dataset_ids.index(dataset)
                 timing = [
                     reward["absolute_time"] - result["start_time"]
+                    # if "absolute_time" in reward
+                    # else np.nan
                     for reward in result["evaluated_rewards"]
                     if "absolute_time" in reward
                 ]
+                # timing = (
+                #     pd.DataFrame(timing)
+                #     .interpolate()
+                #     .ffill()
+                #     .bfill()
+                #     .iloc[:, 0]
+                #     .values.tolist()
+                # )
                 scores = [
                     max(
                         [
                             0
-                            if _reward["balanced_accuracy"] == "-inf"
+                            if (
+                                _reward["balanced_accuracy"]
+                                == "-inf"
+                                # or "absolute_time" not in _reward
+                            )
                             else _reward["balanced_accuracy"]
                             for _reward in result["evaluated_rewards"][: (idx + 1)]
                             if "balanced_accuracy" in _reward
@@ -337,17 +351,19 @@ def time_plot(summary, output_path, budget):
             axs[results[approach][dataset]["index"]].title.set_text(
                 results[approach][dataset]["title"]
             )
-            timing = (
-                [min_absolute_time]
-                + results[approach][dataset]["timing"]
-                + [max_absolute_time]
-            )
-            timing = [time / 60 for time in timing]
-            scores = (
-                [results[approach][dataset]["min_score"]]
-                + results[approach][dataset]["scores"]
-                + [results[approach][dataset]["max_score"]]
-            )
+            # timing = (
+            #     [min_absolute_time]
+            #     + results[approach][dataset]["timing"]
+            #     + [max_absolute_time]
+            # )
+            # timing = [time / 60 for time in timing]
+            timing = [time / 60 for time in results[approach][dataset]["timing"]]
+            # scores = (
+            #     [results[approach][dataset]["min_score"]]
+            #     + results[approach][dataset]["scores"]
+            #     + [results[approach][dataset]["max_score"]]
+            # )
+            scores = results[approach][dataset]["scores"]
             scores = [
                 (score - min_absolute_score[dataset])
                 / (max_absolute_score[dataset] - min_absolute_score[dataset])
@@ -358,7 +374,7 @@ def time_plot(summary, output_path, budget):
                 scores,
                 label=approach,
                 marker=marker[approach],
-                markevery=5,
+                markevery=len(timing) - 1,
             )
             axs[results[approach][dataset]["index"]].set_xlabel(
                 "optimization time (m)", labelpad=10
@@ -367,8 +383,11 @@ def time_plot(summary, output_path, budget):
                 "balanced accuracy", labelpad=7
             )
             # axs[results[approach][dataset]["index"]].set_ylim([0.0, 1])
+            # axs[results[approach][dataset]["index"]].set_xlim(
+            #     [0, 60 if budget == 500 else 120]
+            # )
             axs[results[approach][dataset]["index"]].set_xlim(
-                [0, 60 if budget == 500 else 120]
+                [0, 80 if budget == 500 else 120]
             )
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
