@@ -128,31 +128,37 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
     #     + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
     # ].plot.bar().get_figure().savefig(os.path.join(path, "time.png"))
     colors = {
-        "pkb": ["gold", "tab:orange"],
-        "ika": ["lightgreen", "tab:green"],
-        "pkb_ika": ["lightcoral", "tab:red"],
+        "pkb": "tab:orange",
+        "ika": "tab:green",
+        "pkb_ika": "tab:red",
     }
     fig, ax = plt.subplots()
     for i, series in enumerate(others):
         label = series if ("_" not in series) else " + ".join(series.split("_"))
         label = label if label == "baseline" else label.upper()
-        sum = df[[f"argumentation_time_{series}", f"automl_time_{series}"]].sum(axis=1)
-        argumentation = df[f"argumentation_time_{series}"] / sum
-        automl = df[f"automl_time_{series}"] / sum
-        ax.bar(
-            paddings[i],
-            argumentation,
-            width,
-            label="argum. " + label,
-            color=colors[series][1],
+        total = df[[f"argumentation_time_{series}", f"automl_time_{series}"]].sum(
+            axis=1
         )
+        argumentation = df[f"argumentation_time_{series}"] / total
+        automl = df[f"automl_time_{series}"] / total
         ax.bar(
             paddings[i],
             automl,
             width,
             label="automl " + label,
-            bottom=argumentation,
-            color=colors[series][0],
+            color=colors[series],
+            edgecolor="black",
+            # hatch="oo",
+        )
+        ax.bar(
+            paddings[i],
+            argumentation,
+            width,
+            label="argum. " + label,
+            color=colors[series],
+            bottom=automl,
+            hatch="xx",
+            edgecolor="black",
         )
     ax.set_ylabel(
         "Percentage of time",
@@ -164,7 +170,12 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
     # ax.legend()
 
     _handles, _labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(_labels, _handles))
+    by_label = dict(
+        zip(
+            _labels[:2][::-1] + _labels[2:4][::-1] + _labels[4:][::-1],
+            _handles[:2][::-1] + _handles[2:4][::-1] + _handles[4:][::-1],
+        )
+    )
     lgd = fig.legend(
         by_label.values(),
         by_label.keys(),
