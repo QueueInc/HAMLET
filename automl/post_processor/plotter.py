@@ -53,7 +53,7 @@ def create_hamlet_plot(
     # ax.set_title("Balanced accuracy achieved by the approaches")
     ax.set_xticks(ticks, labels)
     if mode == "accuracy":
-        ax.set_ylim([0.75, 1])
+        ax.set_ylim([0.75, 1.01])
     # ax.legend()
 
     _handles, _labels = plt.gca().get_legend_handles_labels()
@@ -78,30 +78,30 @@ def create_comparison_plot(
     df, all_series, comparison, ticks, paddings, width, labels, path
 ):
     fig, ax = plt.subplots()
-    bar = ax.barh(
+    bar = ax.bar(
         paddings[0],
         list(df[all_series].max(axis=1)),
         width,
         label="HAMLET",
         color="tab:cyan",
     )
-    ax.bar_label(bar, list(df[all_series].idxmax(axis=1)), padding=-30)
+    ax.bar_label(bar, list(df[all_series].idxmax(axis=1)))
     for i, series in enumerate(comparison):
-        ax.barh(
+        ax.bar(
             paddings[i + 1],
             df[series],
             width,
             label=series,
             color="tab:pink" if series == "auto_sklearn" else "tab:brown",
         )
-    ax.set_xlabel(
+    ax.set_ylabel(
         "Balanced accuracy",
         labelpad=10,
     )
 
     # ax.set_title("Balanced accuracy achieved by the approaches")
-    ax.set_yticks(ticks, labels)
-    ax.set_xlim([0.75, 1])
+    ax.set_xticks(ticks, labels)
+    ax.set_ylim([0.75, 1.01])
     # ax.legend()
 
     _handles, _labels = plt.gca().get_legend_handles_labels()
@@ -148,6 +148,7 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
             label="automl " + label,
             color=colors[series],
             edgecolor="black",
+            linewidth=1,
             # hatch="oo",
         )
         ax.bar(
@@ -159,6 +160,7 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
             bottom=automl,
             hatch="xx",
             edgecolor="black",
+            linewidth=1,
         )
     ax.set_ylabel(
         "Percentage of time",
@@ -283,6 +285,8 @@ def time_plot(summary, output_path, budget):
                     # else np.nan
                     for reward in result["evaluated_rewards"]
                     if "absolute_time" in reward
+                    and "balanced_accuracy" in reward
+                    and reward["balanced_accuracy"] != "-inf"
                 ]
                 # timing = (
                 #     pd.DataFrame(timing)
@@ -295,20 +299,26 @@ def time_plot(summary, output_path, budget):
                 scores = [
                     max(
                         [
-                            0 if _reward["balanced_accuracy"] == "-inf"
+                            # 0 if _reward["balanced_accuracy"] == "-inf"
                             # or "absolute_time" not in _reward
-                            else _reward["balanced_accuracy"]
+                            # else
+                            _reward["balanced_accuracy"]
                             for _reward in result["evaluated_rewards"][: (idx + 1)]
                             if "balanced_accuracy" in _reward
+                            and _reward["balanced_accuracy"] != "-inf"
                         ]
                     )
                     for idx, reward in enumerate(result["evaluated_rewards"])
                     if "absolute_time" in reward
+                    and "balanced_accuracy" in reward
+                    and reward["balanced_accuracy"] != "-inf"
                 ]
                 iterations = [
                     reward["iteration"]
                     for reward in result["evaluated_rewards"]
                     if "absolute_time" in reward
+                    and "balanced_accuracy" in reward
+                    and reward["balanced_accuracy"] != "-inf"
                 ]
                 markers = [
                     iterations.index(iteration)
