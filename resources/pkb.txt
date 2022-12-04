@@ -24,6 +24,7 @@ operator(classification, dt).
 operator(classification, knn).
 operator(classification, naive_bayes).
 operator(classification, nn).
+operator(classification, svm).
 operator(classification, rf).
 operator(classification, ada_boost).
 
@@ -60,6 +61,7 @@ hyperparameter(nn, activation, choice).
 hyperparameter(nn, solver, choice).
 hyperparameter(nn, alpha, choice).
 hyperparameter(nn, learning_rate, choice).
+hyperparameter(svm, "C", choice).
 hyperparameter(rf, n_estimators, choice).
 hyperparameter(rf, max_depth, randint).
 hyperparameter(rf, max_features, randint).
@@ -102,6 +104,7 @@ domain(nn, activation, ["logistic", "tanh", "relu"]).
 domain(nn, solver, ["lbfgs", "sgd", "adam"]).
 domain(nn, alpha, [0.0001, 0.001, 0.01, 0.00001]).
 domain(nn, learning_rate, ["constant", "invscaling", "adaptive"]).
+domain(svm, "C", [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5]).
 domain(rf, n_estimators, [10, 25, 50, 75, 100]).
 domain(rf, max_depth, [1, 5]).
 domain(rf, max_features, [1, 4]).
