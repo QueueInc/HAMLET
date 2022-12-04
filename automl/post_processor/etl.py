@@ -50,7 +50,7 @@ def extract(budget, path, input_folder, output_folder):
     # extract_comparison_results(
     #     os.path.join(path, "auto_sklearn_pro_500"), "auto_sklearn_pro"
     # )
-    extract_comparison_results(os.path.join(path, f"h2o_{budget}"), "h2o")
+    extract_comparison_results(os.path.join(path, f"h2o_pro_{budget}"), "h2o")
 
 
 def summarize(budget, path, output_folder):
@@ -65,9 +65,9 @@ def summarize(budget, path, output_folder):
     # df_auto_sklearn_pro_500 = pd.read_csv(
     #     os.path.join(path, "auto_sklearn_pro_500", "summary.csv")
     # ).set_index("id")
-    df_h2o = pd.read_csv(os.path.join(path, f"h2o_{budget}", "summary.csv")).set_index(
-        "id"
-    )
+    df_h2o = pd.read_csv(
+        os.path.join(path, f"h2o_pro_{budget}", "summary.csv")
+    ).set_index("id")
 
     others = [
         df_auto_sklearn,
