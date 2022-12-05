@@ -9,26 +9,26 @@ import matplotlib.pyplot as plt
 def plot_pd(df, baseline, others, path):
     f = plt.figure()
     df.boxplot([f"delta_{x}" for x in others])
-    f.savefig(os.path.join(path, f"{baseline}_boxplot_delta.png"))
+    f.savefig(os.path.join(path, f"{baseline}_boxplot_delta.pdf"))
 
     f = plt.figure()
     df.boxplot([f"delta_iteration_{x}" for x in others])
-    f.savefig(os.path.join(path, f"{baseline}_boxplot_delta_iteration.png"))
+    f.savefig(os.path.join(path, f"{baseline}_boxplot_delta_iteration.pdf"))
 
     df[[f"delta_iteration_{x}" for x in others]].plot.bar().get_figure().savefig(
-        os.path.join(path, f"{baseline}_barchart_delta_iteration.png")
+        os.path.join(path, f"{baseline}_barchart_delta_iteration.pdf")
     )
 
     df[[f"norm_iteration_{x}" for x in others]].plot.bar().get_figure().savefig(
-        os.path.join(path, f"{baseline}_barchart_norm_iteration.png")
+        os.path.join(path, f"{baseline}_barchart_norm_iteration.pdf")
     )
 
     df[[f"delta_{x}" for x in others]].plot.bar().get_figure().savefig(
-        os.path.join(path, f"{baseline}_barchart_delta.png")
+        os.path.join(path, f"{baseline}_barchart_delta.pdf")
     )
 
     df[[f"norm_{x}" for x in others]].plot.bar().get_figure().savefig(
-        os.path.join(path, f"{baseline}_barchart_norm_delta.png")
+        os.path.join(path, f"{baseline}_barchart_norm_delta.pdf")
     )
 
 
@@ -68,7 +68,7 @@ def create_hamlet_plot(
     text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
     fig.tight_layout()
     fig.savefig(
-        os.path.join(path, f"{mode}.png"),
+        os.path.join(path, f"{mode}.pdf"),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
@@ -116,7 +116,7 @@ def create_comparison_plot(
     text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
     fig.tight_layout()
     fig.savefig(
-        os.path.join(path, "comparison.png"),
+        os.path.join(path, "comparison.pdf"),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
@@ -126,7 +126,7 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
     # df[
     #     [f"argumentation_time_{x}" for x in others if f"argumentation_time_{x}" in df]
     #     + [f"automl_time_{x}" for x in others if f"automl_time_{x}" in df]
-    # ].plot.bar().get_figure().savefig(os.path.join(path, "time.png"))
+    # ].plot.bar().get_figure().savefig(os.path.join(path, "time.pdf"))
     colors = {
         "pkb": "tab:orange",
         "ika": "tab:green",
@@ -183,12 +183,12 @@ def create_time_plot(df, others, ticks, paddings, width, labels, path):
         by_label.keys(),
         loc="lower center",
         ncol=3,
-        bbox_to_anchor=(0.5, -0.1),
+        bbox_to_anchor=(0.5, -0.13),
     )
     text = fig.text(-0.2, 1.05, "", transform=ax.transAxes)
     fig.tight_layout()
     fig.savefig(
-        os.path.join(path, "time.png"),
+        os.path.join(path, "time.pdf"),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
@@ -444,19 +444,20 @@ def time_plot(summary, output_path, budget):
                         color=colors[approach],
                     )
             axs[results[approach][dataset]["index"]].set_xlabel(
-                "optimization time (m)", labelpad=10
+                "Optimization time (m)", labelpad=10
             )
             if results[approach][dataset]["index"] == 0:
                 axs[results[approach][dataset]["index"]].set_ylabel(
-                    "balanced accuracy", labelpad=7
+                    "Balanced accuracy", labelpad=7
                 )
             # axs[results[approach][dataset]["index"]].set_ylim([0.0, 1])
             # axs[results[approach][dataset]["index"]].set_xlim(
             #     [0, 60 if budget == 500 else 120]
             # )
-            # axs[results[approach][dataset]["index"]].set_xlim(
-            #     [0, 80 if budget == 500 else 120]
-            # )
+            axs[results[approach][dataset]["index"]].set_xlim(
+                [-5, 80 if budget == 500 else 120]
+            )
+            # axs[results[approach][dataset]["index"]].set_xticklabels(range(0, 90, 10))
             ticks = [
                 round(tick, 3)
                 for tick in np.linspace(0.0, 1.0, num=7)
@@ -477,7 +478,7 @@ def time_plot(summary, output_path, budget):
     # fig.tight_layout()
     fig.set_size_inches(35, 5)
     fig.savefig(
-        os.path.join(output_path, "accuracy_time.png"),
+        os.path.join(output_path, "accuracy_time.pdf"),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
     )
