@@ -85,7 +85,7 @@ def create_comparison_plot(
         label="HAMLET",
         color="tab:cyan",
     )
-    ax.bar_label(bar, list(df[all_series].idxmax(axis=1)))
+    # ax.bar_label(bar, list(df[all_series].idxmax(axis=1)))
     for i, series in enumerate(comparison):
         ax.bar(
             paddings[i + 1],
