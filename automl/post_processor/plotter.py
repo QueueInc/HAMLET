@@ -276,17 +276,18 @@ def time_plot(summary, output_path, budget):
                     reward["absolute_time"]
                     - result["start_time"]
                     - (
-                        result[f"""graph_generation_time_{reward["iteration"]}"""]
-                        + result[f"""space_generation_time_{reward["iteration"]}"""]
+                        (
+                            result[f"""graph_generation_time_{reward["iteration"]}"""]
+                            + result[f"""space_generation_time_{reward["iteration"]}"""]
+                        )
                         if reward["iteration"] != 1
                         else 0
                     )
                     # if "absolute_time" in reward
                     # else np.nan
                     for reward in result["evaluated_rewards"]
-                    if "absolute_time" in reward
-                    and "balanced_accuracy" in reward
-                    and reward["balanced_accuracy"] != "-inf"
+                    if "absolute_time" in reward and "balanced_accuracy" in reward
+                    # and reward["balanced_accuracy"] != "-inf"
                 ]
                 # timing = (
                 #     pd.DataFrame(timing)
@@ -296,29 +297,34 @@ def time_plot(summary, output_path, budget):
                 #     .iloc[:, 0]
                 #     .values.tolist()
                 # )
+
+                # rewards = [
+                #     reward
+                #     for reward in result["evaluated_rewards"]
+                #     if "absolute_time" in reward and "balanced_accuracy" in reward
+                #     # and reward["balanced_accuracy"] != "-inf"
+                # ]
                 scores = [
                     max(
                         [
                             # 0 if _reward["balanced_accuracy"] == "-inf"
                             # or "absolute_time" not in _reward
                             # else
-                            _reward["balanced_accuracy"]
+                            float(_reward["balanced_accuracy"])
                             for _reward in result["evaluated_rewards"][: (idx + 1)]
                             if "balanced_accuracy" in _reward
-                            and _reward["balanced_accuracy"] != "-inf"
+                            # and _reward["balanced_accuracy"] != "-inf"
                         ]
                     )
                     for idx, reward in enumerate(result["evaluated_rewards"])
-                    if "absolute_time" in reward
-                    and "balanced_accuracy" in reward
-                    and reward["balanced_accuracy"] != "-inf"
+                    if "absolute_time" in reward and "balanced_accuracy" in reward
+                    # and reward["balanced_accuracy"] != "-inf"
                 ]
                 iterations = [
                     reward["iteration"]
                     for reward in result["evaluated_rewards"]
-                    if "absolute_time" in reward
-                    and "balanced_accuracy" in reward
-                    and reward["balanced_accuracy"] != "-inf"
+                    if "absolute_time" in reward and "balanced_accuracy" in reward
+                    # and reward["balanced_accuracy"] != "-inf"
                 ]
                 markers = [
                     iterations.index(iteration)
@@ -328,9 +334,10 @@ def time_plot(summary, output_path, budget):
                 results[approach][dataset] = {
                     "index": current_subplot_index,
                     "title": dataset_names[current_subplot_index],
-                    "timing": timing[1:],
-                    "scores": scores[1:],
+                    "timing": timing,
+                    "scores": scores,
                     "markers": markers,
+                    # "rewards": rewards,
                 }
                 results[approach][dataset]["min_score"] = min(
                     results[approach][dataset]["scores"]
@@ -360,10 +367,20 @@ def time_plot(summary, output_path, budget):
     }
     min_absolute_score = {
         dataset: min(
-            [min(results[approach][dataset]["scores"]) for approach in approaches]
+            [
+                min(
+                    [
+                        score
+                        for score in results[approach][dataset]["scores"]
+                        if score != float("-inf")
+                    ]
+                )
+                for approach in approaches
+            ]
         )
         for dataset in dataset_ids
     }
+
     markers = {
         "baseline": "o",
         "pkb": "^",
@@ -388,8 +405,17 @@ def time_plot(summary, output_path, budget):
             )
             timing = [time / 60 for time in timing]
             # timing = [time / 60 for time in results[approach][dataset]["timing"]]
+            results[approach][dataset]["scores"] = [
+                score if score != float("-inf") else min_absolute_score[dataset]
+                for score in results[approach][dataset]["scores"]
+            ]
             scores = (
-                [results[approach][dataset]["min_score"]]
+                [
+                    max(
+                        results[approach][dataset]["min_score"],
+                        results[approach][dataset]["scores"][0],
+                    )
+                ]
                 + results[approach][dataset]["scores"]
                 # + [results[approach][dataset]["max_score"]]
             )
@@ -409,26 +435,28 @@ def time_plot(summary, output_path, budget):
                 color=colors[approach],
             )
             for idx in results[approach][dataset]["markers"]:
-                axs[results[approach][dataset]["index"]].plot(
-                    timing[idx],
-                    scores[idx],
-                    marker=markers[approach],
-                    markersize=9 if approach == "pkb_ika" else 6,
-                    color=colors[approach],
-                )
+                if idx != 0:
+                    axs[results[approach][dataset]["index"]].plot(
+                        timing[idx],
+                        scores[idx],
+                        marker=markers[approach],
+                        markersize=9 if approach == "pkb_ika" else 6,
+                        color=colors[approach],
+                    )
             axs[results[approach][dataset]["index"]].set_xlabel(
                 "optimization time (m)", labelpad=10
             )
-            axs[results[approach][dataset]["index"]].set_ylabel(
-                "balanced accuracy", labelpad=7
-            )
+            if results[approach][dataset]["index"] == 0:
+                axs[results[approach][dataset]["index"]].set_ylabel(
+                    "balanced accuracy", labelpad=7
+                )
             # axs[results[approach][dataset]["index"]].set_ylim([0.0, 1])
             # axs[results[approach][dataset]["index"]].set_xlim(
             #     [0, 60 if budget == 500 else 120]
             # )
-            axs[results[approach][dataset]["index"]].set_xlim(
-                [0, 80 if budget == 500 else 120]
-            )
+            # axs[results[approach][dataset]["index"]].set_xlim(
+            #     [0, 80 if budget == 500 else 120]
+            # )
             ticks = [
                 round(tick, 3)
                 for tick in np.linspace(0.0, 1.0, num=7)
