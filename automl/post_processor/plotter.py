@@ -322,7 +322,7 @@ def time_plot(summary, output_path, budget):
                 ]
                 markers = [
                     iterations.index(iteration)
-                    for iteration in range(max(iterations))
+                    for iteration in range(1, max(iterations) + 1)
                     if iteration in iterations
                 ]
                 results[approach][dataset] = {
@@ -381,19 +381,19 @@ def time_plot(summary, output_path, budget):
             axs[results[approach][dataset]["index"]].title.set_text(
                 results[approach][dataset]["title"]
             )
-            # timing = (
-            #     [min_absolute_time]
-            #     + results[approach][dataset]["timing"]
-            #     + [max_absolute_time]
-            # )
-            # timing = [time / 60 for time in timing]
-            timing = [time / 60 for time in results[approach][dataset]["timing"]]
-            # scores = (
-            #     [results[approach][dataset]["min_score"]]
-            #     + results[approach][dataset]["scores"]
-            #     + [results[approach][dataset]["max_score"]]
-            # )
-            scores = results[approach][dataset]["scores"]
+            timing = (
+                [min_absolute_time]
+                + results[approach][dataset]["timing"]
+                # + [max_absolute_time]
+            )
+            timing = [time / 60 for time in timing]
+            # timing = [time / 60 for time in results[approach][dataset]["timing"]]
+            scores = (
+                [results[approach][dataset]["min_score"]]
+                + results[approach][dataset]["scores"]
+                # + [results[approach][dataset]["max_score"]]
+            )
+            # scores = results[approach][dataset]["scores"]
             scores = [
                 (score - min_absolute_score[dataset])
                 / (max_absolute_score[dataset] - min_absolute_score[dataset])
@@ -429,6 +429,13 @@ def time_plot(summary, output_path, budget):
             axs[results[approach][dataset]["index"]].set_xlim(
                 [0, 80 if budget == 500 else 120]
             )
+            ticks = [
+                round(tick, 3)
+                for tick in np.linspace(0.0, 1.0, num=7)
+                * (max_absolute_score[dataset] - min_absolute_score[dataset])
+                + min_absolute_score[dataset]
+            ]
+            axs[results[approach][dataset]["index"]].set_yticklabels([ticks[0]] + ticks)
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     lgd = fig.legend(
