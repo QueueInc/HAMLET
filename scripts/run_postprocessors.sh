@@ -8,6 +8,7 @@ python automl/post_processor/etl.py --input-folder new_improved_seed_1000 --outp
 python automl/post_processor/etl.py --input-folder new_improved_svc_1000 --output-folder new_improved_svc_1000 --budget 1000
 python automl/post_processor/etl.py --input-folder new_improved_svc_1000 --output-folder new_improved_svc_500 --budget 500
 python automl/post_processor/etl.py --input-folder new_improved_svc_seed_500 --output-folder new_improved_svc_seed_500 --budget 500
+python automl/post_processor/etl.py --input-folder new_improved_svc_it_1000 --output-folder new_improved_svc_it_1000 --budget 1000
 
 # NOLIMIT
 python automl/post_processor/etl.py --input-folder nolimit_1000 --output-folder nolimit_1000 --budget 1000
