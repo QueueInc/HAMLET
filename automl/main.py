@@ -13,7 +13,7 @@ from flaml import tune
 
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
-from utils.datasets import get_dataset_by_id, get_dataset_by_name, load_from_csv
+from utils.datasets import load_dataset_from_openml, load_from_csv
 from hamlet.objective import objective
 from hamlet.loader import Loader
 from hamlet.buffer import Buffer
@@ -23,9 +23,9 @@ from hamlet.miner import Miner
 def main(args):
     np.random.seed(args.seed)
 
-    # X, y, _ = get_dataset_by_name(args.dataset)
     start_time = time.time()
-    X, y, categorical_indicator = load_from_csv(args.dataset)
+    # X, y, categorical_indicator = load_from_csv(args.dataset)
+    X, y, categorical_indicator = load_dataset_from_openml(args.dataset)
     loader = Loader(args.input_path)
     buffer = Buffer(metric=args.metric, loader=loader)
     Buffer().attach_handler()
