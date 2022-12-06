@@ -104,7 +104,8 @@ def main(args):
         ],
         os.path.join(path, args.output_folder),
     )
-    time_plot(summary, os.path.join(path, args.output_folder), args.budget)
+    time_plot(summary, os.path.join(path, args.output_folder), args.budget, "time")
+    time_plot(summary, os.path.join(path, args.output_folder), args.budget, "iteration")
 
 
 if __name__ == "__main__":
