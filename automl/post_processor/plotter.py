@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from paretoset import paretoset
 
 
 def plot_pd(df, baseline, others, path):
@@ -380,6 +381,12 @@ def time_plot(summary, output_path, budget, mode):
         "ika": "tab:green",
         "pkb_ika": "tab:red",
     }
+    thickness = {
+        "baseline": 4,
+        "pkb": 3,
+        "ika": 2,
+        "pkb_ika": 1,
+    }
     for approach in approaches:
         for dataset in dataset_ids:
             axs[results[approach][dataset]["index"]].title.set_text(
@@ -420,6 +427,8 @@ def time_plot(summary, output_path, budget, mode):
                 approach if ("_" not in approach) else " + ".join(approach.split("_"))
             )
             label = label if label == "baseline" else label.upper()
+            scores = [score for idx, score in enumerate(scores) if timing[idx] <= 60]
+            timing = [time for time in timing if time <= 60]
             axs[results[approach][dataset]["index"]].plot(
                 timing,
                 scores,
@@ -428,16 +437,17 @@ def time_plot(summary, output_path, budget, mode):
                 markevery=len(timing) - 1,
                 markersize=9 if approach == "pkb_ika" else 6,
                 color=colors[approach],
+                linewidth=thickness[approach],
             )
-            for idx in results[approach][dataset]["markers"]:
-                if idx != 0:
-                    axs[results[approach][dataset]["index"]].plot(
-                        timing[idx],
-                        scores[idx],
-                        marker=markers[approach],
-                        markersize=9 if approach == "pkb_ika" else 6,
-                        color=colors[approach],
-                    )
+            # for idx in results[approach][dataset]["markers"]:
+            #     if idx != 0:
+            #         axs[results[approach][dataset]["index"]].plot(
+            #             timing[idx],
+            #             scores[idx],
+            #             marker=markers[approach],
+            #             markersize=9 if approach == "pkb_ika" else 6,
+            #             color=colors[approach],
+            #         )
             axs[results[approach][dataset]["index"]].set_xlabel(
                 "Optimization time (m)", labelpad=10
             )
@@ -447,7 +457,7 @@ def time_plot(summary, output_path, budget, mode):
                 )
             if mode == "time":
                 axs[results[approach][dataset]["index"]].set_xlim(
-                    [-5, 80 if budget == 500 else 120]
+                    [-5, 60 if budget == 500 else 120]
                 )
             ticks = [
                 round(tick, 3)
