@@ -1,7 +1,10 @@
 # Scikit-learn provides a set of machine learning techniques
-import traceback
+import sys
 import time
+import gc
+
 import numpy as np
+
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
 from sklearn.preprocessing import FunctionTransformer
@@ -34,11 +37,16 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.linear_model import LogisticRegression
 
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
 
-from .buffer import Buffer
+from .buffer import Buffer, TimeException
 
 
 def get_prototype(config):
@@ -146,28 +154,58 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 # We define the function to optimize
 def objective(X, y, categorical_indicator, metric, seed, config):
-    result = {metric: float("-inf"), "status": "fail", "time": 0}
+    def set_time(result, scores, start_time):
+        result["absolute_time"] = time.time()
+        result["total_time"] = result["absolute_time"] - start_time
 
-    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate(config)
+        if scores and "fit_time" in scores:
+            result["fit_time"] = np.mean(scores["fit_time"])
+        if scores and "score_time" in scores:
+            result["score_time"] = np.mean(scores["score_time"])
+
+    result = {
+        metric: float("-inf"),
+        "status": "fail",
+        "total_time": 0,
+        "fit_time": 0,
+        "score_time": 0,
+        "absolute_time": 0,
+    }
+
+    start_time = time.time()
+    scores = None
+
+    is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
         return reward
 
     if Buffer().check_template_constraints(config):
         result["status"] = "previous_constraint"
+        set_time(result, scores, start_time)
         Buffer().add_evaluation(config=config, result=result)
         return result
 
-    try:
-        prototype = get_prototype(config)
+    Buffer().printflush(config)
 
+    try:
+
+        X_copy = X.copy()
+        y_copy = y.copy()
+        X_copy_ii = X.copy()
+        y_copy_ii = y.copy()
+
+        prototype = get_prototype(config)
         pipeline = instantiate_pipeline(
-            prototype, categorical_indicator, X, y, seed, config
+            prototype, categorical_indicator, X_copy, y_copy, seed, config
         )
+
+        Buffer().printflush("opt")
+        Buffer().attach_timer(900)
 
         scores = cross_validate(
             pipeline,
-            X.copy(),
-            y.copy(),
+            X_copy_ii,
+            y_copy_ii,
             scoring=[metric],
             cv=10,
             return_estimator=False,
@@ -175,19 +213,31 @@ def objective(X, y, categorical_indicator, metric, seed, config):
             verbose=0,
         )
 
+        Buffer().detach_timer()
+        Buffer().printflush("end opt")
+
         result[metric] = np.mean(scores["test_" + metric])
         if np.isnan(result[metric]):
             result[metric] = float("-inf")
-            raise Exception(f"The result for {config} was")
+            print(f"The result for {config} was NaN")
+            raise Exception(f"The result for {config} was NaN")
         result["status"] = "success"
-        result["time"] = time.time()
 
-    except Exception as e:
-        print(
-            "Something went wrong"
-            # f"""MyException: {e}"""
-            #   {traceback.print_exc()}"""
-        )
+    except TimeException:
+        Buffer().printflush("Timeout")
+    except:
+        Buffer().detach_timer()
+        Buffer().printflush("Something went wrong")
+    finally:
+
+        set_time(result, scores, start_time)
+
+        del X_copy
+        del X_copy_ii
+        del y_copy
+        del y_copy_ii
+
+        gc.collect()
 
     Buffer().add_evaluation(config=config, result=result)
     return result

@@ -1,11 +1,9 @@
 import subprocess
-import openml
-import math
 import os
 import argparse
+
 import pandas as pd
 
-from multiprocessing import Pool
 from tqdm import tqdm
 
 
@@ -24,7 +22,7 @@ def get_input(iteration, dataset_path, dataset, kb):
         df = pd.read_csv(
             os.path.join("resources", "extended_meta_features_openml_cc_18.csv")
         )
-        df = df[df["ID"] == dataset]
+        df = df[df["ID"] == int(dataset)]
         if not df.empty:
             my_constraints = ""
             if df["MinorityClassPercentage"].values[0] < (
@@ -67,7 +65,7 @@ def get_commands(data, args):
             input_path, before_execute = get_input(
                 iteration, dataset_path, dataset, args.kb
             )
-            cmd = f"""java -jar hamlet-{args.version}-all.jar \
+            cmd = f"""java -Xss128M -jar hamlet-{args.version}-all.jar \
                         {dataset_path} \
                         {dataset} \
                         {args.metric} \

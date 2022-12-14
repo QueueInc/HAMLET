@@ -46,6 +46,8 @@ class Loader:
                 return tune.choice([self._get_space(elem) for elem in value])
             if key == "randint":
                 return tune.randint(lower=value[0], upper=value[1])
+            if key == "uniform":
+                return tune.uniform(lower=value[0], upper=value[1])
             if type(value) is dict:
                 space[key] = self._get_space(value)
             elif type(value) is list:

@@ -132,7 +132,8 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                     updateIteration()
                     val res = dataManager.loadAutoMLData(config.copy())!!
                     dataManager.saveGeneratedRules(config.copy(),
-                        res.inferredRules.joinToString("\n") { "cc${Random.nextLong(0, Long.MAX_VALUE)} :=> ${it.theoryRepresentation}." }
+                        res.inferredRules.distinctBy { it.theoryRepresentation }
+                            .joinToString("\n") { "cc${Random.nextLong(0, Long.MAX_VALUE)} :=> ${it.theoryRepresentation}." }
                     )
                     update(res)
                 } else {

@@ -10,12 +10,18 @@ import it.unibo.tuprolog.solve.SolveOptions
 import it.unibo.tuprolog.solve.TimeDuration
 import it.unibo.tuprolog.unify.Unificator
 import org.queueinc.hamlet.toSklearnClass
+import java.math.BigDecimal
 
 object SpaceTranslator {
 
     private fun translateList(terms: List<Term>) =
-        if (terms.any { it.isTrue || it.isNumber || it.isFail }) terms.toString()
-        else terms.map { "\"$it\"".replace("'", "") }.toString()
+        terms.map {
+            when {
+                it.isReal -> it.castToReal().value.toDouble().toBigDecimal().toPlainString()
+                it.isTrue || it.isNumber || it.isFail -> it
+                else -> "\"$it\"".replace("'", "")
+            }
+    }.toString()
 
     @JvmStatic
     private fun translateSpace(space: Term) =
@@ -36,7 +42,7 @@ object SpaceTranslator {
                                 unifier2[B]!!.castToList().toList().joinToString(",\n") { hyper ->
                                     Unificator.default.mgu(hyper, tupleOf(C, D, E)).let { unifier3 ->
                                         """
-                                            "${unifier3[C]}" : {
+                                            "${unifier3[C].toString().replace("'", "")}" : {
                                                "${unifier3[D]}" : ${translateList(unifier3[E]!!.castToList().toList())}
                                             }
                                             """
@@ -81,9 +87,16 @@ object SpaceTranslator {
                 target.castToList().toList().map { template ->
                     Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                         unifier[A]!!.castToList().toList().mapIndexed { i, step ->
-                            """
-                                "$step" : {${if (type) "\"type\": {" else ""}"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())} ${if (type) "}" else ""}}
+                            if (type || i == 0) {
                                 """
+                                    "$step" : {${if (type) "\"type\": {" else ""}"$comparator": ${mapTerm(step, unifier[B]!!.castToList().toList()[i].castToList().toList())} ${if (type) "}" else ""}}
+                                """
+                            }
+                            else {
+                                """
+                                    "$step" : { "type": { "neq": "${Term.parse("function_transformer").toSklearnClass()}" }}
+                                """
+                            }
                         }.joinToString(",\n").let {
                             """
                                 {

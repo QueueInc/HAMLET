@@ -5,10 +5,15 @@ import java.io.File
 
 val dictionary = mapOf(
     "dt" to "DecisionTreeClassifier",
+    "xgboost" to "XGBClassifier",
+    "lightboost" to "LGBMClassifier",
+    "catboost" to "CatBoostClassifier",
+    "extra_trees" to "ExtraTreesClassifier",
+    "lr" to "LogisticRegression",
     "knn" to "KNeighborsClassifier",
     "naive_bayes" to "GaussianNB",
     "nn" to "MLPClassifier",
-    "svm" to "SVC",
+    "svm" to "LinearSVC",
     "rf" to "RandomForestClassifier",
     "ada_boost" to "AdaBoostClassifier",
     "function_transformer" to "FunctionTransformer",

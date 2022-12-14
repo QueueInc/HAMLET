@@ -13,8 +13,9 @@ from flaml import tune
 
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
-from utils.datasets import get_dataset_by_id, get_dataset_by_name
+from utils.datasets import load_dataset_from_openml, load_from_csv
 from hamlet.objective import objective
+from hamlet.loader import Loader
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
 
@@ -22,12 +23,13 @@ from hamlet.miner import Miner
 def main(args):
     np.random.seed(args.seed)
 
-    # X, y, _ = get_dataset_by_name(args.dataset)
     start_time = time.time()
-    X, y, categorical_indicator = get_dataset_by_id(args.dataset)
-    buffer = Buffer(metric=args.metric, input_path=args.input_path)
-    space = buffer.loader.get_space()
-    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
+    # X, y, categorical_indicator = load_from_csv(args.dataset)
+    X, y, categorical_indicator = load_dataset_from_openml(args.dataset)
+    loader = Loader(args.input_path)
+    buffer = Buffer(metric=args.metric, loader=loader)
+    Buffer().attach_handler()
+    space = loader.get_space()
 
     # print(
     #     pd.concat(
@@ -42,6 +44,13 @@ def main(args):
     #     )
     # )
 
+    previous_evaluated_points = (
+        loader.get_points_to_evaluate() + loader.get_instance_constraints()
+    )
+    graph_generation_time = loader.get_graph_generation_time()
+    space_generation_time = loader.get_space_generation_time()
+    del loader
+
     analysis = tune.run(
         evaluation_function=partial(
             objective, X, y, categorical_indicator, args.metric, args.seed
@@ -49,20 +58,19 @@ def main(args):
         config=space,
         metric=args.metric,
         mode=args.mode,
-        num_samples=(args.batch_size + len(points_to_evaluate))
+        num_samples=(args.batch_size + len(previous_evaluated_points))
         if args.batch_size > 0
         else -1,
         time_budget_s=args.time_budget if args.time_budget > 0 else None,
-        points_to_evaluate=points_to_evaluate,
+        points_to_evaluate=previous_evaluated_points,
         # evaluated_rewards=evaluated_rewards,
         verbose=0,
         max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
     )
 
-    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
-    points_to_evaluate = points_to_evaluate[-buffer.get_num_points_to_consider() :]
-    evaluated_rewards = evaluated_rewards[-buffer.get_num_points_to_consider() :]
+    Buffer().printflush("AutoML: optimization done.")
 
+    points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miner = Miner(
         points_to_evaluate=points_to_evaluate,
         evaluated_rewards=evaluated_rewards,
@@ -70,15 +78,23 @@ def main(args):
         mode=args.mode,
     )
     end_time = time.time()
-    rules = miner.get_rules()
 
+    Buffer().printflush("AutoML: miner done.")
+
+    best_config = {}
+    try:
+        best_config = analysis.best_trial.last_result
+    except:
+        Buffer().printflush("Apparently no results are available")
+
+    rules = miner.get_rules()
     automl_output = {
         "start_time": start_time,
-        "graph_generation_time": buffer.loader.get_graph_generation_time(),
-        "space_generation_time": buffer.loader.get_space_generation_time(),
+        "graph_generation_time": graph_generation_time,
+        "space_generation_time": space_generation_time,
         "optimization_time": end_time - start_time,
         "mining_time": time.time() - end_time,
-        "best_config": analysis.best_trial.last_result,
+        "best_config": best_config,
         "rules": rules,
         "points_to_evaluate": points_to_evaluate,
         # "evaluated_rewards": [str(reward[args.metric]) for reward in evaluated_rewards],
@@ -92,6 +108,8 @@ def main(args):
         json.dump(automl_output, outfile)
 
     json_to_csv(automl_output=automl_output.copy(), args=args)
+
+    Buffer().printflush("AutoML: export done.")
 
     # results_df = pd.concat(
     #     [

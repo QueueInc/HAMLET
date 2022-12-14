@@ -181,6 +181,7 @@ map_space([(Z, X, Y)|T], [(Z, X, [(function_transformer)|Y])|TT]) :- map_space(T
 fetch_mandatory(Mandatory) :-
     findall((S, O, A), (
         get_in_argument_by_conclusion(mandatory(S, A)),
+        A \= classification,
         fetch_operators(S, O)
     ), Mandatory).
 
@@ -188,13 +189,14 @@ fetch_mandatory(Mandatory) :-
 fetch_forbidden(Forbidden) :-
     findall((S, O, A), (
         get_in_argument_by_conclusion(forbidden(S, A)),
+        A \= classification,
         fetch_operators(S, O)
     ), Forbidden).
 
 
 fetch_mandatory_order(Mandatory) :-
     fetch_prototypes(Prototypes),
-    findall(([prototype], [Ps], A), (
+    findall(([prototype|S], [Ps], A), (
         get_in_argument_by_conclusion(mandatory_order(S, A)),
         A \= classification,
         findall(P, (
