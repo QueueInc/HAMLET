@@ -156,3 +156,25 @@ git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_h
 git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/ika balanced_accuracy max 250 1800 0.3.7 4 $(pwd)/resources/kb.txt
 - baseline (55)
 git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/baseline balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/kb.txt
+
+
+HAMLET new_improved_svc_data_500:
+- pkb (53)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_500/pkb balanced_accuracy max 500 3600 0.3.8 1 $(pwd)/resources/pkb.txt
+- pkb_ika (52)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_500/pkb_ika balanced_accuracy max 125 900 0.3.8 4 $(pwd)/resources/pkb.txt
+- ika (57)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_500/ika balanced_accuracy max 125 900 0.3.8 4 $(pwd)/resources/kb.txt
+- baseline (55)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_500/baseline balanced_accuracy max 500 3600 0.3.8 1 $(pwd)/resources/kb.txt
+
+
+HAMLET new_improved_svc_data_1000:
+- pkb (53)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_1000/pkb balanced_accuracy max 1000 7200 0.3.8 1 $(pwd)/resources/pkb.txt
+- pkb_ika (52)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_1000/pkb_ika balanced_accuracy max 250 1800 0.3.8 4 $(pwd)/resources/pkb.txt
+- ika (57)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_1000/ika balanced_accuracy max 250 1800 0.3.8 4 $(pwd)/resources/kb.txt
+- baseline (55)
+git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_8/new_improved_svc_data_1000/baseline balanced_accuracy max 1000 7200 0.3.8 1 $(pwd)/resources/kb.txt
