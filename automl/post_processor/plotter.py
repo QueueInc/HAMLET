@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from paretoset import paretoset
+import copy
 
 
 def plot_pd(df, baseline, others, path):
@@ -270,12 +271,255 @@ def plot_matplotlib(df, baseline, others, comparison, path):
 
 
 def time_plot(summary, output_path, budget, mode):
+    def create_figure():
+        # fig = plt.figure(figsize=(15, 7), layout="constrained")
+        # spec = fig.add_gridspec(2, 6)
+        # axs = []
+        # axs.append(fig.add_subplot(spec[0, 1:3]))
+        # axs.append(fig.add_subplot(spec[0, 3:5]))
+        # axs.append(fig.add_subplot(spec[1, :2]))
+        # axs.append(fig.add_subplot(spec[1, 2:4]))
+        # axs.append(fig.add_subplot(spec[1, 4:]))
+        fig, axs = plt.subplots(1, 5)
+        fig.set_size_inches(30, 5)
+        return fig, axs
+
+    def create_time_iteration_plot(results):
+        fig, axs = create_figure()
+        colors = {
+            "baseline": "tab:blue",
+            "pkb": "tab:orange",
+            "ika": "tab:green",
+            "pkb_ika": "tab:red",
+        }
+        thickness = {
+            "baseline": 4,
+            "pkb": 3,
+            "ika": 2,
+            "pkb_ika": 1,
+        }
+        for approach in approaches:
+            for dataset in dataset_ids:
+                axs[results[approach][dataset]["index"]].title.set_text(
+                    results[approach][dataset]["title"]
+                )
+                timing = [0.0] + results[approach][dataset]["timing"]
+                if mode == "time":
+                    timing = [time / 60 for time in timing]
+                results[approach][dataset]["scores"] = [
+                    score
+                    if score != float("-inf")
+                    else min(
+                        [
+                            elem
+                            for _approach in (
+                                ["pkb", "pkb_ika"]
+                                if approach in ["pkb", "pkb_ika"]
+                                else ["baseline", "ika"]
+                            )
+                            for elem in results[_approach][dataset]["scores"]
+                            if elem != float("-inf")
+                        ]
+                    )
+                    for score in results[approach][dataset]["scores"]
+                ]
+                scores = [
+                    max(
+                        results[approach][dataset]["min_score"],
+                        results[approach][dataset]["scores"][0],
+                    )
+                ] + results[approach][dataset]["scores"]
+                scores = [
+                    (score - min_absolute_score[dataset])
+                    / (max_absolute_score[dataset] - min_absolute_score[dataset])
+                    for score in scores
+                ]
+                label = (
+                    approach
+                    if ("_" not in approach)
+                    else " + ".join(approach.split("_"))
+                )
+                label = label if label == "baseline" else label.upper()
+                # scores = [
+                #     score for idx, score in enumerate(scores) if timing[idx] <= 60
+                # ]
+                # timing = [time for time in timing if time <= 60]
+                axs[results[approach][dataset]["index"]].plot(
+                    timing,
+                    scores,
+                    label=label,
+                    # marker=markers[approach],
+                    # markevery=len(timing) - 1,
+                    # markersize=9 if approach == "pkb_ika" else 6,
+                    color=colors[approach],
+                    linewidth=thickness[approach],
+                )
+                # for idx in results[approach][dataset]["markers"]:
+                #     if idx != 0:
+                #         axs[results[approach][dataset]["index"]].plot(
+                #             timing[idx],
+                #             scores[idx],
+                #             marker=markers[approach],
+                #             markersize=9 if approach == "pkb_ika" else 6,
+                #             color=colors[approach],
+                #         )
+                axs[results[approach][dataset]["index"]].set_xlabel(
+                    "Optimization time (m)", labelpad=10
+                )
+                if results[approach][dataset]["index"] == 0:
+                    axs[results[approach][dataset]["index"]].set_ylabel(
+                        "Balanced accuracy", labelpad=7
+                    )
+                if mode == "time":
+                    axs[results[approach][dataset]["index"]].set_xlim(
+                        [-5, 60 if budget == 500 else 120]
+                    )
+                ticks = [
+                    round(tick, 3)
+                    for tick in np.linspace(0.0, 1.0, num=6)
+                    * (max_absolute_score[dataset] - min_absolute_score[dataset])
+                    + min_absolute_score[dataset]
+                ]
+                axs[results[approach][dataset]["index"]].set_yticklabels(
+                    [ticks[0]] + ticks
+                )
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        lgd = fig.legend(
+            by_label.values(),
+            by_label.keys(),
+            loc="upper center",
+            ncol=4,
+            bbox_to_anchor=(0.5, -0.05),
+        )
+        text = fig.text(-0.2, 1.05, "", transform=axs[0].transAxes)
+        for ext in ["png", "pdf"]:
+            fig.savefig(
+                os.path.join(output_path, f"accuracy_{mode}.{ext}"),
+                bbox_extra_artists=(lgd, text),
+                bbox_inches="tight",
+            )
+
+    def create_skyline(results):
+        fig, axs = create_figure()
+        scores = {}
+        for dataset in dataset_ids:
+            scores = [
+                max([score for score in results[approach][dataset]["scores"]])
+                for approach in approaches
+            ]
+            # timing = [
+            #     results[approach][dataset]["timing"][
+            #         results[approach][dataset]["scores"].index(scores[idx])
+            #     ]
+            #     for idx, approach in enumerate(approaches)
+            # ]
+            timing = [
+                max([time for time in results[approach][dataset]["timing"]])
+                for approach in approaches
+            ]
+            timing = [time / 60 for time in timing]
+            timing = [time if time < 60 else 60 for time in timing]
+            max_score, min_score = max(scores), min(scores)
+            max_timing, min_timing = max(timing), min(timing)
+            scores = [
+                (score - min(scores)) / (max(scores) - min(scores)) for score in scores
+            ]
+            timing = [
+                (time - min(timing)) / (max(timing) - min(timing)) for time in timing
+            ]
+
+            df = pd.DataFrame(
+                {
+                    "timing": timing,
+                    "scores": scores,
+                }
+            )
+            mask = paretoset(df, sense=["min", "max"])
+            pareto = df[mask]
+            colors = {
+                "baseline": "tab:blue",
+                "pkb": "tab:orange",
+                "ika": "tab:green",
+                "pkb_ika": "tab:red",
+            }
+            pareto = [tuple(x) for x in pareto.to_numpy()]
+            # axs[results[approaches[0]][dataset]["index"]].scatter(
+            #     pareto["timing"], pareto["scores"], color="orange", s=250, alpha=0.7
+            # )
+            for idx, approach in enumerate(approaches):
+                label = (
+                    approach
+                    if ("_" not in approach)
+                    else " + ".join(approach.split("_"))
+                )
+                label = label if label == "baseline" else label.upper()
+                axs[results[approach][dataset]["index"]].title.set_text(
+                    results[approach][dataset]["title"]
+                )
+                # axs[results[approach][dataset]["index"]].plot(
+                #     np.linspace(0, 1, num=100),
+                #     np.sqrt(1 - np.linspace(-1.0, 0, num=100) ** 2),
+                #     color="black",
+                # )
+                axs[results[approach][dataset]["index"]].scatter(
+                    timing[idx],
+                    scores[idx],
+                    color=colors[approach],
+                    label=label,
+                    s=250 if (timing[idx], scores[idx]) in pareto else 100,
+                )
+                axs[results[approach][dataset]["index"]].set_xlabel(
+                    "Optimization time (m)", labelpad=10
+                )
+                if results[approach][dataset]["index"] == 0:
+                    axs[results[approach][dataset]["index"]].set_ylabel(
+                        "Balanced accuracy", labelpad=7
+                    )
+                # axs[results[approach][dataset]["index"]].set_xlim(
+                #     [-5, 60 if budget == 500 else 120]
+                # )
+                ticks = [
+                    round(tick, 3)
+                    for tick in np.linspace(0.0, 1.0, num=7) * (max_score - min_score)
+                    + min_score
+                ]
+                axs[results[approach][dataset]["index"]].set_yticklabels(
+                    [ticks[0]] + ticks
+                )
+                ticks = [
+                    round(tick, 1)
+                    for tick in np.linspace(0.0, 1.0, num=6) * (max_timing - min_timing)
+                    + min_timing
+                ]
+                axs[results[approach][dataset]["index"]].set_xticklabels(
+                    [ticks[0]] + ticks
+                )
+
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        lgd = fig.legend(
+            by_label.values(),
+            by_label.keys(),
+            loc="upper center",
+            ncol=4,
+            bbox_to_anchor=(0.5, -0.05),
+        )
+        text = fig.text(-0.2, 1.05, "", transform=axs[0].transAxes)
+        fig.set_size_inches(30, 5)
+        for ext in ["pdf", "png"]:
+            fig.savefig(
+                os.path.join(output_path, f"skyline.{ext}"),
+                bbox_extra_artists=(lgd, text),
+                bbox_inches="tight",
+            )
+
     approaches = ["baseline", "pkb", "ika", "pkb_ika"]
     dataset_names = list(summary["name"])
     dataset_ids = list(summary.index.astype(str))
 
-    SMALL_SIZE = 14
-    MEDIUM_SIZE = 16
+    SMALL_SIZE = 17
+    MEDIUM_SIZE = 20
 
     plt.rc("font", size=MEDIUM_SIZE)  # controls default text sizes
     plt.rc("axes", titlesize=MEDIUM_SIZE)  # fontsize of the axes title
@@ -338,15 +582,6 @@ def time_plot(summary, output_path, budget, mode):
                     results[approach][dataset]["scores"]
                 )
 
-    fig = plt.figure(figsize=(15, 7), layout="constrained")
-    spec = fig.add_gridspec(2, 6)
-    axs = []
-    axs.append(fig.add_subplot(spec[0, 1:3]))
-    axs.append(fig.add_subplot(spec[0, 3:5]))
-    axs.append(fig.add_subplot(spec[1, :2]))
-    axs.append(fig.add_subplot(spec[1, 2:4]))
-    axs.append(fig.add_subplot(spec[1, 4:]))
-
     max_absolute_score = {
         dataset: max(
             [max(results[approach][dataset]["scores"]) for approach in approaches]
@@ -369,116 +604,6 @@ def time_plot(summary, output_path, budget, mode):
         for dataset in dataset_ids
     }
 
-    markers = {
-        "baseline": "o",
-        "pkb": "^",
-        "ika": "s",
-        "pkb_ika": "*",
-    }
-    colors = {
-        "baseline": "tab:blue",
-        "pkb": "tab:orange",
-        "ika": "tab:green",
-        "pkb_ika": "tab:red",
-    }
-    thickness = {
-        "baseline": 4,
-        "pkb": 3,
-        "ika": 2,
-        "pkb_ika": 1,
-    }
-    for approach in approaches:
-        for dataset in dataset_ids:
-            axs[results[approach][dataset]["index"]].title.set_text(
-                results[approach][dataset]["title"]
-            )
-            timing = [0.0] + results[approach][dataset]["timing"]
-            if mode == "time":
-                timing = [time / 60 for time in timing]
-            results[approach][dataset]["scores"] = [
-                score
-                if score != float("-inf")
-                else min(
-                    [
-                        elem
-                        for _approach in (
-                            ["pkb", "pkb_ika"]
-                            if approach in ["pkb", "pkb_ika"]
-                            else ["baseline", "ika"]
-                        )
-                        for elem in results[_approach][dataset]["scores"]
-                        if elem != float("-inf")
-                    ]
-                )
-                for score in results[approach][dataset]["scores"]
-            ]
-            scores = [
-                max(
-                    results[approach][dataset]["min_score"],
-                    results[approach][dataset]["scores"][0],
-                )
-            ] + results[approach][dataset]["scores"]
-            scores = [
-                (score - min_absolute_score[dataset])
-                / (max_absolute_score[dataset] - min_absolute_score[dataset])
-                for score in scores
-            ]
-            label = (
-                approach if ("_" not in approach) else " + ".join(approach.split("_"))
-            )
-            label = label if label == "baseline" else label.upper()
-            scores = [score for idx, score in enumerate(scores) if timing[idx] <= 60]
-            timing = [time for time in timing if time <= 60]
-            axs[results[approach][dataset]["index"]].plot(
-                timing,
-                scores,
-                label=label,
-                marker=markers[approach],
-                markevery=len(timing) - 1,
-                markersize=9 if approach == "pkb_ika" else 6,
-                color=colors[approach],
-                linewidth=thickness[approach],
-            )
-            # for idx in results[approach][dataset]["markers"]:
-            #     if idx != 0:
-            #         axs[results[approach][dataset]["index"]].plot(
-            #             timing[idx],
-            #             scores[idx],
-            #             marker=markers[approach],
-            #             markersize=9 if approach == "pkb_ika" else 6,
-            #             color=colors[approach],
-            #         )
-            axs[results[approach][dataset]["index"]].set_xlabel(
-                "Optimization time (m)", labelpad=10
-            )
-            if results[approach][dataset]["index"] in [0, 2]:
-                axs[results[approach][dataset]["index"]].set_ylabel(
-                    "Balanced accuracy", labelpad=7
-                )
-            if mode == "time":
-                axs[results[approach][dataset]["index"]].set_xlim(
-                    [-5, 60 if budget == 500 else 120]
-                )
-            ticks = [
-                round(tick, 3)
-                for tick in np.linspace(0.0, 1.0, num=7)
-                * (max_absolute_score[dataset] - min_absolute_score[dataset])
-                + min_absolute_score[dataset]
-            ]
-            axs[results[approach][dataset]["index"]].set_yticklabels([ticks[0]] + ticks)
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    lgd = fig.legend(
-        by_label.values(),
-        by_label.keys(),
-        loc="upper center",
-        ncol=4,
-        bbox_to_anchor=(0.5, -0.05),
-    )
-    text = fig.text(-0.2, 1.05, "", transform=axs[0].transAxes)
-    for ext in ["png", "pdf"]:
-        fig.savefig(
-            os.path.join(output_path, f"accuracy_{mode}.{ext}"),
-            bbox_extra_artists=(lgd, text),
-            bbox_inches="tight",
-        )
+    create_time_iteration_plot(copy.deepcopy(results))
+    if mode == "time":
+        create_skyline(copy.deepcopy(results))
