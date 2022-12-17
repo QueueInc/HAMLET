@@ -1,0 +1,6 @@
+FROM docker
+RUN apk add python3 openjdk17-jre git && \
+    cd home && \
+    git clone https://github.com/QueueInc/HAMLET.git && \
+    chmod 777 HAMLET/scripts/*
+CMD ["bash", "HAMLET/scripts/run_experiments.sh"]
