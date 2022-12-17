@@ -1,5 +1,5 @@
 FROM docker
-RUN apk add python3 openjdk17-jre git
+RUN apk add python3 openjdk17-jre git wget bash
 RUN cd home && \
     git clone https://github.com/QueueInc/HAMLET.git
 RUN cd /home/HAMLET && \
@@ -7,6 +7,5 @@ RUN cd /home/HAMLET && \
     tr -d 'r' < ./scripts/run_hamlet.sh > ./scripts/run_hamlet.sh && \
     tr -d 'r' < ./scripts/run_comparison.sh > ./scripts/run_comparison.sh && \
     chmod 777 scripts/*
-RUN apk add wget
 WORKDIR /home/HAMLET
-CMD ./scripts/run_experiments.sh
+CMD ["./scripts/run_hamlet.sh", "results/hamlet", "balanced_accuracy", "max", "500", "3600", "1.0.0", "1", "$(pwd)/resources/kb.txt"]

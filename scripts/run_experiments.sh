@@ -1,3 +1,4 @@
+#!/bin/bash
 ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 500 3600 1.0.0 1 $(pwd)/resources/kb.txt
 ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 500 3600 1.0.0 1 $(pwd)/resources/pkb.txt
 ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 125 900 1.0.0 4 $(pwd)/resources/kb.txt

@@ -1,3 +1,4 @@
+#!/bin/bash
 wget https://github.com/QueueInc/HAMLET/releases/download/$6/hamlet-$6-all.jar
 python3 -m venv venv
 source venv/bin/activate
