@@ -24,135 +24,20 @@
 
       sudo git clone https://github.com/QueueInc/HAMLET.git
       cd HAMLET
-      sudo chmod 777 scripts/run_hamlet.sh
+      sudo chmod 777 scripts/*
 
 - Run the baseline (AutoML explores 1000 configurations in a single run with a time budget of 7200 seconds).
 
-      sudo ./scripts/run_hamlet.sh results/baseline_500 balanced_accuracy max 500 3600 0.2.11 1 $(pwd)/resources/kb.txt
+      sudo ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 500 3600 1.0.0 1 $(pwd)/resources/kb.txt
 
 - Run HAMLET with PKB (Preliminary Knowledge Base) settings, HAMLET starts with a preliminary LogicalKB constraining the search space from the first iteration, and no rule mining is applied.
 
-      sudo ./scripts/run_hamlet.sh results/pkb_500 balanced_accuracy max 500 3600 0.2.11 1 $(pwd)/resources/pkb.txt
+      sudo ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 500 3600 1.0.0 1 $(pwd)/resources/pkb.txt
 
 - Run HAMLET with IKA (Iterative Knowledge Augmentation) settings, HAMLET starts with an empty LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/ika_500 balanced_accuracy max 125 900 0.2.11 4 $(pwd)/resources/kb.txt
+      sudo ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 125 900 1.0.0 4 $(pwd)/resources/kb.txt
 
 - Run HAMLET with PKB + IKA settings, HAMLET starts with a preliminary LogicalKB, and the rules recommended after each run are applied to extend the LogicalKB.
 
-      sudo ./scripts/run_hamlet.sh results/pkb_ika_500 balanced_accuracy max 125 900 0.2.11 4 $(pwd)/resources/pkb.txt
-
-HAMLET improved_500 and improved_1000:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/pkb balanced_accuracy max 500 3600 0.3.5 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/pkb balanced_accuracy max 1000 7200 0.3.5 1 $(pwd)/resources/pkb.txt
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/pkb_ika balanced_accuracy max 125 900 0.3.5 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/pkb_ika balanced_accuracy max 125 900 0.3.5 8 $(pwd)/resources/pkb.txt
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/ika balanced_accuracy max 125 900 0.3.5 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/ika balanced_accuracy max 125 900 0.3.5 8 $(pwd)/resources/kb.txt
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/baseline balanced_accuracy max 500 3600 0.3.5 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/baseline balanced_accuracy max 1000 7200 0.3.5 1 $(pwd)/resources/kb.txt
-
-HAMLET improved_500, improved_1000, and w/ comparison:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/pkb balanced_accuracy max 500 3600 0.3.5 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/pkb balanced_accuracy max 1000 7200 0.3.5 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_comparison.sh auto-sklearn 3600 results_0_3_5/auto_sklearn_500
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/pkb_ika balanced_accuracy max 125 900 0.3.5 4 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/pkb_ika balanced_accuracy max 125 900 0.3.5 8 $(pwd)/resources/pkb.txt && sudo ./scripts/run_comparison.sh h2o 3600 results_0_3_5/h2o_500
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/ika balanced_accuracy max 125 900 0.3.5 4 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/ika balanced_accuracy max 125 900 0.3.5 8 $(pwd)/resources/kb.txt && sudo ./scripts/run_comparison.sh auto-sklearn 7200 results_0_3_5/auto_sklearn_1000
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_500/baseline balanced_accuracy max 500 3600 0.3.5 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_5/improved_1000/baseline balanced_accuracy max 1000 7200 0.3.5 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_comparison.sh h2o 7200 results_0_3_5/h2o_1000
-
-HAMLET nolimit_1000:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/nolimit_1000/pkb balanced_accuracy max -1 7200 0.3.5 1 $(pwd)/resources/pkb.txt
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/nolimit_1000/pkb_ika balanced_accuracy max -1 900 0.3.5 8 $(pwd)/resources/pkb.txt
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/nolimit_1000/ika balanced_accuracy max -1 900 0.3.5 8 $(pwd)/resources/kb.txt
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_5/nolimit_1000/baseline balanced_accuracy max -1 7200 0.3.5 1 $(pwd)/resources/kb.txt
-
-HAMLET new_nolimit_1000:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_6/new_nolimit_1000/pkb balanced_accuracy max -1 7200 0.3.6 1 $(pwd)/resources/pkb.txt
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_6/new_nolimit_1000/pkb_ika balanced_accuracy max -1 900 0.3.6 8 $(pwd)/resources/pkb.txt
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_6/new_nolimit_1000/ika balanced_accuracy max -1 900 0.3.6 8 $(pwd)/resources/kb.txt
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_6/new_nolimit_1000/baseline balanced_accuracy max -1 7200 0.3.6 1 $(pwd)/resources/kb.txt
-
-
-HAMLET new_nolimit_svc_1000 and new_improved_svc_1000:
-- pkb (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_1000/pkb balanced_accuracy max -1 7200 0.3.7 1 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_1000/pkb balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_1000/pkb_ika balanced_accuracy max -1 900 0.3.7 8 $(pwd)/resources/pkb.txt && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_1000/pkb_ika balanced_accuracy max 125 900 0.3.7 8 $(pwd)/resources/pkb.txt
-- ika (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_1000/ika balanced_accuracy max -1 900 0.3.7 8 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_1000/ika balanced_accuracy max 125 900 0.3.7 8 $(pwd)/resources/kb.txt
-- baseline (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_1000/baseline balanced_accuracy max -1 7200 0.3.7 1 $(pwd)/resources/kb.txt && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_1000/baseline balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/kb.txt
-
-HAMLET new_improved_500:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_500/pkb balanced_accuracy max 500 3600 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_500/pkb_ika balanced_accuracy max 125 900 0.3.7 4 $(pwd)/resources/pkb.txt
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_500/ika balanced_accuracy max 125 900 0.3.7 4 $(pwd)/resources/kb.txt
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_500/baseline balanced_accuracy max 500 3600 0.3.7 1 $(pwd)/resources/kb.txt
-
-
-HAMLET new_improved_seed_1000:
-- pkb (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_seed_1000/pkb balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_seed_1000/pkb_ika balanced_accuracy max 125 900 0.3.7 8 $(pwd)/resources/pkb.txt
-- ika (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_seed_1000/ika balanced_accuracy max 125 900 0.3.7 8 $(pwd)/resources/kb.txt
-- baseline (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_seed_1000/baseline balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/kb.txt
-
-HAMLET new_nolimit_seed_500:
-- pkb (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_seed_500/pkb balanced_accuracy max -1 3600 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_seed_500/pkb_ika balanced_accuracy max -1 900 0.3.7 4 $(pwd)/resources/pkb.txt
-- ika (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_seed_500/ika balanced_accuracy max -1 900 0.3.7 4 $(pwd)/resources/kb.txt
-- baseline (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_seed_500/baseline balanced_accuracy max -1 3600 0.3.7 1 $(pwd)/resources/kb.txt
-
-HAMLET new_nolimit_svc_seed_500:
-- pkb (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_seed_500/pkb balanced_accuracy max -1 3600 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_seed_500/pkb_ika balanced_accuracy max -1 900 0.3.7 4 $(pwd)/resources/pkb.txt
-- ika (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_seed_500/ika balanced_accuracy max -1 900 0.3.7 4 $(pwd)/resources/kb.txt
-- baseline (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_nolimit_svc_seed_500/baseline balanced_accuracy max -1 3600 0.3.7 1 $(pwd)/resources/kb.txt
-
-
-HAMLET new_improved_svc_seed_500:
-- pkb (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_seed_500/pkb balanced_accuracy max 500 3600 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_seed_500/pkb_ika balanced_accuracy max 125 900 0.3.7 4 $(pwd)/resources/pkb.txt
-- ika (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_seed_500/ika balanced_accuracy max 125 900 0.3.7 4 $(pwd)/resources/kb.txt
-- baseline (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_seed_500/baseline balanced_accuracy max 500 3600 0.3.7 1 $(pwd)/resources/kb.txt
-
-
-
-HAMLET new_improved_svc_it_1000:
-- pkb (53)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/pkb balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/pkb.txt
-- pkb_ika (52)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/pkb_ika balanced_accuracy max 250 1800 0.3.7 4 $(pwd)/resources/pkb.txt
-- ika (57)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/ika balanced_accuracy max 250 1800 0.3.7 4 $(pwd)/resources/kb.txt
-- baseline (55)
-git reset --hard && git pull && sudo chmod 777 scripts/* && sudo ./scripts/run_hamlet.sh results_0_3_7/new_improved_svc_it_1000/baseline balanced_accuracy max 1000 7200 0.3.7 1 $(pwd)/resources/kb.txt
+      sudo ./scripts/run_hamlet.sh results/hamlet balanced_accuracy max 125 900 1.0.0 4 $(pwd)/resources/pkb.txt
