@@ -1,11 +1,14 @@
-FROM docker
-RUN apk add python3 openjdk17-jre git wget bash
-RUN cd home && \
-    git clone https://github.com/QueueInc/HAMLET.git
+FROM python:3.9-bullseye
+RUN apt update
+RUN apt install docker.io default-jre git -y
+RUN cd home && git clone https://github.com/QueueInc/HAMLET.git
 RUN cd /home/HAMLET && \
     git checkout develop/comparison && \
     tr -d 'r' < ./scripts/run_hamlet.sh > ./scripts/run_hamlet.sh && \
     tr -d 'r' < ./scripts/run_comparison.sh > ./scripts/run_comparison.sh && \
     chmod 777 scripts/*
+COPY ./scripts/run_hamlet.sh /home/HAMLET/scripts/run_hamlet.sh
+COPY ./scripts/run_experiments.sh /home/HAMLET/scripts/run_experiments.sh
 WORKDIR /home/HAMLET
-CMD ["./scripts/run_hamlet.sh", "results/hamlet", "balanced_accuracy", "max", "500", "3600", "1.0.0", "1", "$(pwd)/resources/kb.txt"]
+RUN chmod 777 scripts/*
+CMD ["./scripts/run_experiments.sh"]
