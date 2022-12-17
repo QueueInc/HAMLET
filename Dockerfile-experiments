@@ -3,6 +3,7 @@ RUN apk add python3 openjdk17-jre git && \
     cd home && \
     git clone https://github.com/QueueInc/HAMLET.git && \
     cd HAMLET && \
+    git checkout develop/comparison && \
     chmod 777 scripts/*
 WORKDIR /home/HAMLET
 CMD ["./scripts/run_experiments.sh"]
