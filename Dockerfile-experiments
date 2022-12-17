@@ -5,4 +5,4 @@ RUN apk add python3 openjdk17-jre git && \
     cd HAMLET && \
     chmod 777 scripts/*
 WORKDIR /home/HAMLET
-CMD ["bash", "scripts/run_experiments.sh"]
+CMD ["./scripts/run_experiments.sh"]
