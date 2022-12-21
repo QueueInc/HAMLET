@@ -10,4 +10,3 @@ imbalanced-learn
 xgboost
 lightgbm
 catboost
-h2o
