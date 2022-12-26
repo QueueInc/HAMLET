@@ -5,6 +5,8 @@ We have formalized and tested our approach in an extension paper with the name "
 
 If you are interested in reproducing the performed experiments (and see the results of the coming-soon paper), we created a dedicated [GitHub repository](https://github.com/QueueInc/HAMLET-FGCS2022).
 
+## Philosophy
+
 In the last decades, we have witnessed an exponential growth in the field of AutoML.
 Unfortunately, this lead AutoML to be just another black-box that can be barely open.
 We claim that the user / data scientist has the right and the duty to revise and supervise the Machine Learning (ML) / Data Mining (DM) process.
