@@ -30,7 +30,7 @@ HAMLET leverages:
 ## REQUIREMENTS
 
 - Docker
-- Java >= 1.0
+- Java >= 11.0
 
 ## EXECUTION
 
