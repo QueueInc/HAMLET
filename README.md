@@ -1,9 +1,11 @@
 # HAMLET: Human-centered AutoMl via Logic and argumEnTation
 
-This work is the implementation of the framework proposed in the future vision paper [Towards Human-centric AutoML via Logic and Argumentation](https://ceur-ws.org/Vol-3135/dataplat_short2.pdf), presented at [DATAPLAT 2022 workshop](https://big.csr.unibo.it/dataplat2022/), co-located with [EDBT/ICDT 2022](https://conferences.inf.ed.ac.uk/edbticdt2022/).
-We have formalized and tested our approach in an extension paper with the name "HAMLET: a framework for Human-centered AutoML via Structured Argumentation" that has been **already accepted** at the journal [Future Generation Computer Systems](https://www.sciencedirect.com/journal/future-generation-computer-systems) (IF 7.3).
+This work is the implementation of the framework proposed in: [HAMLET: a framework for Human-centered AutoML via Structured Argumentation](https://authors.elsevier.com/sd/article/S0167-739X(22)00439-3).
 
-If you are interested in reproducing the performed experiments (and see the results of the coming-soon paper), we created a dedicated [GitHub repository](https://github.com/QueueInc/HAMLET-FGCS2022).
+The framework was originally proposed in the future vision paper [Towards Human-centric AutoML via Logic and Argumentation](https://ceur-ws.org/Vol-3135/dataplat_short2.pdf), presented at [DATAPLAT 2022 workshop](https://big.csr.unibo.it/dataplat2022/), co-located with [EDBT/ICDT 2022](https://conferences.inf.ed.ac.uk/edbticdt2022/).
+In our last work, we have formalized and tested the approach.
+This has been **already accepted** at the journal [Future Generation Computer Systems](https://www.sciencedirect.com/journal/future-generation-computer-systems) (IF 7.3) and its **pre-proof** is available via the link above.
+If you are interested in reproducing the experiments performed in it, please refer to the dedicated [GitHub repository](https://github.com/QueueInc/HAMLET-FGCS2022).
 
 ## Philosophy
 
@@ -55,9 +57,11 @@ java -jar hamlet-1.0.0-all.jar [workspace_path] [dataset_id] [optimization_metri
 
 Once you run HAMLET with a specific dataset and a specific metric to optimize, at the top of the window, HAMLET allows to encode both the AutoML search space and the user-defined constraints into the LogicalKB (see the next section for the accepted syntax).
 
-Two prepackaged LogicalKB can be found in the resources folder of this repository:
+Two ready-to-use LogicalKB can be found in the resources folder of this repository:
 - ```kb.txt``` is a knowledge base containing the search space leveraged in our experiments;
 - ```pkb.txt``` (PreliminaryKB) is a knowledge base containing the search space along with some suggested constraints (discovered in the paper [Data pre-processing pipeline generation for AutoETL](https://www.sciencedirect.com/science/article/abs/pii/S0306437921001514)).
+
+For the sake of brevity, follows an example with a simplier LogicalKB:
 
 <img width="960" alt="hamlet_gui" src="https://user-images.githubusercontent.com/41596745/209572069-4e63d9b5-a88d-405b-bf01-cc1a02cd1812.png">
 
@@ -67,7 +71,7 @@ In the example at hand, we have:
 - a Data Pre-processing step for Normalization;
 - a Modeling step for Classification (the task we want to address).
 
-Follows the implementations and the hyper-parameter domains of each step:
+Then, we have the implementations and the hyper-parameter domains of each step:
 - KBins for Discretization, with a integer parameter k_bins that ranges from 3 to 8;
 - StandardScaler for Normalization, with no parameter;
 - Decision Tree and K-Nearest Neighbors for Classification, with -- respectively -- an integer parameter max_depth that ranges from 1 to 5 and an integer parameter n_neighbors that ranges from 3 to 20.
@@ -88,15 +92,17 @@ Edges are attacks from an argument to another (```c1``` attacks exactly the pipe
 
 By hitting the ```Run AutoML``` button, HAMLET triggers FLAML to explore the encoded search space, taking also in consideration the specified constraints (discouraging the exploration in those particular sub-spaces).
 
+At the end of the optimization, the user can switch to the ```Data``` tab to go through all the explored configurations:
+
 <img width="956" alt="hamlet-gui-data2" src="https://user-images.githubusercontent.com/41596745/209576316-92bb528a-b180-4b61-83fd-621a3f8e3589.png">
 
-At the end of the optimization, the user can switch to the ```Data``` tab to go through all the explored configurations.
+As to the last tab ```AutoML arguments```, we can see reccomendations of constraints, mined from the AutoML output:
 
-<img width="960" alt="hamlet-gui-rules" src="https://user-images.githubusercontent.com/41596745/209576328-bc494b69-1e9b-4a44-b2aa-f7704465ea7e.png">
+<img width="959" alt="hamlet-gui-rules2" src="https://user-images.githubusercontent.com/41596745/210392351-13491f27-e07f-4e3e-a012-4f2e3692bc52.png">
 
-As to the last tab ```AutoML arguments```, we can see reccomendations of constraints, mined from the AutoML output.
 We think at this process as an *argument* between the data scientist and the AutoML tool.
 The data scientist can consider the arguments at hand, and encode them into the LogicalKB.
+
 
 At this point, the next iteration can be performed.
 
