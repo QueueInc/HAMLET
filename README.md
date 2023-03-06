@@ -2,9 +2,6 @@
 
 This work is the implementation of the framework proposed in: [HAMLET: a framework for Human-centered AutoML via Structured Argumentation](https://authors.elsevier.com/sd/article/S0167-739X(22)00439-3).
 
-The framework was originally proposed in the future vision paper [Towards Human-centric AutoML via Logic and Argumentation](https://ceur-ws.org/Vol-3135/dataplat_short2.pdf), presented at [DATAPLAT 2022 workshop](https://big.csr.unibo.it/dataplat2022/), co-located with [EDBT/ICDT 2022](https://conferences.inf.ed.ac.uk/edbticdt2022/).
-In our last work, we have formalized and tested the approach.
-This has been **already accepted** at the journal [Future Generation Computer Systems](https://www.sciencedirect.com/journal/future-generation-computer-systems) (IF 7.3) and its **pre-proof** is available via the link above.
 If you are interested in reproducing the experiments performed in it, please refer to the dedicated [GitHub repository](https://github.com/QueueInc/HAMLET-FGCS2022).
 
 ## Philosophy
