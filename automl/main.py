@@ -24,7 +24,9 @@ def main(args):
     np.random.seed(args.seed)
 
     start_time = time.time()
-    X, y, categorical_indicator = load_from_csv(args.dataset)
+    X, y, categorical_indicator, sensitive_indicator = load_dataset_from_openml(
+        args.dataset
+    )
     # X, y, categorical_indicator = load_dataset_from_openml(args.dataset)
     loader = Loader(args.input_path)
     buffer = Buffer(metric=args.metric, loader=loader)
@@ -53,14 +55,23 @@ def main(args):
 
     analysis = tune.run(
         evaluation_function=partial(
-            objective, X, y, categorical_indicator, args.metric, args.seed
+            objective,
+            X,
+            y,
+            categorical_indicator,
+            sensitive_indicator,
+            args.metric,
+            args.fair_metric,
+            args.seed,
         ),
         config=space,
         metric=args.metric,
         mode=args.mode,
-        num_samples=(args.batch_size + len(previous_evaluated_points))
-        if args.batch_size > 0
-        else -1,
+        num_samples=(
+            (args.batch_size + len(previous_evaluated_points))
+            if args.batch_size > 0
+            else -1
+        ),
         time_budget_s=args.time_budget if args.time_budget > 0 else None,
         points_to_evaluate=previous_evaluated_points,
         # evaluated_rewards=evaluated_rewards,
@@ -88,6 +99,7 @@ def main(args):
         Buffer().printflush("Apparently no results are available")
 
     rules = miner.get_rules()
+    print(points_to_evaluate, evaluated_rewards)
     automl_output = {
         "start_time": start_time,
         "graph_generation_time": graph_generation_time,

@@ -113,3 +113,12 @@ We committed in developing a logical language as intuitive as possible:
 - ```id :=> mandatory_order([S1, S2], O1).``` specifies a ```mandatory_order``` constraint: the step ```S1``` has to appear before the step ```S2``` when occurring the operator ```O1``` of the task step (in this implementation we support only ```classification``` task); it is possible to put ```classification``` instead of ```O1```, this will apply the constraint for each ```classification``` operators
 - ```id :=> mandatory([S1, S2, ...], O1).``` specifies a ```mandatory``` constraint: the steps ```[S1, S2, ...]``` are mandatory when occurring the operator ```O1``` of the task step (in this implementation we support only ```classification``` task); if the array of the steps is empty, the constraint specifies only that O1 is mandatory (with or withour Data Pre-processing steps)
 - ```id :=> forbidden([S1, S2, ...], O1).``` specifies a ```forbidden``` constraint: the steps ```[S1, S2, ...]``` are forbidden when occurring the operator ```O1``` of the task step (in this implementation we support only ```classification``` task); if the array of the steps is empty, the constraint specifies only that O1 is forbidden (with or withour Data Pre-processing steps)
+
+
+# Debug
+
+/usr/local/bin/python /home/automl/main.py -dataset 31 -metric balanced_accuracy -fair_metric demographic_parity -mode max -batch_size 30 -time_budget 100 -input_path /home/results/trial/automl/input/automl_input_1.json -output_path /home/results/trial/automl/output/automl_output_1.json -seed 42
+
+Notes
+- fair_metric is new
+- 31 is the german-credit dataset

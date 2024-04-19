@@ -1,7 +1,7 @@
-auto-sklearn
 numpy
 pandas
 flaml[blendsearch]
+scikit-learn
 openml
 matplotlib
 seq2pat
@@ -10,3 +10,4 @@ imbalanced-learn
 xgboost
 lightgbm
 catboost
+fairlearn

@@ -1,4 +1,5 @@
 # OpenML provides several benchmark datasets
+import json
 import openml
 import os
 
@@ -30,11 +31,16 @@ def get_dataset_by_id(id):
     return load_dataset_from_openml(id)
 
 
-def load_dataset_from_openml(id):
+def load_dataset_from_openml(
+    id, input_path=os.path.join("/home", "resources", "datasets")
+):
     dataset = openml.datasets.get_dataset(id)
-    X, y, categorical_indicator, _ = dataset.get_data(
+    X, y, categorical_indicator, feature_names = dataset.get_data(
         dataset_format="array", target=dataset.default_target_attribute
     )
+    with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
+        sensitive_indicators = json.load(f)
+    sensitive_indicator = sensitive_indicators[str(id)]
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
     # Xt[cat_features] = Xt[cat_features].fillna(-1)
@@ -42,7 +48,7 @@ def load_dataset_from_openml(id):
     # Xt[cat_features] = Xt[cat_features].replace("-1", np.nan)
     # Xt = Xt.to_numpy()
     # return Xt, y, categorical_indicator
-    return X, y, categorical_indicator
+    return X, y, categorical_indicator, sensitive_indicator
 
 
 def load_from_csv(id, input_path=os.path.join("/home", "resources", "datasets")):

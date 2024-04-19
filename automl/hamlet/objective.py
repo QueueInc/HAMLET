@@ -1,10 +1,18 @@
 # Scikit-learn provides a set of machine learning techniques
+import json
+import os
 import sys
 import time
 import gc
 
 import numpy as np
 
+from fairlearn import metrics
+
+# from fairlearn.metrics import demographic_parity_ratio
+
+# from sklearn import metrics
+# from sklearn.metrics import make_scorer
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
 from sklearn.preprocessing import FunctionTransformer
@@ -59,9 +67,13 @@ def get_prototype(config):
     return ml_pipeline
 
 
+def get_indices_from_mask(mask, detect):
+    return [i for i, x in enumerate(mask) if x == detect]
+
+
 def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
-    num_features = [i for i, x in enumerate(categorical_indicator) if x == False]
-    cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
+    num_features = get_indices_from_mask(categorical_indicator, False)
+    cat_features = get_indices_from_mask(categorical_indicator, True)
     # if (
     #     config["discretization"]["type"] != "FunctionTransformer"
     #     and config["normalization"]["type"] != "FunctionTransformer"
@@ -153,7 +165,9 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 
 # We define the function to optimize
-def objective(X, y, categorical_indicator, metric, seed, config):
+def objective(
+    X, y, categorical_indicator, sensitive_indicator, metric, fair_metric, seed, config
+):
     def set_time(result, scores, start_time):
         result["absolute_time"] = time.time()
         result["total_time"] = result["absolute_time"] - start_time
@@ -196,27 +210,89 @@ def objective(X, y, categorical_indicator, metric, seed, config):
 
         prototype = get_prototype(config)
         pipeline = instantiate_pipeline(
-            prototype, categorical_indicator, X_copy, y_copy, seed, config
+            prototype,
+            categorical_indicator,
+            X_copy,
+            y_copy,
+            seed,
+            config,
         )
 
         Buffer().printflush("opt")
         Buffer().attach_timer(900)
 
+        cv = 10
         scores = cross_validate(
             pipeline,
             X_copy_ii,
             y_copy_ii,
             scoring=[metric],
-            cv=10,
-            return_estimator=False,
+            # scoring={
+            #     metric: performance_scorer,
+            #     "demographic_parity": make_scorer(
+            #         demographic_parity_ratio, sensitive_features=[]
+            #     ),
+            # },
+            cv=cv,
+            return_estimator=True,
             return_train_score=False,
+            return_indices=True,
             verbose=0,
         )
 
         Buffer().detach_timer()
         Buffer().printflush("end opt")
 
+        # Buffer().printflush(scores["estimator"])
+        # Buffer().printflush(type(scores["estimator"]))
+        # log = [estimator.__dict__ for estimator in scores["estimator"]]
+        # with open(
+        #     os.path.join(
+        #         "/", "home", "results", "trial", "automl", "output", "log.json"
+        #     ),
+        #     "w",
+        # ) as outfile:
+        #     json.dump(log, outfile)
+
+        # metrics_module = __import__("metrics")
+        metrics_module = globals()["metrics"]
+        performance_metric = getattr(metrics_module, f"{fair_metric}_ratio")
+        # performance_scorer = make_scorer(performance_metric)
+
+        fair_scores = []
+        for fold in range(cv):
+            test_indeces = scores["indices"]["test"][fold]
+            x_original = X.copy()[test_indeces, :]
+            x_sensitive = x_original[
+                :, get_indices_from_mask(sensitive_indicator, True)
+            ]
+            # Buffer().printflush(x_original)
+            # Buffer().printflush(x_sensitive)
+            # Buffer().printflush(y.copy()[test_indeces])
+            # Buffer().printflush(scores["estimator"][fold].predict(x_original))
+            # Buffer().printflush(
+            #     performance_metric(
+            #         y_true=np.array(y.copy()[test_indeces]).reshape(-1, 1),
+            #         y_pred=np.array(
+            #             scores["estimator"][fold].predict(x_original)
+            #         ).reshape(-1, 1),
+            #         sensitive_features=x_sensitive,
+            #     )
+            # )
+            fair_scores += [
+                performance_metric(
+                    y_true=np.array(y.copy()[test_indeces]).reshape(-1, 1),
+                    y_pred=np.array(
+                        scores["estimator"][fold].predict(x_original)
+                    ).reshape(-1, 1),
+                    sensitive_features=x_sensitive,
+                )
+            ]
+
         result[metric] = np.mean(scores["test_" + metric])
+        result[f"{fair_metric}"] = np.mean(fair_scores)
+        if np.isnan(result[f"{fair_metric}"]):
+            result[f"{fair_metric}"] = float("-inf")
         if np.isnan(result[metric]):
             result[metric] = float("-inf")
             print(f"The result for {config} was NaN")
@@ -225,11 +301,11 @@ def objective(X, y, categorical_indicator, metric, seed, config):
 
     except TimeException:
         Buffer().printflush("Timeout")
-    except:
+    except Exception as e:
         Buffer().detach_timer()
         Buffer().printflush("Something went wrong")
+        Buffer().printflush(str(e))
     finally:
-
         set_time(result, scores, start_time)
 
         del X_copy
