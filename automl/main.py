@@ -77,6 +77,14 @@ def main(args):
         # evaluated_rewards=evaluated_rewards,
         verbose=0,
         max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
+        lexico_objectives={
+            "metrics": [args.fair_metric, args.metric],
+            "modes": [args.mode, args.mode],
+            # "targets": {
+            #     args.fair_metric: 1 if args.mode == "max" else 0,
+            #     args.metric: 1 if args.mode == "max" else 0,
+            # },
+        },
     )
 
     Buffer().printflush("AutoML: optimization done.")
