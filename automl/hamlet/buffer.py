@@ -10,19 +10,19 @@ class Buffer:
     _instance = None
 
     _num_points_to_consider = None
-    _metric = None
+    _metrics = None
     _template_constraints = []
     _configs = []
     _results = []
     _current_point_to_evaluate = 0
     _num_previous_evaluated_points = 0
 
-    def __new__(cls, metric=None, loader=None):
+    def __new__(cls, metrics=None, loader=None):
         if cls._instance is None:
             cls._instance = super(Buffer, cls).__new__(cls)
 
-        if metric and loader:
-            cls._instance._metric = metric
+        if metrics and loader:
+            cls._instance._metrics = metrics
             cls._instance._template_constraints = loader.get_template_constraints()
             (
                 cls._instance._configs,
@@ -30,26 +30,33 @@ class Buffer:
             ) = cls._instance._filter_previous_results(
                 loader.get_points_to_evaluate(),
                 loader.get_evaluated_rewards(),
-                metric,
+                metrics,
             )
 
+            # We put the partial configuration at the end because flaml can sample in tha subspace
+            # Indeed, in check_points_to_evaluate, to detect when we sample with flaml,
+            # we check the length of the th two lists _num_previous_evaluated_points and _result,
+            # the former will be longer than the latter.
             cls._instance._num_previous_evaluated_points = len(
                 cls._instance._configs
             ) + len(loader.get_instance_constraints())
 
         return cls._instance
 
-    def _filter_previous_results(self, points_to_evaluate, evaluated_rewards, metric):
+    # todo: metrics as input, and output has the new metrics in the keys : done, to check
+    def _filter_previous_results(self, points_to_evaluate, evaluated_rewards, metrics):
         new_points_to_evaluate = []
         new_evaluated_rewards = []
         for i, point_to_evaluate in enumerate(points_to_evaluate):
             if self.check_template_constraints(point_to_evaluate):
-                evaluated_rewards[i][metric] = float("-inf")
+                for metric in metrics:
+                    evaluated_rewards[i][metric] = float("-inf")
                 evaluated_rewards[i]["status"] = "previous_constraint"
                 new_points_to_evaluate.append(point_to_evaluate)
                 new_evaluated_rewards.append(evaluated_rewards[i])
             elif evaluated_rewards[i]["status"] != "previous_constraint":
-                evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
+                for metric in metrics:
+                    evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
                 new_points_to_evaluate.append(point_to_evaluate)
                 new_evaluated_rewards.append(evaluated_rewards[i])
         return new_points_to_evaluate, new_evaluated_rewards
@@ -74,9 +81,13 @@ class Buffer:
             #     f"{self._current_point_to_evaluate} out of {self._num_previous_evaluated_points}"
             # )
             self._current_point_to_evaluate += 1
+            # Here, we return the -inf result if flaml is sampling (see comment above in the constructor)
             if self._current_point_to_evaluate < len(self._results):
                 return True, self._results[self._current_point_to_evaluate]
-            return True, {self._metric: float("-inf"), "status": "previous_constraint"}
+            return True, {
+                **{metric: float("-inf") for metric in self._metrics},
+                **{"status": "previous_constraint"},
+            }
         return False, 0
 
     def printflush(self, message):

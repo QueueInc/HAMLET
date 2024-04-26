@@ -166,7 +166,7 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
 
 # We define the function to optimize
 def objective(
-    X, y, categorical_indicator, sensitive_indicator, metric, fair_metric, seed, config
+    X, y, categorical_indicator, sensitive_indicator, fair_metric, metric, seed, config
 ):
     def set_time(result, scores, start_time):
         result["absolute_time"] = time.time()
@@ -178,6 +178,7 @@ def objective(
             result["score_time"] = np.mean(scores["score_time"])
 
     result = {
+        fair_metric: float("-inf"),
         metric: float("-inf"),
         "status": "fail",
         "total_time": 0,
@@ -189,6 +190,8 @@ def objective(
     start_time = time.time()
     scores = None
 
+    # We check if the point has already been evaluated
+    # (i.e., if it is in the "points_to_evaluate" read by the json)
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
         return reward
@@ -221,7 +224,7 @@ def objective(
         Buffer().printflush("opt")
         Buffer().attach_timer(900)
 
-        cv = 10
+        cv = 5
         scores = cross_validate(
             pipeline,
             X_copy_ii,
@@ -279,17 +282,20 @@ def objective(
             #         sensitive_features=x_sensitive,
             #     )
             # )
+
+            # forse fare .reshape(-1, 1) in caso di intersectionality
             fair_scores += [
                 performance_metric(
-                    y_true=np.array(y.copy()[test_indeces]).reshape(-1, 1),
-                    y_pred=np.array(
-                        scores["estimator"][fold].predict(x_original)
-                    ).reshape(-1, 1),
-                    sensitive_features=x_sensitive,
+                    y_true=np.array(y.copy()[test_indeces]),
+                    y_pred=np.array(scores["estimator"][fold].predict(x_original)),
+                    sensitive_features=[str(elem) for elem in x_sensitive.reshape(-1)],
                 )
             ]
 
         result[metric] = np.mean(scores["test_" + metric])
+        result[f"flatten_{fair_metric}"] = "_".join(
+            [str(score) for score in fair_scores]
+        )
         result[f"{fair_metric}"] = np.mean(fair_scores)
         if np.isnan(result[f"{fair_metric}"]):
             result[f"{fair_metric}"] = float("-inf")
@@ -303,6 +309,7 @@ def objective(
         Buffer().printflush("Timeout")
     except Exception as e:
         Buffer().detach_timer()
+        Buffer().printflush("#########################################")
         Buffer().printflush("Something went wrong")
         Buffer().printflush(str(e))
     finally:

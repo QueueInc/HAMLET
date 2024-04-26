@@ -16,7 +16,7 @@ def flattenjson(b, delim):
 def json_to_csv(automl_output, args):
     to_export = automl_output["points_to_evaluate"]
     for i in range(len(to_export)):
-        to_export[i][args.metric] = automl_output["evaluated_rewards"][i]
+        to_export[i]["eval"] = automl_output["evaluated_rewards"][i]
 
     input = [flattenjson(x, "__") for x in to_export]
     columns = [x for row in input for x in row.keys()]

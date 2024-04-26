@@ -3,7 +3,7 @@ import time
 import warnings
 import sys
 
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("always")
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,8 @@ def main(args):
     )
     # X, y, categorical_indicator = load_dataset_from_openml(args.dataset)
     loader = Loader(args.input_path)
-    buffer = Buffer(metric=args.metric, loader=loader)
+    metrics = [args.fair_metric, args.metric]
+    buffer = Buffer(metrics=metrics, loader=loader)
     Buffer().attach_handler()
     space = loader.get_space()
 
@@ -60,8 +61,8 @@ def main(args):
             y,
             categorical_indicator,
             sensitive_indicator,
-            args.metric,
             args.fair_metric,
+            args.metric,
             args.seed,
         ),
         config=space,
@@ -78,24 +79,25 @@ def main(args):
         verbose=0,
         max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
         lexico_objectives={
-            "metrics": [args.fair_metric, args.metric],
-            "modes": [args.mode, args.mode],
-            # "targets": {
-            #     args.fair_metric: 1 if args.mode == "max" else 0,
-            #     args.metric: 1 if args.mode == "max" else 0,
-            # },
+            "metrics": metrics,
+            "modes": [args.mode] * len(metrics),
+            "tolerances": {},
+            "targets": {metric: 1 if args.mode == "max" else 0 for metric in metrics},
         },
     )
 
     Buffer().printflush("AutoML: optimization done.")
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
-    miner = Miner(
-        points_to_evaluate=points_to_evaluate,
-        evaluated_rewards=evaluated_rewards,
-        metric=args.metric,
-        mode=args.mode,
-    )
+    miners = {
+        metric: Miner(
+            points_to_evaluate=points_to_evaluate,
+            evaluated_rewards=evaluated_rewards,
+            metric=args.metric,
+            mode=args.mode,
+        )
+        for metric in metrics
+    }
     end_time = time.time()
 
     Buffer().printflush("AutoML: miner done.")
@@ -106,7 +108,7 @@ def main(args):
     except:
         Buffer().printflush("Apparently no results are available")
 
-    rules = miner.get_rules()
+    rules = [elem for miner in miners.values() for elem in miner.get_rules()]
     print(points_to_evaluate, evaluated_rewards)
     automl_output = {
         "start_time": start_time,
