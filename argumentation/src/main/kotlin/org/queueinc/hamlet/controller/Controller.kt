@@ -37,7 +37,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     fun init(dataset: String, metric: String, fairnessMetric: String, mode: String, batchSize: Int, timeBudget: Int, seed: Int) {
         // stopAutoML()
-        runAutoML(dataManager.workspacePath, debugMode)
+        runAutoML(dataManager.workspacePath, dataManager.volume, debugMode)
 
         config = dataManager.loadConfig().let {
             if (it == null || it.dataset != dataset) {

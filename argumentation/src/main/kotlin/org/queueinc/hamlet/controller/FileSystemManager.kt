@@ -8,7 +8,7 @@ import org.queueinc.hamlet.createAndWrite
 import java.io.File
 
 
-class FileSystemManager(val workspacePath: String) {
+class FileSystemManager(val workspacePath: String, val volume: String?) {
 
     fun cleanWorkspace() {
         File("$workspacePath/argumentation").deleteRecursively()

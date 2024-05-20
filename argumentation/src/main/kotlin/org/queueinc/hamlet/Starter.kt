@@ -20,6 +20,7 @@ private var timeBudget: Int = 0
 private var seed: Int = 0
 private var debugMode: Boolean = true
 private var theory: String = ""
+private var volume: String? = null
 
 object Starter {
     @JvmStatic
@@ -33,7 +34,8 @@ object Starter {
         timeBudget = args[6].toInt()
         seed = args[7].toInt()
         debugMode = args[8].toBoolean()
-        theory = if (args.size == 10) File(args[9]).readText() else ""
+        volume = if (args[9] != "None") args[9] else null
+        theory = if (args.size == 11) File(args[10]).readText() else ""
 
         if (theory == "") {
             Application.launch(HAMLET::class.java)
@@ -46,7 +48,7 @@ object Starter {
 
 
 fun consoleHamlet() {
-    Controller(debugMode, FileSystemManager(path)).also { controller ->
+    Controller(debugMode, FileSystemManager(path, volume)).also { controller ->
         controller.init(dataset, metric, fairnessMetric, mode, batchSize, timeBudget, seed)
         controller.generateGraph(theory, true) {}
         controller.launchAutoML(true) {}
@@ -56,7 +58,7 @@ fun consoleHamlet() {
 
 class HAMLET : Application() {
 
-    private val controller = Controller(debugMode, FileSystemManager(path))
+    private val controller = Controller(debugMode, FileSystemManager(path, volume))
 
     override fun start(stage: Stage) {
         try {

@@ -41,9 +41,9 @@ fun stopAutoML() {
     getOutputFromProgram(rm)
 }
 
-fun runAutoML(workspacePath: String, debug: Boolean) {
+fun runAutoML(workspacePath: String, volume: String?, debug: Boolean) {
 
-    val tmp = workspacePath.replace("C:", "/mnt/c")
+    val tmp = volume ?: workspacePath.replace("C:", "/mnt/c")
 
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-container", ".")
