@@ -126,7 +126,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
                 println("Input created for iteration ${nextIteration()}")
 
-                execAutoML(nextIteration())
+                execAutoML(dataManager.workspacePath, nextIteration())
 
                 if (dataManager.existsAutoMLData(nextIteration())) {
                     updateIteration()

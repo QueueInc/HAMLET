@@ -48,7 +48,7 @@ fun runAutoML(workspacePath: String, volume: String?, debug: Boolean) {
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-container", ".")
         val run = arrayOf("docker", "run", "--name", containerName,
-            "--volume", "${tmp}:/home/workspace", "--detach", "-t", "automl-container")
+            "--volume", "${volume}:/", "--detach", "-t", "automl-container")
 
         getOutputFromProgram(build)
         getOutputFromProgram(run)
@@ -62,18 +62,26 @@ fun runAutoML(workspacePath: String, volume: String?, debug: Boolean) {
     }
 
     val run = arrayOf("docker", "run", "--name", containerName,
-        "--volume", "${tmp}:/home/workspace", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
+        "--volume", "${volume}:/", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
 
     getOutputFromProgram(run)
 }
 
-fun execAutoML(config: Config) {
+fun execAutoML(workspacePath: String, config: Config) {
+
+    val tmp = workspacePath.replace("C:", "/mnt/c")
 
     val exec  =
         arrayOf("docker", "exec", containerName, "python", "automl/main.py",
-                "--dataset", config.dataset, "--metric", config.metric, "--fair_metric", config.fairnessMetric, "--mode", config.mode, "--batch_size", config.batchSize.toString(), "--time_budget", config.timeBudget.toString(), "--seed", config.seed.toString(),
-                "--input_path", "/home/workspace/automl/input/automl_input_${config.iteration}.json",
-                "--output_path", "/home/workspace/automl/output/automl_output_${config.iteration}.json")
+                "--dataset", config.dataset,
+                "--metric", config.metric,
+                "--fair_metric", config.fairnessMetric,
+                "--mode", config.mode,
+                "--batch_size", config.batchSize.toString(),
+                "--time_budget", config.timeBudget.toString(),
+                "--seed", config.seed.toString(),
+                "--input_path", "${tmp}/automl/input/automl_input_${config.iteration}.json",
+                "--output_path", "${tmp}/automl/output/automl_output_${config.iteration}.json")
 
     getOutputFromProgram(exec)
 
