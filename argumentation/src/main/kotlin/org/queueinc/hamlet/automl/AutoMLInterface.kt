@@ -62,7 +62,7 @@ fun runAutoML(workspacePath: String, volume: String?, debug: Boolean) {
     }
 
     val run = arrayOf("docker", "run", "--name", containerName,
-        "--volume", "${volume}:/", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
+        "--volume", "${volume}:/temp", "--detach", "-t", "ghcr.io/queueinc/automl-container:$version")
 
     getOutputFromProgram(run)
 }
@@ -80,8 +80,8 @@ fun execAutoML(workspacePath: String, config: Config) {
                 "--batch_size", config.batchSize.toString(),
                 "--time_budget", config.timeBudget.toString(),
                 "--seed", config.seed.toString(),
-                "--input_path", "${tmp}/automl/input/automl_input_${config.iteration}.json",
-                "--output_path", "${tmp}/automl/output/automl_output_${config.iteration}.json")
+                "--input_path", "/temp/${tmp}/automl/input/automl_input_${config.iteration}.json",
+                "--output_path", "/temp/${tmp}/automl/output/automl_output_${config.iteration}.json")
 
     getOutputFromProgram(exec)
 
