@@ -164,9 +164,62 @@ def instantiate_pipeline(prototype, categorical_indicator, X, y, seed, config):
     return Pipeline(pipeline)
 
 
+def transform_configuration(config):
+    transformed = {}
+
+    for key, value in config.items():
+        parts = key.split(".")
+
+        if len(parts) == 1:
+            transformed[parts[0]] = value
+        else:
+            current_level = transformed
+            for part in parts[:-1]:
+                if part not in current_level:
+                    current_level[part] = {}
+                elif isinstance(current_level[part], str):
+                    current_level[part] = {"type": current_level[part]}
+                current_level = current_level[part]
+            current_level[parts[-1]] = value
+
+    for top_level_key in list(transformed.keys()):
+        if isinstance(transformed[top_level_key], str):
+            type_value = transformed.pop(top_level_key)
+            transformed[top_level_key] = {"type": type_value}
+        elif (
+            isinstance(transformed[top_level_key], dict)
+            and "type" not in transformed[top_level_key]
+        ):
+            type_value = transformed[top_level_key].pop("type", None)
+            if type_value:
+                transformed[top_level_key] = {
+                    "type": type_value,
+                    **transformed[top_level_key],
+                }
+
+    temp = copy.deepcopy(transformed)
+    for key, value in transformed.items():
+        if type(value) == dict:
+            for nested_key, nested_value in value.items():
+                if type(nested_value) == dict:
+                    for new_key, new_value in nested_value.items():
+                        temp[key][new_key] = new_value
+                    del temp[key][nested_key]
+    temp["prototype"] = temp["prototype"]["type"]
+
+    return temp
+
+
 # We define the function to optimize
 def objective(
-    X, y, categorical_indicator, sensitive_indicator, fair_metric, metric, seed, config
+    X,
+    y,
+    categorical_indicator,
+    sensitive_indicator,
+    fair_metric,
+    metric,
+    seed,
+    smac_config,
 ):
     def set_time(result, scores, start_time):
         result["absolute_time"] = time.time()
@@ -176,6 +229,8 @@ def objective(
             result["fit_time"] = np.mean(scores["fit_time"])
         if scores and "score_time" in scores:
             result["score_time"] = np.mean(scores["score_time"])
+
+    config = transform_configuration(smac_config)
 
     result = {
         fair_metric: float("-inf"),
@@ -323,4 +378,10 @@ def objective(
         gc.collect()
 
     Buffer().add_evaluation(config=config, result=result)
+
+    # TODO
+    # Transform result
+    # Per esempio: smac gestisce solo min! Fare 1 - metric
+    # Controlla il formato (il dict è composto uguale? Non vuole solo le metriche interessate?)
+
     return result

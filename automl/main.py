@@ -19,6 +19,9 @@ from hamlet.loader import Loader
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
 
+from smac import HyperparameterOptimizationFacade as HPOFacade
+from smac import Scenario
+
 
 def main(args):
     np.random.seed(args.seed)
@@ -54,8 +57,64 @@ def main(args):
     space_generation_time = loader.get_space_generation_time()
     del loader
 
-    analysis = tune.run(
-        evaluation_function=partial(
+    ##################### OLD FLAML OPTIMIZATION
+    # analysis = tune.run(
+    #     evaluation_function=partial(
+    #         objective,
+    #         X,
+    #         y,
+    #         categorical_indicator,
+    #         sensitive_indicator,
+    #         args.fair_metric,
+    #         args.metric,
+    #         args.seed,
+    #     ),
+    #     config=space,
+    #     metric=args.metric,
+    #     mode=args.mode,
+    #     num_samples=(
+    #         (args.batch_size + len(previous_evaluated_points))
+    #         if args.batch_size > 0
+    #         else -1
+    #     ),
+    #     time_budget_s=args.time_budget if args.time_budget > 0 else None,
+    #     points_to_evaluate=previous_evaluated_points,
+    #     # evaluated_rewards=evaluated_rewards,
+    #     verbose=0,
+    #     max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
+    #     lexico_objectives={
+    #         "metrics": metrics,
+    #         "modes": [args.mode] * len(metrics),
+    #         "tolerances": {},
+    #         "targets": {metric: 1 if args.mode == "max" else 0 for metric in metrics},
+    #     },
+    # )
+
+    ##################### SMAC ADAPTATION TO MOO
+    # SMAC vuole che specifichiamo i trials, quindi non possiamo mettere -1, va bene maxsize?
+    n_trials = (
+        (args.batch_size + len(previous_evaluated_points))
+        if args.batch_size > 0
+        else sys.maxsize
+    )
+
+    # Define our environment variables
+    scenario = Scenario(
+        space,
+        objectives=metrics,
+        n_trials=n_trials,
+        seed=args.seed,
+        n_workers=1,
+    )
+
+    initial_design = previous_evaluated_points
+    intensifier = HPOFacade.get_intensifier(scenario, max_config_calls=1)
+
+    # Create our SMAC object and pass the scenario and the train method
+    smac = HPOFacade(
+        scenario,
+        # Questa non funziona di sicuro
+        partial(
             objective,
             X,
             y,
@@ -65,26 +124,13 @@ def main(args):
             args.metric,
             args.seed,
         ),
-        config=space,
-        metric=args.metric,
-        mode=args.mode,
-        num_samples=(
-            (args.batch_size + len(previous_evaluated_points))
-            if args.batch_size > 0
-            else -1
-        ),
-        time_budget_s=args.time_budget if args.time_budget > 0 else None,
-        points_to_evaluate=previous_evaluated_points,
-        # evaluated_rewards=evaluated_rewards,
-        verbose=0,
-        max_failure=sys.maxsize * 2 + 1,  # args.batch_size + len(points_to_evaluate),
-        lexico_objectives={
-            "metrics": metrics,
-            "modes": [args.mode] * len(metrics),
-            "tolerances": {},
-            "targets": {metric: 1 if args.mode == "max" else 0 for metric in metrics},
-        },
+        initial_design=initial_design,
+        intensifier=intensifier,
+        overwrite=True,
     )
+
+    # Let's optimize
+    incumbents = smac.optimize()
 
     Buffer().printflush("AutoML: optimization done.")
 
@@ -102,9 +148,12 @@ def main(args):
 
     Buffer().printflush("AutoML: miner done.")
 
-    best_config = {}
+    # best_config = {}
+    best_config = []
     try:
-        best_config = analysis.best_trial.last_result
+        # best_config = analysis.best_trial.last_result
+        # potrebbe non funzionare
+        best_config = incumbents
     except:
         Buffer().printflush("Apparently no results are available")
 

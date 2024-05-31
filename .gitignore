@@ -160,3 +160,5 @@ vscode/
 results/
 .temp
 temp/
+.results_fairness
+results_fairness/

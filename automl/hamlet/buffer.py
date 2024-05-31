@@ -6,6 +6,8 @@ class TimeException(BaseException):
     pass
 
 
+# TODO
+# Anche qua, dobbiamo adattare ogni volta che ritorniamo un result
 class Buffer:
     _instance = None
 
