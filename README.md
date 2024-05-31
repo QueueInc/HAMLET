@@ -117,7 +117,7 @@ We committed in developing a logical language as intuitive as possible:
 
 # Debug
 
-/usr/local/bin/python /home/automl/main.py -dataset 31 -metric balanced_accuracy -fair_metric demographic_parity -mode max -batch_size 30 -time_budget 100 -input_path /home/results/trial/automl/input/automl_input_1.json -output_path /home/results/trial/automl/output/automl_output_1.json -seed 42
+/usr/local/bin/python /home/automl/main.py -dataset 31 -metric balanced_accuracy -fair_metric demographic_parity -mode max -batch_size 125 -time_budget 900 -input_path /home/results_fairness/pkb_cluster/automl/input/automl_input_1.json -output_path /home/results_fairness/pkb_cluster/automl/output/automl_output_1.json -seed 42
 
 Notes
 - fair_metric is new
