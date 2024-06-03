@@ -1,4 +1,5 @@
 # Scikit-learn provides a set of machine learning techniques
+import copy
 import json
 import os
 import sys
@@ -210,6 +211,16 @@ def transform_configuration(config):
     return temp
 
 
+def adapt_to_smac(result, metric, fair_metric, mode):
+    to_retun = copy.deepcopy(result)
+    if mode == "min":
+        for key in [metric, fair_metric]:
+            if result[metric] == float("-inf"):
+                result[metric] == float("inf")
+            else:
+                to_retun[key] = 1 - to_retun[key]
+
+
 # We define the function to optimize
 def objective(
     X,
@@ -218,6 +229,7 @@ def objective(
     sensitive_indicator,
     fair_metric,
     metric,
+    mode,
     seed,
     smac_config,
 ):
@@ -249,13 +261,13 @@ def objective(
     # (i.e., if it is in the "points_to_evaluate" read by the json)
     is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
     if is_point_to_evaluate:
-        return reward
+        return adapt_to_smac(reward, metric, fair_metric, mode)
 
     if Buffer().check_template_constraints(config):
         result["status"] = "previous_constraint"
         set_time(result, scores, start_time)
         Buffer().add_evaluation(config=config, result=result)
-        return result
+        return adapt_to_smac(result, metric, fair_metric, mode)
 
     Buffer().printflush(config)
 
@@ -381,7 +393,7 @@ def objective(
 
     # TODO
     # Transform result
-    # Per esempio: smac gestisce solo min! Fare 1 - metric
-    # Controlla il formato (il dict è composto uguale? Non vuole solo le metriche interessate?)
+    # Per esempio: smac gestisce solo min! Fare 1 - metric DONE
+    # Controlla il formato (il dict è composto uguale? Non vuole solo le metriche interessate?) TO CHECK
 
-    return result
+    return adapt_to_smac(result, metric, fair_metric, mode)

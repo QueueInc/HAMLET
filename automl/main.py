@@ -122,6 +122,7 @@ def main(args):
             sensitive_indicator,
             args.fair_metric,
             args.metric,
+            args.mode,
             args.seed,
         ),
         initial_design=initial_design,
