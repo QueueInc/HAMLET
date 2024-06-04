@@ -57,25 +57,14 @@ class Loader:
                 mode="max",
             )
 
-            temp_smac_instance_constraints = [
+            self._instance_constraints = [
                 complete_config(config, flaml_space, cfo._ls)[0]
                 for config in flaml_instance_constraints
             ]
 
-            temp_smac_points_to_evaluate = [
+            self._points_to_evaluate = [
                 complete_config(config, flaml_space, cfo._ls)[0]
                 for config in flaml_points_to_evaluate
-            ]
-
-            # Map instance constraints to smac configurations
-            self._instance_constraints = [
-                self._flatten_configuration(config)
-                for config in temp_smac_instance_constraints
-            ]
-
-            self._points_to_evaluate = [
-                self._flatten_configuration(config)
-                for config in temp_smac_points_to_evaluate
             ]
 
             # Map space to smac space
@@ -104,14 +93,15 @@ class Loader:
     def _flatten_configuration(self, config):
         flattened = {}
 
-        def recurse(current_level, prefix=""):
+        def recurse(current_level, prefix):
+            print(current_level)
             for key, value in current_level.items():
-                new_key = f"{prefix}.{key}" if prefix else key
-                if isinstance(value, dict) and "type" in value:
-                    flattened[new_key] = value["type"]
-                    recurse(value, new_key)
-                else:
-                    flattened[new_key] = value
+                new_key = (
+                    f"""{prefix}.{current_level["type"]}.{key}"""
+                    if key != "type"
+                    else prefix
+                )
+                flattened[new_key] = value
 
         for key, value in config.items():
             if isinstance(value, dict) and "type" in value:
@@ -120,12 +110,12 @@ class Loader:
             else:
                 flattened[key] = value
 
-        to_return = copy.deepcopy(flattened)
-        for key, value in flattened.items():
-            if "type" in key:
-                del to_return[key]
+        # to_return = copy.deepcopy(flattened)
+        # for key, value in flattened.items():
+        #     if "type" in key:
+        #         del to_return[key]
 
-        return to_return
+        return flattened
 
     def _add_hyperparameters(
         self, cs, name_prefix, params, conditions, parent_name=None, parent_value=None
@@ -306,11 +296,23 @@ class Loader:
     def get_template_constraints(self):
         return self._template_constraints
 
-    def get_instance_constraints(self):
-        return self._instance_constraints
+    def get_instance_constraints(self, is_smac=False):
+        if is_smac:
+            return [
+                self._flatten_configuration(config)
+                for config in self._instance_constraints
+            ]
+        else:
+            return self._instance_constraints
 
-    def get_points_to_evaluate(self):
-        return self._points_to_evaluate
+    def get_points_to_evaluate(self, is_smac=False):
+        if is_smac:
+            return [
+                self._flatten_configuration(config)
+                for config in self._points_to_evaluate
+            ]
+        else:
+            return self._points_to_evaluate
 
     def get_evaluated_rewards(self):
         return self._evaluated_rewards

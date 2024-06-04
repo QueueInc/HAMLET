@@ -5,6 +5,7 @@ import sys
 
 warnings.filterwarnings("always")
 
+from ConfigSpace import Configuration
 import numpy as np
 import pandas as pd
 
@@ -14,7 +15,7 @@ from flaml import tune
 from utils.argparse import parse_args
 from utils.json_to_csv import json_to_csv
 from utils.datasets import load_dataset_from_openml, load_from_csv
-from hamlet.objective import objective
+from hamlet.objective import Prototype
 from hamlet.loader import Loader
 from hamlet.buffer import Buffer
 from hamlet.miner import Miner
@@ -30,29 +31,33 @@ def main(args):
     X, y, categorical_indicator, sensitive_indicator = load_dataset_from_openml(
         args.dataset
     )
-    # X, y, categorical_indicator = load_dataset_from_openml(args.dataset)
-    loader = Loader(args.input_path)
     metrics = [args.fair_metric, args.metric]
-    buffer = Buffer(metrics=metrics, loader=loader)
+    # TODO
+    # Put initial initial_design_configs = 0 if not first iteration
+    initial_design_configs = 5
+    loader = Loader(args.input_path)
+    buffer = Buffer(
+        metrics=metrics, loader=loader, initial_design_configs=initial_design_configs
+    )
     Buffer().attach_handler()
     space = loader.get_space()
-
-    # print(
-    #     pd.concat(
-    #         [
-    #             pd.DataFrame(points_to_evaluate),
-    #             pd.DataFrame(
-    #                 [reward[args.metric] for reward in evaluated_rewards],
-    #                 columns=[args.metric],
-    #             ),
-    #         ],
-    #         axis=1,
-    #     )
-    # )
-
-    previous_evaluated_points = (
-        loader.get_points_to_evaluate() + loader.get_instance_constraints()
+    pipeline = Prototype(
+        X,
+        y,
+        categorical_indicator,
+        sensitive_indicator,
+        args.fair_metric,
+        args.metric,
+        args.mode,
     )
+
+    previous_evaluated_points = [
+        Configuration(configuration_space=space, values=elem)
+        for elem in (
+            loader.get_points_to_evaluate(is_smac=True)
+            + loader.get_instance_constraints(is_smac=True)
+        )
+    ]
     graph_generation_time = loader.get_graph_generation_time()
     space_generation_time = loader.get_space_generation_time()
     del loader
@@ -93,11 +98,10 @@ def main(args):
     ##################### SMAC ADAPTATION TO MOO
     # SMAC vuole che specifichiamo i trials, quindi non possiamo mettere -1, va bene maxsize?
     n_trials = (
-        (args.batch_size + len(previous_evaluated_points))
+        (args.batch_size + len(previous_evaluated_points) + initial_design_configs)
         if args.batch_size > 0
         else sys.maxsize
     )
-
     # Define our environment variables
     scenario = Scenario(
         space,
@@ -107,24 +111,18 @@ def main(args):
         n_workers=1,
     )
 
-    initial_design = previous_evaluated_points
+    initial_design = HPOFacade.get_initial_design(
+        scenario,
+        n_configs=initial_design_configs,
+        additional_configs=previous_evaluated_points,
+    )
     intensifier = HPOFacade.get_intensifier(scenario, max_config_calls=1)
 
     # Create our SMAC object and pass the scenario and the train method
     smac = HPOFacade(
         scenario,
         # Questa non funziona di sicuro
-        partial(
-            objective,
-            X,
-            y,
-            categorical_indicator,
-            sensitive_indicator,
-            args.fair_metric,
-            args.metric,
-            args.mode,
-            args.seed,
-        ),
+        pipeline.objective,
         initial_design=initial_design,
         intensifier=intensifier,
         overwrite=True,
@@ -152,9 +150,9 @@ def main(args):
     # best_config = {}
     best_config = []
     try:
-        # best_config = analysis.best_trial.last_result
-        # potrebbe non funzionare
-        best_config = incumbents
+        # TODO
+        # Get also the reward/evaluation
+        best_config = [elem.get_dictionary() for elem in incumbents]
     except:
         Buffer().printflush("Apparently no results are available")
 

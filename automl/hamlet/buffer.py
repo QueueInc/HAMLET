@@ -18,13 +18,15 @@ class Buffer:
     _results = []
     _current_point_to_evaluate = 0
     _num_previous_evaluated_points = 0
+    _initial_design_configs = 0
 
-    def __new__(cls, metrics=None, loader=None):
+    def __new__(cls, metrics=None, loader=None, initial_design_configs=None):
         if cls._instance is None:
             cls._instance = super(Buffer, cls).__new__(cls)
 
-        if metrics and loader:
+        if metrics and loader and initial_design_configs:
             cls._instance._metrics = metrics
+            cls._instance._initial_design_configs = initial_design_configs
             cls._instance._template_constraints = loader.get_template_constraints()
             (
                 cls._instance._configs,
@@ -61,11 +63,21 @@ class Buffer:
                     evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
                 new_points_to_evaluate.append(point_to_evaluate)
                 new_evaluated_rewards.append(evaluated_rewards[i])
+        if (len(new_points_to_evaluate) != len(points_to_evaluate)) or (
+            len(new_evaluated_rewards) != len(evaluated_rewards)
+        ):
+            raise Exception(
+                "points_to_evaluate or evaluated_rewards have difrent length after Buffer processing"
+            )
         return new_points_to_evaluate, new_evaluated_rewards
 
     def add_evaluation(self, config, result):
-        self._configs.append(config)
-        self._results.append(result)
+        if self._current_point_to_evaluate < (self._initial_design_configs + 1):
+            self._configs.insert(0, config)
+            self._results.insert(0, result)
+        else:
+            self._configs.append(config)
+            self._results.append(result)
         self.printflush(len(self._configs))
 
     def get_evaluations(self):
@@ -78,14 +90,19 @@ class Buffer:
         return False
 
     def check_points_to_evaluate(self):
-        if self._current_point_to_evaluate < self._num_previous_evaluated_points:
+        if self._current_point_to_evaluate < self._initial_design_configs:
+            self._current_point_to_evaluate += 1
+            return False, 0
+        elif self._current_point_to_evaluate < (
+            self._initial_design_configs + self._num_previous_evaluated_points
+        ):
             # print(
             #     f"{self._current_point_to_evaluate} out of {self._num_previous_evaluated_points}"
             # )
             self._current_point_to_evaluate += 1
             # Here, we return the -inf result if flaml is sampling (see comment above in the constructor)
-            if self._current_point_to_evaluate < len(self._results):
-                return True, self._results[self._current_point_to_evaluate]
+            if self._current_point_to_evaluate < (len(self._results) + 1):
+                return True, self._results[self._current_point_to_evaluate - 1]
             return True, {
                 **{metric: float("-inf") for metric in self._metrics},
                 **{"status": "previous_constraint"},
