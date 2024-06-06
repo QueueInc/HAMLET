@@ -94,7 +94,6 @@ class Loader:
         flattened = {}
 
         def recurse(current_level, prefix):
-            print(current_level)
             for key, value in current_level.items():
                 new_key = (
                     f"""{prefix}.{current_level["type"]}.{key}"""

@@ -237,14 +237,15 @@ class Prototype:
 
         return temp
 
-    def _adapt_to_smac(self, result, metric, fair_metric, mode):
-        to_retun = copy.deepcopy(result)
-        if mode == "min":
-            for key in [metric, fair_metric]:
-                if result[metric] == float("-inf"):
-                    result[metric] == float("inf")
-                else:
-                    to_retun[key] = 1 - to_retun[key]
+    def _transform_result(self, result, metric, fair_metric, mode):
+        return {
+            key: (
+                (float("inf") if result[key] == float("-inf") else (1 - result[key]))
+                if mode == "max"
+                else result[key]
+            )
+            for key in [metric, fair_metric]
+        }
 
     # We define the function to optimize
     def objective(
@@ -282,13 +283,17 @@ class Prototype:
         # (i.e., if it is in the "points_to_evaluate" read by the json)
         is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
         if is_point_to_evaluate:
-            return self._adapt_to_smac(reward, self.metric, self.fair_metric, self.mode)
+            return self._transform_result(
+                reward, self.metric, self.fair_metric, self.mode
+            )
 
         if Buffer().check_template_constraints(config):
             result["status"] = "previous_constraint"
             set_time(result, scores, start_time)
             Buffer().add_evaluation(config=config, result=result)
-            return self._adapt_to_smac(result, self.metric, self.fair_metric, self.mode)
+            return self._transform_result(
+                result, self.metric, self.fair_metric, self.mode
+            )
 
         Buffer().printflush(config)
 
@@ -392,7 +397,7 @@ class Prototype:
                 result[f"{self.fair_metric}"] = float("-inf")
             if np.isnan(result[self.metric]):
                 result[self.metric] = float("-inf")
-                print(f"The result for {config} was NaN")
+                Buffer().printflush(f"The result for {config} was NaN")
                 raise Exception(f"The result for {config} was NaN")
             result["status"] = "success"
 
@@ -415,9 +420,4 @@ class Prototype:
 
         Buffer().add_evaluation(config=config, result=result)
 
-        # TODO
-        # Transform result
-        # Per esempio: smac gestisce solo min! Fare 1 - metric DONE
-        # Controlla il formato (il dict è composto uguale? Non vuole solo le metriche interessate?) TO CHECK
-
-        return self._adapt_to_smac(result, self.metric, self.fair_metric, self.mode)
+        return self._transform_result(result, self.metric, self.fair_metric, self.mode)

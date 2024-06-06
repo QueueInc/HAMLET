@@ -32,16 +32,16 @@ def main(args):
         args.dataset
     )
     metrics = [args.fair_metric, args.metric]
-    # TODO
     # Put initial initial_design_configs = 0 if not first iteration
-    initial_design_configs = 5
+    # (brutto tanto ma devo lanciare gli esperimenti :crying_face:)
+    initial_design_configs = 5 if args.input_path == "automl_input_1.json" else 0
     loader = Loader(args.input_path)
     buffer = Buffer(
         metrics=metrics, loader=loader, initial_design_configs=initial_design_configs
     )
     Buffer().attach_handler()
     space = loader.get_space()
-    pipeline = Prototype(
+    prototype = Prototype(
         X,
         y,
         categorical_indicator,
@@ -106,6 +106,7 @@ def main(args):
     scenario = Scenario(
         space,
         objectives=metrics,
+        walltime_limit=args.time_budget,
         n_trials=n_trials,
         seed=args.seed,
         n_workers=1,
@@ -122,7 +123,7 @@ def main(args):
     smac = HPOFacade(
         scenario,
         # Questa non funziona di sicuro
-        pipeline.objective,
+        prototype.objective,
         initial_design=initial_design,
         intensifier=intensifier,
         overwrite=True,
@@ -130,6 +131,7 @@ def main(args):
 
     # Let's optimize
     incumbents = smac.optimize()
+    incumbents_costs = [smac.runhistory.average_cost(elem) for elem in incumbents]
 
     Buffer().printflush("AutoML: optimization done.")
 
@@ -149,15 +151,31 @@ def main(args):
 
     # best_config = {}
     best_config = []
+    Buffer().printflush(incumbents)
     try:
-        # TODO
-        # Get also the reward/evaluation
-        best_config = [elem.get_dictionary() for elem in incumbents]
+        best_config = [
+            {
+                **(prototype._transform_configuration(elem.get_dictionary())),
+                **{
+                    key: (
+                        (
+                            float("-inf")
+                            if incumbents_costs[idx_incumbent][idx_metric]
+                            == float("inf")
+                            else (1 - incumbents_costs[idx_incumbent][idx_metric])
+                        )
+                        if args.mode == "max"
+                        else incumbents_costs[idx_incumbent][idx_metric]
+                    )
+                    for idx_metric, key in enumerate([args.fair_metric, args.metric])
+                },
+            }
+            for idx_incumbent, elem in enumerate(incumbents)
+        ]
     except:
         Buffer().printflush("Apparently no results are available")
 
     rules = [elem for miner in miners.values() for elem in miner.get_rules()]
-    print(points_to_evaluate, evaluated_rewards)
     automl_output = {
         "start_time": start_time,
         "graph_generation_time": graph_generation_time,

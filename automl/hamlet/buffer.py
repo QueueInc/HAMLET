@@ -6,8 +6,6 @@ class TimeException(BaseException):
     pass
 
 
-# TODO
-# Anche qua, dobbiamo adattare ogni volta che ritorniamo un result
 class Buffer:
     _instance = None
 
@@ -47,7 +45,6 @@ class Buffer:
 
         return cls._instance
 
-    # todo: metrics as input, and output has the new metrics in the keys : done, to check
     def _filter_previous_results(self, points_to_evaluate, evaluated_rewards, metrics):
         new_points_to_evaluate = []
         new_evaluated_rewards = []
