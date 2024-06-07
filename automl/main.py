@@ -143,7 +143,8 @@ def main(args):
             metric=args.metric,
             mode=args.mode,
         )
-        for metric in metrics
+        # for metric in metrics
+        for metric in [args.fair_metric]
     }
     end_time = time.time()
 
