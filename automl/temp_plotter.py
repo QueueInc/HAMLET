@@ -71,11 +71,12 @@ def plot_results(working_path, results, hamlet_modes):
 def main():
 
     hamlet_modes = ["baseline", "pkb", "ika", "pkb_ika"]
+    version = "1_0_9"
     working_path = os.path.join(
         "/",
         "home",
         "results_fairness",
-        "cluster",
+        version,
     )
 
     results = load_resuts(working_path=working_path, hamlet_modes=hamlet_modes)
