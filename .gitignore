@@ -162,5 +162,7 @@ results/
 temp/
 .results_fairness
 results_fairness/
+.results_fairness_debug
+results_fairness_debug/
 .smac3_output
 smac3_output/
