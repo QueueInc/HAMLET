@@ -12,3 +12,4 @@ lightgbm
 catboost
 fairlearn
 smac
+pymoo
