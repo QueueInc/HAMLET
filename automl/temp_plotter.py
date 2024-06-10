@@ -115,7 +115,7 @@ def plot_results(working_path, results, hamlet_modes, abscissa_label, ordinate_l
     fig.savefig(
         os.path.join(
             working_path,
-            f"trial.png",
+            f"summary.png",
         ),
         bbox_extra_artists=(lgd, text),
         bbox_inches="tight",
