@@ -57,6 +57,8 @@ from catboost import CatBoostClassifier
 
 from .buffer import Buffer, TimeException
 
+from fairlearn.preprocessing import CorrelationRemover
+
 
 class Prototype:
 
@@ -103,6 +105,16 @@ class Prototype:
     ):
         num_features = self._get_indices_from_mask(categorical_indicator, False)
         cat_features = self._get_indices_from_mask(categorical_indicator, True)
+        sen_num_features = [
+            elem
+            for elem in self._get_indices_from_mask(self.sensitive_indicator, True)
+            if elem in num_features
+        ]
+        sen_cat_features = [
+            elem
+            for elem in self._get_indices_from_mask(self.sensitive_indicator, True)
+            if elem in cat_features
+        ]
         # if (
         #     config["discretization"]["type"] != "FunctionTransformer"
         #     and config["normalization"]["type"] != "FunctionTransformer"
@@ -127,12 +139,19 @@ class Prototype:
                 operator_parameters.pop("n_hidden_layers", None)
 
             # we instantiate the operator/algorithm,
+            if config[step]["type"] == "CorrelationRemover":
+                operator = globals()[config[step]["type"]](
+                    sensitive_feature_ids=sen_num_features + sen_cat_features,
+                    **operator_parameters,
+                )
+
             if "random_state" in globals()[config[step]["type"]]().get_params():
                 operator = globals()[config[step]["type"]](
                     random_state=seed, **operator_parameters
                 )
             else:
                 operator = globals()[config[step]["type"]](**operator_parameters)
+
             # and we add it to the pipeline
             if step in ["discretization", "normalization", "encoding"]:
                 if step in ["discretization", "normalization"]:
@@ -165,9 +184,23 @@ class Prototype:
                 pipeline.append([step, operator])
 
             if step == "discretization":
+                sen_cat_features = [
+                    num_features.index(feature) for feature in sen_num_features
+                ] + [
+                    cat_features.index(feature) + len(num_features)
+                    for feature in sen_cat_features
+                ]
+                sen_num_features = []
                 cat_features = list(range(len(cat_features + num_features)))
                 num_features = []
             elif step in ["encoding", "normalization"]:
+                sen_num_features = [
+                    num_features.index(feature) for feature in sen_num_features
+                ]
+                sen_cat_features = [
+                    cat_features.index(feature) + len(num_features)
+                    for feature in sen_cat_features
+                ]
                 num_features = list(range(len(num_features)))
                 cat_features = list(
                     range(len(num_features), len(num_features) + len(cat_features))
@@ -176,6 +209,10 @@ class Prototype:
                 if config[step]["type"] == "PCA":
                     num_features = list(range(config[step]["n_components"]))
                     cat_features = []
+                    # TODO
+                    # Tirare eccezione se PCA prima
+                    sen_num_features = []
+                    sen_cat_features = []
                 elif config[step]["type"] == "SelectKBest":
                     selector = Pipeline(pipeline)
                     selector.fit_transform(X, y)
@@ -190,6 +227,41 @@ class Prototype:
                         for feature in cat_features
                         if feature in selected_features
                     ]
+                    sen_num_features = [
+                        selected_features.index(feature)
+                        for feature in sen_num_features
+                        if feature in selected_features
+                    ]
+                    sen_cat_features = [
+                        selected_features.index(feature)
+                        for feature in sen_cat_features
+                        if feature in selected_features
+                    ]
+            elif step == "mitigation":
+                num_features = [
+                    elem
+                    - len(
+                        [
+                            sen_elem
+                            for sen_elem in sen_num_features + sen_cat_features
+                            if sen_elem < elem
+                        ]
+                    )
+                    for elem in num_features
+                ]
+                cat_features = [
+                    elem
+                    - len(
+                        [
+                            sen_elem
+                            for sen_elem in sen_num_features + sen_cat_features
+                            if sen_elem < elem
+                        ]
+                    )
+                    for elem in cat_features
+                ]
+                sen_num_features = []
+                sen_cat_features = []
         return Pipeline(pipeline)
 
     def _transform_configuration(self, config):
