@@ -22,7 +22,7 @@ class Buffer:
         if cls._instance is None:
             cls._instance = super(Buffer, cls).__new__(cls)
 
-        if metrics and loader and initial_design_configs:
+        if metrics and loader:
             cls._instance._metrics = metrics
             cls._instance._initial_design_configs = initial_design_configs
             cls._instance._template_constraints = loader.get_template_constraints()

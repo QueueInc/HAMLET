@@ -103,6 +103,14 @@ class Prototype:
     def _instantiate_pipeline(
         self, prototype, categorical_indicator, X, y, seed, config
     ):
+
+        if (
+            prototype.index("mitigation") > prototype.index("features")
+            and config["features"]["type"] == "PCA"
+            and config["mitigation"]["type"] == "CorrelationRemover"
+        ):
+            raise Exception("PCA before CorrelationRemover")
+
         num_features = self._get_indices_from_mask(categorical_indicator, False)
         cat_features = self._get_indices_from_mask(categorical_indicator, True)
         sen_num_features = [
@@ -144,13 +152,13 @@ class Prototype:
                     sensitive_feature_ids=sen_num_features + sen_cat_features,
                     **operator_parameters,
                 )
-
-            if "random_state" in globals()[config[step]["type"]]().get_params():
-                operator = globals()[config[step]["type"]](
-                    random_state=seed, **operator_parameters
-                )
             else:
-                operator = globals()[config[step]["type"]](**operator_parameters)
+                if "random_state" in globals()[config[step]["type"]]().get_params():
+                    operator = globals()[config[step]["type"]](
+                        random_state=seed, **operator_parameters
+                    )
+                else:
+                    operator = globals()[config[step]["type"]](**operator_parameters)
 
             # and we add it to the pipeline
             if step in ["discretization", "normalization", "encoding"]:
@@ -209,8 +217,6 @@ class Prototype:
                 if config[step]["type"] == "PCA":
                     num_features = list(range(config[step]["n_components"]))
                     cat_features = []
-                    # TODO
-                    # Tirare eccezione se PCA prima
                     sen_num_features = []
                     sen_cat_features = []
                 elif config[step]["type"] == "SelectKBest":
@@ -238,28 +244,37 @@ class Prototype:
                         if feature in selected_features
                     ]
             elif step == "mitigation":
-                num_features = [
-                    elem
-                    - len(
-                        [
-                            sen_elem
-                            for sen_elem in sen_num_features + sen_cat_features
-                            if sen_elem < elem
-                        ]
+                # num_features = [
+                #     elem
+                #     - len(
+                #         [
+                #             sen_elem
+                #             for sen_elem in sen_num_features + sen_cat_features
+                #             if sen_elem < elem
+                #         ]
+                #     )
+                #     for elem in num_features
+                #     if elem not in sen_num_features + sen_cat_features
+                # ]
+                # cat_features = [
+                #     elem
+                #     - len(
+                #         [
+                #             sen_elem
+                #             for sen_elem in sen_num_features + sen_cat_features
+                #             if sen_elem < elem
+                #         ]
+                #     )
+                #     for elem in cat_features
+                #     if elem not in sen_num_features + sen_cat_features
+                # ]
+                num_features = list(
+                    range(
+                        len(cat_features + num_features)
+                        - len(sen_num_features + sen_cat_features)
                     )
-                    for elem in num_features
-                ]
-                cat_features = [
-                    elem
-                    - len(
-                        [
-                            sen_elem
-                            for sen_elem in sen_num_features + sen_cat_features
-                            if sen_elem < elem
-                        ]
-                    )
-                    for elem in cat_features
-                ]
+                )
+                cat_features = []
                 sen_num_features = []
                 sen_cat_features = []
         return Pipeline(pipeline)
@@ -371,15 +386,12 @@ class Prototype:
 
         try:
 
-            X_copy = self.X.copy()
-            y_copy = self.y.copy()
-
             prototype = self._get_prototype(config)
             pipeline = self._instantiate_pipeline(
                 prototype,
                 self.categorical_indicator,
-                X_copy,
-                y_copy,
+                self.X.copy(),
+                self.y.copy(),
                 seed,
                 config,
             )
@@ -387,14 +399,11 @@ class Prototype:
             Buffer().printflush("opt")
             Buffer().attach_timer(900)
 
-            X_copy_ii = self.X.copy()
-            y_copy_ii = self.y.copy()
-
             cv = 5
             scores = cross_validate(
                 pipeline,
-                X_copy_ii,
-                y_copy_ii,
+                self.X.copy(),
+                self.y.copy(),
                 scoring=[self.metric],
                 # scoring={
                 #     metric: performance_scorer,
@@ -482,12 +491,6 @@ class Prototype:
             Buffer().printflush(str(e))
         finally:
             set_time(result, scores, start_time)
-
-            del X_copy
-            del X_copy_ii
-            del y_copy
-            del y_copy_ii
-
             gc.collect()
 
         Buffer().add_evaluation(config=config, result=result)
