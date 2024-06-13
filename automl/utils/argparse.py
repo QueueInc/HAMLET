@@ -26,7 +26,7 @@ def parse_args():
         "--fair_metric",
         nargs="?",
         type=str,
-        required=False,
+        required=True,
         help="fair metric to optimize",
     )
     parser.add_argument(

@@ -11,6 +11,7 @@ from utils import commons
 
 
 class Miner:
+    
     def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode):
         self._automl_output = [
             (config, reward[metric])

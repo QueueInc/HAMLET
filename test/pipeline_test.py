@@ -385,6 +385,5 @@ class TestAdjustIndexes(unittest.TestCase):
         }
         self.assertEqual(result, expected_indexes)
 
-
 if __name__ == "__main__":
     unittest.main()

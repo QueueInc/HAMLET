@@ -59,6 +59,8 @@ from .buffer import Buffer, TimeException
 
 from fairlearn.preprocessing import CorrelationRemover
 
+from utils.flaml_to_smac import transform_configuration, transform_result
+
 
 def _get_prototype(config):
     # We define the ml pipeline to optimize (i.e., the order of the pre-processing transformations + the ml algorithm)
@@ -239,63 +241,6 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
     }
 
 
-def _transform_configuration(config):
-    transformed = {}
-
-    for key, value in config.items():
-        parts = key.split(".")
-
-        if len(parts) == 1:
-            transformed[parts[0]] = value
-        else:
-            current_level = transformed
-            for part in parts[:-1]:
-                if part not in current_level:
-                    current_level[part] = {}
-                elif isinstance(current_level[part], str):
-                    current_level[part] = {"type": current_level[part]}
-                current_level = current_level[part]
-            current_level[parts[-1]] = value
-
-    for top_level_key in list(transformed.keys()):
-        if isinstance(transformed[top_level_key], str):
-            type_value = transformed.pop(top_level_key)
-            transformed[top_level_key] = {"type": type_value}
-        elif (
-            isinstance(transformed[top_level_key], dict)
-            and "type" not in transformed[top_level_key]
-        ):
-            type_value = transformed[top_level_key].pop("type", None)
-            if type_value:
-                transformed[top_level_key] = {
-                    "type": type_value,
-                    **transformed[top_level_key],
-                }
-
-    temp = copy.deepcopy(transformed)
-    for key, value in transformed.items():
-        if type(value) == dict:
-            for nested_key, nested_value in value.items():
-                if type(nested_value) == dict:
-                    for new_key, new_value in nested_value.items():
-                        temp[key][new_key] = new_value
-                    del temp[key][nested_key]
-    temp["prototype"] = temp["prototype"]["type"]
-
-    return temp
-
-
-def _transform_result(result, metric, fair_metric, mode):
-    return {
-        key: (
-            (float("inf") if result[key] == float("-inf") else (1 - result[key]))
-            if mode == "max"
-            else result[key]
-        )
-        for key in [metric, fair_metric]
-    }
-
-
 def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores, cv):
 
     # metrics_module = __import__("metrics")
@@ -310,19 +255,6 @@ def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores, cv):
         x_sensitive = x_original[
             :, [i for i, x in enumerate(sensitive_indicator) if x == True]
         ]
-        # Buffer().printflush(x_original)
-        # Buffer().printflush(x_sensitive)
-        # Buffer().printflush(y.copy()[test_indeces])
-        # Buffer().printflush(scores["estimator"][fold].predict(x_original))
-        # Buffer().printflush(
-        #     performance_metric(
-        #         y_true=np.array(y.copy()[test_indeces]).reshape(-1, 1),
-        #         y_pred=np.array(
-        #             scores["estimator"][fold].predict(x_original)
-        #         ).reshape(-1, 1),
-        #         sensitive_features=x_sensitive,
-        #     )
-        # )
 
         # forse fare .reshape(-1, 1) in caso di intersectionality
         fair_scores += [
@@ -410,7 +342,7 @@ class Prototype:
                 return True
             return False
             
-        config = _transform_configuration(smac_config)
+        config = transform_configuration(smac_config)
         Buffer().printflush(config)
 
         result = {
@@ -430,7 +362,7 @@ class Prototype:
         # (i.e., if it is in the "points_to_evaluate" read by the json)
         is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
         if is_point_to_evaluate:
-            return self._transform_result(
+            return transform_result(
                 reward, self.metric, self.fair_metric, self.mode
             )
 
@@ -438,7 +370,7 @@ class Prototype:
             result["status"] = "previous_constraint"
             _set_time(result, scores, start_time)
             Buffer().add_evaluation(config=config, result=result)
-            return self._transform_result(
+            return transform_result(
                 result, self.metric, self.fair_metric, self.mode
             )
 
@@ -496,4 +428,4 @@ class Prototype:
             gc.collect()
 
         Buffer().add_evaluation(config=config, result=result)
-        return self._transform_result(result, self.metric, self.fair_metric, self.mode)
+        return transform_result(result, self.metric, self.fair_metric, self.mode)
