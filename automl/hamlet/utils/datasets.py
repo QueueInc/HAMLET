@@ -2,6 +2,7 @@
 import json
 import openml
 import os
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -28,11 +29,12 @@ def get_dataset_by_name(name):
 
 
 def get_dataset_by_id(id):
+    print(__file__)
     return load_dataset_from_openml(id)
 
 
 def load_dataset_from_openml(
-    id, input_path=os.path.join("/home", "resources", "datasets")
+    id, input_path=os.path.join(Path(__file__).parent.parent.parent.resolve(), "resources", "datasets")
 ):
     dataset = openml.datasets.get_dataset(id)
     X, y, categorical_indicator, feature_names = dataset.get_data(
@@ -51,7 +53,7 @@ def load_dataset_from_openml(
     return X, y, categorical_indicator, sensitive_indicator
 
 
-def load_from_csv(id, input_path=os.path.join("/home", "resources", "datasets")):
+def load_from_csv(id, input_path=os.path.join(Path(__file__).parent.parent.parent.resolve(), "resources", "datasets")):
     """Load a dataset given its id on OpenML from resources/datasets.
 
     Args:
