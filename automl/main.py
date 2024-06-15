@@ -1,7 +1,7 @@
 import shutup; shutup.please()
 
-from automl.utils.argparse import parse_args
-from automl.hamlet import run
+from hamlet.utils.argparse import parse_args
+from hamlet import run
 
 
 if __name__ == "__main__":

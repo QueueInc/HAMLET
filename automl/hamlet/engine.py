@@ -3,17 +3,15 @@ import time
 import sys
 
 from ConfigSpace import Configuration
-import numpy as np
 
 from smac import HyperparameterOptimizationFacade as HPOFacade
 from smac import Scenario
 
-from automl.utils.json_to_csv import json_to_csv
-from automl.hamlet.buffer import Buffer
-from automl.hamlet.miner import Miner
+from hamlet.buffer import Buffer
+from hamlet.miner import Miner
 
-from automl.utils.flaml_to_smac import transform_configuration
-
+from hamlet.utils.json_to_csv import json_to_csv
+from hamlet.utils.flaml_to_smac import transform_configuration
 
 def optimize(args, prototype, loader, initial_design_configs, metrics):
 

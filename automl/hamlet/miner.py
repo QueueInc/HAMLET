@@ -5,7 +5,7 @@ from sequential.seq2pat import Seq2Pat
 from mlxtend.preprocessing import TransactionEncoder
 from mlxtend.frequent_patterns import apriori
 
-from automl.utils import commons
+from hamlet.utils import commons
 
 
 class Miner:

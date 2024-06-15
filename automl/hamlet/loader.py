@@ -1,6 +1,6 @@
 import json
 
-from automl.utils.flaml_to_smac import get_space, flatten_configuration
+from hamlet.utils.flaml_to_smac import get_space, flatten_configuration
 
 
 class Loader:

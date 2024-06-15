@@ -51,8 +51,8 @@ from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 
-from automl.hamlet.buffer import Buffer, TimeException
-from automl.utils.flaml_to_smac import transform_configuration, transform_result
+from hamlet.buffer import Buffer, TimeException
+from hamlet.utils.flaml_to_smac import transform_configuration, transform_result
 
 
 def _get_prototype(config):

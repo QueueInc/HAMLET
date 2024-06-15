@@ -1,11 +1,11 @@
 import time
 import numpy as np
 
-from automl.hamlet.buffer import Buffer
-from automl.hamlet.objective import Prototype
-from automl.hamlet.loader import Loader
-from automl.utils.datasets import load_dataset_from_openml
-from automl.hamlet.engine import optimize, mine_results, dump_results
+from hamlet.buffer import Buffer
+from hamlet.objective import Prototype
+from hamlet.loader import Loader
+from hamlet.utils.datasets import load_dataset_from_openml
+from hamlet.engine import optimize, mine_results, dump_results
 
 def run(args):
 

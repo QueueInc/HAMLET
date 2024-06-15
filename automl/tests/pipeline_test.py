@@ -1,35 +1,20 @@
 import unittest
+from unittest.mock import MagicMock
 
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import SimpleImputer, IterativeImputer
-from sklearn.preprocessing import (
-    OrdinalEncoder, RobustScaler, StandardScaler, MinMaxScaler,
-    PowerTransformer, KBinsDiscretizer, Binarizer
-)
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import RobustScaler
 from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
-from imblearn.pipeline import Pipeline
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neural_network import MLPClassifier
-from sklearn.svm import LinearSVC
-from sklearn.ensemble import (
-    RandomForestClassifier, AdaBoostClassifier, ExtraTreesClassifier
-)
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
-from lightgbm import LGBMClassifier
-from catboost import CatBoostClassifier
 from fairlearn.preprocessing import CorrelationRemover
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import FunctionTransformer
 
-from unittest.mock import MagicMock
-
-from automl.hamlet.objective import _get_prototype, _check_coherence, _prepare_indexes, _prepare_parameters, _prepare_operator, _adjust_indexes
+from context import hamlet
+from hamlet.objective import _get_prototype, _check_coherence, _prepare_indexes, _prepare_parameters, _prepare_operator, _adjust_indexes
 
 class TestPipelineFunctions(unittest.TestCase):
 

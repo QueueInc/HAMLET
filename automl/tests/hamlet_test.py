@@ -1,10 +1,10 @@
 import unittest
-
 from unittest.mock import MagicMock
 
-from automl.hamlet import run
+from context import hamlet
+from hamlet import run
 
-class HamletTest(unittest.TestCase):
+class TestHamlet(unittest.TestCase):
 
     def test_balanced_accuracy(self):
 
@@ -40,6 +40,6 @@ class HamletTest(unittest.TestCase):
 
         self.assertGreater(len(best), 0)
 
-        
+
 if __name__ == "__main__":
     unittest.main()
