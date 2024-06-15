@@ -1,9 +1,7 @@
-import warnings
+import shutup; shutup.please()
 
-warnings.filterwarnings("ignore")
-
-from utils.argparse import parse_args
-from hamlet.engine import run
+from automl.utils.argparse import parse_args
+from automl.hamlet import run
 
 
 if __name__ == "__main__":

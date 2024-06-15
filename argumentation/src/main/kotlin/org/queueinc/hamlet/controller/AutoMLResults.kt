@@ -5,6 +5,7 @@ import org.queueinc.hamlet.dictionary
 typealias Point = List<String>
 
 data class Rule(
+    val source: String,
     val type: String,
     private val rule: List<String>,
     val occurrences: Int,

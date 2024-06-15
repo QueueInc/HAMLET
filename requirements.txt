@@ -13,3 +13,4 @@ catboost
 fairlearn
 smac
 pymoo
+shutup

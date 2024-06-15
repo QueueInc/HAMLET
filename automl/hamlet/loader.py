@@ -1,5 +1,6 @@
 import json
-from utils.flaml_to_smac import get_space, flatten_configuration
+
+from automl.utils.flaml_to_smac import get_space, flatten_configuration
 
 
 class Loader:

@@ -1,27 +1,18 @@
-# Scikit-learn provides a set of machine learning techniques
-import copy
-import json
-import os
-import sys
 import time
-import gc
-
 import numpy as np
 
 from fairlearn import metrics
-
-# from fairlearn.metrics import demographic_parity_ratio
-
-# from sklearn import metrics
-# from sklearn.metrics import make_scorer
-from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import cross_validate
+
+## Base operators
+from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer
 
 ## Feature Engineering operators
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 
+## Imputation operators
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer
 from sklearn.impute import IterativeImputer
@@ -37,9 +28,13 @@ from sklearn.preprocessing import (
     Binarizer,
 )
 
+# Rebalancing operators
 from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
+
+## Mitigation operators
+from fairlearn.preprocessing import CorrelationRemover
 
 ## Classification algorithms
 from sklearn.neighbors import KNeighborsClassifier
@@ -55,11 +50,9 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
-from .buffer import Buffer, TimeException
 
-from fairlearn.preprocessing import CorrelationRemover
-
-from utils.flaml_to_smac import transform_configuration, transform_result
+from automl.hamlet.buffer import Buffer, TimeException
+from automl.utils.flaml_to_smac import transform_configuration, transform_result
 
 
 def _get_prototype(config):
@@ -241,7 +234,7 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
     }
 
 
-def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores, cv):
+def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores):
 
     # metrics_module = __import__("metrics")
     metrics_module = globals()["metrics"]
@@ -249,7 +242,7 @@ def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores, cv):
     # performance_scorer = make_scorer(performance_metric)
 
     fair_scores = []
-    for fold in range(cv):
+    for fold in range(len(scores["indices"]["test"])):
         test_indeces = scores["indices"]["test"][fold]
         x_original = X.copy()[test_indeces, :]
         x_sensitive = x_original[
@@ -314,7 +307,13 @@ class Prototype:
             operator_parameters = _prepare_parameters(config, step, indexes)
             operator = _prepare_operator(config, step, seed, indexes, operator_parameters)
             pipeline.append([step, operator])
-            indexes = _adjust_indexes(step, config, indexes, lambda : Pipeline(pipeline).fit_transform(self.X.copy(), self.y.copy()))
+
+            def fit_pipeline():
+                p = Pipeline(pipeline)
+                p.fit_transform(self.X.copy(), self.y.copy())
+                return p
+
+            indexes = _adjust_indexes(step, config, indexes, lambda : fit_pipeline())
 
         return Pipeline(pipeline)
 
@@ -341,13 +340,22 @@ class Prototype:
                 Buffer().printflush(f"The result for {config} was NaN")
                 return True
             return False
+        
+        def _return_res(config, result, start_time, status, scores=None, add_to_buffer=True):
+            result["status"] = status
+            _set_time(result, scores, start_time)
+            if add_to_buffer:
+                Buffer().add_evaluation(config=config, result=result)
+            Buffer().printflush(f"{status}\n{config}\n{result}")
+            return transform_result(
+                result, self.metric, self.fair_metric, self.mode
+            )
             
         config = transform_configuration(smac_config)
-        Buffer().printflush(config)
 
         result = {
-            self.fair_metric: float("-inf"),
-            self.metric: float("-inf"),
+            f"{self.fair_metric}" : float("-inf"),
+            f"{self.metric}" : float("-inf"),
             "status": "fail",
             "total_time": 0,
             "fit_time": 0,
@@ -356,43 +364,34 @@ class Prototype:
         }
 
         start_time = time.time()
-        scores = None
 
-        # We check if the point has already been evaluated
-        # (i.e., if it is in the "points_to_evaluate" read by the json)
-        is_point_to_evaluate, reward = Buffer().check_points_to_evaluate()
-        if is_point_to_evaluate:
-            return transform_result(
-                reward, self.metric, self.fair_metric, self.mode
-            )
+        already_evaluated, reward = Buffer().check_points_to_evaluate()
+        if already_evaluated:
+            return _return_res(config, reward, start_time, "already_evaluated", add_to_buffer=False)
+        
 
         if Buffer().check_template_constraints(config):
-            result["status"] = "previous_constraint"
-            _set_time(result, scores, start_time)
-            Buffer().add_evaluation(config=config, result=result)
-            return transform_result(
-                result, self.metric, self.fair_metric, self.mode
-            )
+            return _return_res(config, result, start_time, "previous_constraint")
 
-        Buffer().printflush(config)
 
         try:
-            
+
+            scores = None
             pipeline = self._instantiate_pipeline(
                 seed,
                 config,
             )
 
-            Buffer().printflush("opt")
             Buffer().attach_timer(900)
 
-            cv = 5
+            # TODO
+            # Potrebbe valere la pena fare la stratificazione sulla feature sensibile
             scores = cross_validate(
                 pipeline,
                 self.X.copy(),
                 self.y.copy(),
                 scoring=[self.metric],
-                cv=cv,
+                cv=5,
                 return_estimator=True,
                 return_train_score=False,
                 return_indices=True,
@@ -400,11 +399,10 @@ class Prototype:
             )
 
             Buffer().detach_timer()
-            Buffer().printflush("end opt")
 
             res = {
-                self.metric : scores["test_" + self.metric],
-                self.fair_metric : _compute_fair_metric(self.fair_metric, self.X.copy(), self.y.copy(), self.sensitive_indicator, scores, cv)
+                f"{self.metric}" : scores["test_" + self.metric],
+                f"{self.fair_metric}" : _compute_fair_metric(self.fair_metric, self.X.copy(), self.y.copy(), self.sensitive_indicator, scores)
             }
 
             result[f"flatten_{self.fair_metric}"] = "_".join(
@@ -420,12 +418,6 @@ class Prototype:
             Buffer().printflush("Timeout")
         except Exception as e:
             Buffer().detach_timer()
-            Buffer().printflush("#########################################")
-            Buffer().printflush("Something went wrong")
-            Buffer().printflush(str(e))
-        finally:
-            _set_time(result, scores, start_time)
-            gc.collect()
-
-        Buffer().add_evaluation(config=config, result=result)
-        return transform_result(result, self.metric, self.fair_metric, self.mode)
+            Buffer().printflush(f"Something went wrong:\n{e}")
+        
+        return _return_res(config, result, start_time, result["status"], scores=scores)

@@ -1,13 +1,11 @@
-import itertools
 import numpy as np
 import pandas as pd
 
-from math import floor
-from lzma import MODE_FAST
 from sequential.seq2pat import Seq2Pat
 from mlxtend.preprocessing import TransactionEncoder
-from mlxtend.frequent_patterns import apriori, association_rules
-from utils import commons
+from mlxtend.frequent_patterns import apriori
+
+from automl.utils import commons
 
 
 class Miner:
@@ -108,6 +106,7 @@ class Miner:
                         if frequent_itemsets.shape[0] > 0:
                             current_rules = [
                                 {
+                                    "source": self._metric,
                                     "type": mode,
                                     "rule": list(rule["itemsets"]),
                                     "support": round(rule["support"], 2),
@@ -164,6 +163,7 @@ class Miner:
                             if len(current_rules) > 0:
                                 current_rules = [
                                     {
+                                        "source": self._metric,
                                         "type": "mandatory_order",
                                         "rule": rule[:-1],
                                         "support": round(rule[-1] / len(prototypes), 2),

@@ -8,72 +8,21 @@ import numpy as np
 from smac import HyperparameterOptimizationFacade as HPOFacade
 from smac import Scenario
 
-from utils.json_to_csv import json_to_csv
-from utils.datasets import load_dataset_from_openml
-from hamlet.objective import Prototype
-from hamlet.loader import Loader
-from hamlet.buffer import Buffer
-from hamlet.miner import Miner
+from automl.utils.json_to_csv import json_to_csv
+from automl.hamlet.buffer import Buffer
+from automl.hamlet.miner import Miner
 
-def run(args):
-
-    np.random.seed(args.seed)
-    metrics = [args.fair_metric, args.metric]
-    # Put initial initial_design_configs = 0 if not first iteration
-    # (brutto tanto ma devo lanciare gli esperimenti :crying_face:)
-    initial_design_configs = 5 if args.input_path == "automl_input_1.json" else 0
-    X, y, categorical_indicator, sensitive_indicator = load_dataset_from_openml(
-        args.dataset
-    )
-    
-    loader = Loader(args.input_path)
-    buffer = Buffer(
-        metrics=metrics, loader=loader, initial_design_configs=initial_design_configs
-    )
-
-    buffer.attach_handler()
-
-    prototype = Prototype(
-        X,
-        y,
-        categorical_indicator,
-        sensitive_indicator,
-        args.fair_metric,
-        args.metric,
-        args.mode,
-    )
-
-    Buffer().printflush("AutoML: starting optimization.")
-
-    start_time = time.time()
-    _, _, best_config = optimize(args, prototype, loader, initial_design_configs, metrics)
-    
-    Buffer().printflush("AutoML: optimization done.")
-
-    end_time = time.time()
-    rules = mine_results(args, buffer)
-
-    Buffer().printflush("AutoML: miner done.")
-
-    mining_time = time.time()
-    dump_results(args, loader, buffer, best_config, rules, start_time, end_time, mining_time)
-    
-    Buffer().printflush("AutoML: export done.")
-
-    del loader
-    del buffer
-    del prototype
+from automl.utils.flaml_to_smac import transform_configuration
 
 
 def optimize(args, prototype, loader, initial_design_configs, metrics):
 
-    def _best_configs(prototype, incumbents, incumbents_costs):
+    def _best_configs(incumbents, incumbents_costs):
         best_config = []
-        Buffer().printflush(incumbents)
         try:
             best_config = [
                 {
-                    **(prototype._transform_configuration(elem.get_dictionary())),
+                    **(transform_configuration(elem.get_dictionary())),
                     **{
                         key: (
                             (
@@ -118,6 +67,7 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
         n_trials=n_trials,
         seed=args.seed,
         n_workers=1,
+        # trial_walltime_limit=900
     )
 
     initial_design = HPOFacade.get_initial_design(
@@ -135,25 +85,25 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
         initial_design=initial_design,
         intensifier=intensifier,
         overwrite=True,
+        logging_level=40,
     )
 
     # Let's optimize
     incumbents = smac.optimize()
     incumbents_costs = [smac.runhistory.average_cost(elem) for elem in incumbents]
-    return incumbents, incumbents_costs, _best_configs(prototype, incumbents, incumbents_costs)
+    return incumbents, incumbents_costs, _best_configs(incumbents, incumbents_costs)
 
 
-def mine_results(args, buffer):
+def mine_results(args, buffer, metrics):
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miners = {
-        metric: Miner(
+        m: Miner(
             points_to_evaluate=points_to_evaluate,
             evaluated_rewards=evaluated_rewards,
-            metric=args.metric,
+            metric=m,
             mode=args.mode,
         )
-        # for metric in metrics
-        for metric in [args.fair_metric]
+        for m in metrics
     }
     return [elem for miner in miners.values() for elem in miner.get_rules()]
 
