@@ -1,0 +1,181 @@
+{
+     "graph_generation_time": 2,
+     "space_generation_time": 1,
+     "space": {
+          "prototype": {
+               "choice": [
+                    "normalization_features_mitigation_classification",
+                    "features_normalization_mitigation_classification",
+                    "features_mitigation_normalization_classification",
+                    "normalization_mitigation_features_classification",
+                    "mitigation_normalization_features_classification",
+                    "mitigation_features_normalization_classification"
+               ]
+          },
+          "normalization": {
+               "choice": [
+                    {
+                         "type": "FunctionTransformer"
+                    },
+                    {
+                         "type": "PowerTransformer"
+                    },
+                    {
+                         "type": "RobustScaler",
+                         "with_centering": {
+                              "choice": [
+                                   true,
+                                   false
+                              ]
+                         },
+                         "with_scaling": {
+                              "choice": [
+                                   true,
+                                   false
+                              ]
+                         }
+                    },
+                    {
+                         "type": "StandardScaler",
+                         "with_mean": {
+                              "choice": [
+                                   true,
+                                   false
+                              ]
+                         },
+                         "with_std": {
+                              "choice": [
+                                   true,
+                                   false
+                              ]
+                         }
+                    },
+                    {
+                         "type": "MinMaxScaler"
+                    }
+               ]
+          },
+          "features": {
+               "choice": [
+                    {
+                         "type": "FunctionTransformer"
+                    },
+                    {
+                         "type": "SelectKBest",
+                         "k": {
+                              "randint": [
+                                   1,
+                                   10
+                              ]
+                         }
+                    },
+                    {
+                         "type": "PCA",
+                         "n_components": {
+                              "randint": [
+                                   1,
+                                   8
+                              ]
+                         }
+                    }
+               ]
+          },
+          "mitigation": {
+               "choice": [
+                    {
+                         "type": "FunctionTransformer"
+                    },
+                    {
+                         "type": "CorrelationRemover",
+                         "alpha": {
+                              "choice": [
+                                   0.25,
+                                   0.5,
+                                   0.75,
+                                   1.0
+                              ]
+                         }
+                    }
+               ]
+          },
+          "classification": {
+               "choice": [
+                    {
+                         "type": "KNeighborsClassifier",
+                         "n_neighbors": {
+                              "randint": [
+                                   3,
+                                   20
+                              ]
+                         },
+                         "weights": {
+                              "choice": [
+                                   "uniform",
+                                   "distance"
+                              ]
+                         },
+                         "metric": {
+                              "choice": [
+                                   "minkowski",
+                                   "euclidean",
+                                   "manhattan"
+                              ]
+                         }
+                    },
+                    {
+                         "type": "MLPClassifier",
+                         "n_hidden_layers": {
+                              "choice": [
+                                   1,
+                                   5,
+                                   10,
+                                   25
+                              ]
+                         },
+                         "n_neurons": {
+                              "choice": [
+                                   5,
+                                   10,
+                                   25,
+                                   50,
+                                   100
+                              ]
+                         },
+                         "activation": {
+                              "choice": [
+                                   "logistic",
+                                   "tanh",
+                                   "relu"
+                              ]
+                         },
+                         "solver": {
+                              "choice": [
+                                   "lbfgs",
+                                   "sgd",
+                                   "adam"
+                              ]
+                         },
+                         "alpha": {
+                              "choice": [
+                                   0.00010,
+                                   0.001,
+                                   0.01,
+                                   0.000010
+                              ]
+                         },
+                         "learning_rate": {
+                              "choice": [
+                                   "constant",
+                                   "invscaling",
+                                   "adaptive"
+                              ]
+                         }
+                    }
+               ]
+          }
+     },
+     "template_constraints": [],
+     "instance_constraints": [],
+     "points_to_evaluate": [],
+     "evaluated_rewards": []
+}
