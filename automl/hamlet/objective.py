@@ -31,7 +31,9 @@ from sklearn.preprocessing import (
 # Rebalancing operators
 from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
-from imblearn.pipeline import Pipeline
+
+# from imblearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline
 
 ## Mitigation operators
 from fairlearn.preprocessing import CorrelationRemover
@@ -66,7 +68,7 @@ def _get_prototype(config):
 
 
 def _check_coherence(prototype, config):
-    
+
     if (
         prototype.index("mitigation") > prototype.index("features")
         and config["features"]["type"] == "PCA"
@@ -92,18 +94,18 @@ def _prepare_indexes(categorical_indicator, sensitive_indicator):
     cat_features = _get_indices_from_mask(categorical_indicator, True)
 
     return {
-        "num_features" : num_features,
-        "cat_features" : cat_features,
-        "sen_num_features" : [
+        "num_features": num_features,
+        "cat_features": cat_features,
+        "sen_num_features": [
             elem
             for elem in _get_indices_from_mask(sensitive_indicator, True)
             if elem in num_features
         ],
-        "sen_cat_features" : [
+        "sen_cat_features": [
             elem
             for elem in _get_indices_from_mask(sensitive_indicator, True)
             if elem in cat_features
-        ]
+        ],
     }
 
 
@@ -121,8 +123,10 @@ def _prepare_parameters(config, step, indexes):
         operator_parameters.pop("n_hidden_layers", None)
 
     if config[step]["type"] == "CorrelationRemover":
-        operator_parameters["sensitive_feature_ids"] = indexes["sen_num_features"] + indexes["sen_cat_features"]
-    
+        operator_parameters["sensitive_feature_ids"] = (
+            indexes["sen_num_features"] + indexes["sen_cat_features"]
+        )
+
     return operator_parameters
 
 
@@ -137,7 +141,11 @@ def _prepare_operator(config, step, seed, indexes, operator_parameters):
     if step not in ["discretization", "normalization", "encoding"]:
         return operator
 
-    num_operator = operator if step in ["discretization", "normalization"] else FunctionTransformer()
+    num_operator = (
+        operator
+        if step in ["discretization", "normalization"]
+        else FunctionTransformer()
+    )
     cat_operator = operator if step in ["encoding"] else FunctionTransformer()
 
     return ColumnTransformer(
@@ -174,9 +182,7 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         cat_features = list(range(len(cat_features + num_features)))
         num_features = []
     elif step in ["encoding", "normalization"]:
-        sen_num_features = [
-            num_features.index(feature) for feature in sen_num_features
-        ]
+        sen_num_features = [num_features.index(feature) for feature in sen_num_features]
         sen_cat_features = [
             cat_features.index(feature) + len(num_features)
             for feature in sen_cat_features
@@ -227,10 +233,10 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         sen_cat_features = []
 
     return {
-        "num_features" : num_features,
-        "cat_features" : cat_features,
-        "sen_num_features" : sen_num_features,
-        "sen_cat_features" : sen_cat_features
+        "num_features": num_features,
+        "cat_features": cat_features,
+        "sen_num_features": sen_num_features,
+        "sen_cat_features": sen_cat_features,
     }
 
 
@@ -254,12 +260,10 @@ def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores):
             performance_metric(
                 y_true=np.array(y.copy()[test_indeces]),
                 y_pred=np.array(scores["estimator"][fold].predict(x_original)),
-                sensitive_features=[
-                    str(elem) for elem in x_sensitive.reshape(-1)
-                ],
+                sensitive_features=[str(elem) for elem in x_sensitive.reshape(-1)],
             )
         ]
-    
+
     return fair_scores
 
 
@@ -291,21 +295,20 @@ class Prototype:
         self.metric = metric
         self.mode = mode
 
-    
     # We define the pipeline to evaluate
-    def _instantiate_pipeline(
-        self, seed, config
-    ):
-        
+    def _instantiate_pipeline(self, seed, config):
+
         prototype = _get_prototype(config)
         _check_coherence(prototype, config)
         indexes = _prepare_indexes(self.categorical_indicator, self.sensitive_indicator)
 
         pipeline = []
         for step in prototype:
-            
+
             operator_parameters = _prepare_parameters(config, step, indexes)
-            operator = _prepare_operator(config, step, seed, indexes, operator_parameters)
+            operator = _prepare_operator(
+                config, step, seed, indexes, operator_parameters
+            )
             pipeline.append([step, operator])
 
             def fit_pipeline():
@@ -313,10 +316,9 @@ class Prototype:
                 p.fit_transform(self.X.copy(), self.y.copy())
                 return p
 
-            indexes = _adjust_indexes(step, config, indexes, lambda : fit_pipeline())
+            indexes = _adjust_indexes(step, config, indexes, lambda: fit_pipeline())
 
         return Pipeline(pipeline)
-
 
     # We define the function to optimize
     def objective(
@@ -340,22 +342,22 @@ class Prototype:
                 Buffer().printflush(f"The result for {config} was NaN")
                 return True
             return False
-        
-        def _return_res(config, result, start_time, status, scores=None, add_to_buffer=True):
+
+        def _return_res(
+            config, result, start_time, status, scores=None, add_to_buffer=True
+        ):
             result["status"] = status
             _set_time(result, scores, start_time)
             if add_to_buffer:
                 Buffer().add_evaluation(config=config, result=result)
             Buffer().printflush(f"{status}\n{config}\n{result}")
-            return transform_result(
-                result, self.metric, self.fair_metric, self.mode
-            )
-            
+            return transform_result(result, self.metric, self.fair_metric, self.mode)
+
         config = transform_configuration(smac_config)
 
         result = {
-            f"{self.fair_metric}" : float("-inf"),
-            f"{self.metric}" : float("-inf"),
+            f"{self.fair_metric}": float("-inf"),
+            f"{self.metric}": float("-inf"),
             "status": "fail",
             "total_time": 0,
             "fit_time": 0,
@@ -367,12 +369,12 @@ class Prototype:
 
         already_evaluated, reward = Buffer().check_points_to_evaluate()
         if already_evaluated:
-            return _return_res(config, reward, start_time, "already_evaluated", add_to_buffer=False)
-        
+            return _return_res(
+                config, reward, start_time, "already_evaluated", add_to_buffer=False
+            )
 
         if Buffer().check_template_constraints(config):
             return _return_res(config, result, start_time, "previous_constraint")
-
 
         try:
 
@@ -401,13 +403,20 @@ class Prototype:
             Buffer().detach_timer()
 
             res = {
-                f"{self.metric}" : scores["test_" + self.metric],
-                f"{self.fair_metric}" : _compute_fair_metric(self.fair_metric, self.X.copy(), self.y.copy(), self.sensitive_indicator, scores)
+                f"{self.metric}": scores["test_" + self.metric],
+                f"{self.fair_metric}": _compute_fair_metric(
+                    self.fair_metric,
+                    self.X.copy(),
+                    self.y.copy(),
+                    self.sensitive_indicator,
+                    scores,
+                ),
             }
 
-            result[f"flatten_{self.fair_metric}"] = "_".join(
-                [str(score) for score in res[self.fair_metric]]
-            )
+            for current_metric in [self.fair_metric, self.metric]:
+                result[f"flatten_{current_metric}"] = "_".join(
+                    [str(round(score, 2)) for score in res[current_metric]]
+                )
 
             if any([_res(m, r) for m, r in res.items()]):
                 raise Exception(f"The result for {config} was NaN")
@@ -419,5 +428,5 @@ class Prototype:
         except Exception as e:
             Buffer().detach_timer()
             Buffer().printflush(f"Something went wrong:\n{e}")
-        
+
         return _return_res(config, result, start_time, result["status"], scores=scores)
