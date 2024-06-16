@@ -13,6 +13,7 @@ from hamlet.miner import Miner
 from hamlet.utils.json_to_csv import json_to_csv
 from hamlet.utils.flaml_to_smac import transform_configuration
 
+
 def optimize(args, prototype, loader, initial_design_configs, metrics):
 
     def _best_configs(incumbents, incumbents_costs):
@@ -24,7 +25,7 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
                     **{
                         key: (
                             (
-                                float("-inf")
+                                '"-inf"'
                                 if incumbents_costs[idx_incumbent][idx_metric]
                                 == float("inf")
                                 else (1 - incumbents_costs[idx_incumbent][idx_metric])
@@ -32,7 +33,9 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
                             if args.mode == "max"
                             else incumbents_costs[idx_incumbent][idx_metric]
                         )
-                        for idx_metric, key in enumerate([args.fair_metric, args.metric])
+                        for idx_metric, key in enumerate(
+                            [args.fair_metric, args.metric]
+                        )
                     },
                 }
                 for idx_incumbent, elem in enumerate(incumbents)
@@ -106,7 +109,9 @@ def mine_results(args, buffer, metrics):
     return [elem for miner in miners.values() for elem in miner.get_rules()]
 
 
-def dump_results(args, loader, buffer, best_config, rules, start_time, end_time, mining_time):
+def dump_results(
+    args, loader, buffer, best_config, rules, start_time, end_time, mining_time
+):
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     graph_generation_time = loader.get_graph_generation_time()
