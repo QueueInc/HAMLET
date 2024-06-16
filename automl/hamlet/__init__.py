@@ -7,6 +7,7 @@ from hamlet.loader import Loader
 from hamlet.utils.datasets import load_dataset_from_openml
 from hamlet.engine import optimize, mine_results, dump_results
 
+
 def run(args):
 
     np.random.seed(args.seed)
@@ -15,7 +16,7 @@ def run(args):
     X, y, categorical_indicator, sensitive_indicator = load_dataset_from_openml(
         args.dataset
     )
-    
+
     loader = Loader(args.input_path)
     initial_design_configs = 5 if len(loader.get_points_to_evaluate()) == 0 else 0
 
@@ -38,18 +39,22 @@ def run(args):
         args.mode,
     )
 
-    _, _, best_config = optimize(args, prototype, loader, initial_design_configs, metrics)
-    
+    _, _, best_config = optimize(
+        args, prototype, loader, initial_design_configs, metrics
+    )
+
     Buffer().printflush("AutoML: optimization done.")
 
     end_time = time.time()
-    rules = mine_results(args, buffer, metrics)
+    rules = mine_results(args, buffer, [args.fair_metric])
 
     Buffer().printflush("AutoML: miner done.")
 
     mining_time = time.time()
-    dump_results(args, loader, buffer, best_config, rules, start_time, end_time, mining_time)
-    
+    dump_results(
+        args, loader, buffer, best_config, rules, start_time, end_time, mining_time
+    )
+
     Buffer().printflush("AutoML: export done.")
 
     del loader
