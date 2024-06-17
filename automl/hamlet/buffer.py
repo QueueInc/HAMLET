@@ -60,12 +60,12 @@ class Buffer:
                     evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
                 new_points_to_evaluate.append(point_to_evaluate)
                 new_evaluated_rewards.append(evaluated_rewards[i])
-        if (len(new_points_to_evaluate) != len(points_to_evaluate)) or (
-            len(new_evaluated_rewards) != len(evaluated_rewards)
-        ):
-            raise Exception(
-                "points_to_evaluate or evaluated_rewards have difrent length after Buffer processing"
-            )
+        # if (len(new_points_to_evaluate) != len(points_to_evaluate)) or (
+        #     len(new_evaluated_rewards) != len(evaluated_rewards)
+        # ):
+        #     raise Exception(
+        #         "points_to_evaluate or evaluated_rewards have difrent length after Buffer processing"
+        #     )
         return new_points_to_evaluate, new_evaluated_rewards
 
     def add_evaluation(self, config, result):
