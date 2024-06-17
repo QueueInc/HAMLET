@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from fairlearn import metrics
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, StratifiedKFold
 
 ## Base operators
 from sklearn.compose import ColumnTransformer
@@ -85,10 +85,11 @@ def _check_coherence(prototype, config):
     #     )
 
 
-def _prepare_indexes(categorical_indicator, sensitive_indicator):
+def _get_indices_from_mask(mask, detect):
+    return [i for i, x in enumerate(mask) if x == detect]
 
-    def _get_indices_from_mask(mask, detect):
-        return [i for i, x in enumerate(mask) if x == detect]
+
+def _prepare_indexes(categorical_indicator, sensitive_indicator):
 
     num_features = _get_indices_from_mask(categorical_indicator, False)
     cat_features = _get_indices_from_mask(categorical_indicator, True)
@@ -240,7 +241,9 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
     }
 
 
-def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores):
+def _compute_fair_metric(
+    fair_metric, X, y, sensitive_indicator, scores, skf, stratified_y
+):
 
     # metrics_module = __import__("metrics")
     metrics_module = globals()["metrics"]
@@ -248,8 +251,8 @@ def _compute_fair_metric(fair_metric, X, y, sensitive_indicator, scores):
     # performance_scorer = make_scorer(performance_metric)
 
     fair_scores = []
-    for fold in range(len(scores["indices"]["test"])):
-        test_indeces = scores["indices"]["test"][fold]
+    for fold, (train_indeces, test_indeces) in enumerate(skf.split(X, stratified_y)):
+        # test_indeces = scores["indices"]["test"][fold]
         x_original = X.copy()[test_indeces, :]
         x_sensitive = x_original[
             :, [i for i, x in enumerate(sensitive_indicator) if x == True]
@@ -388,15 +391,29 @@ class Prototype:
 
             # TODO
             # Potrebbe valere la pena fare la stratificazione sulla feature sensibile
+            skf = StratifiedKFold(n_splits=5)
+            sensistive_feature = _get_indices_from_mask(self.sensitive_indicator, True)
+            stratified_y = np.array(
+                [
+                    "".join([str(e) for e in elem])
+                    for elem in np.concatenate(
+                        [
+                            self.X[:, sensistive_feature].reshape(-1, 1),
+                            self.y.reshape(-1, 1),
+                        ],
+                        axis=1,
+                    )
+                ]
+            )
             scores = cross_validate(
                 pipeline,
                 self.X.copy(),
                 self.y.copy(),
                 scoring=[self.metric],
-                cv=5,
+                cv=skf.split(self.X, stratified_y),
                 return_estimator=True,
                 return_train_score=False,
-                return_indices=True,
+                # return_indices=True,
                 verbose=0,
             )
 
@@ -410,6 +427,8 @@ class Prototype:
                     self.y.copy(),
                     self.sensitive_indicator,
                     scores,
+                    skf,
+                    stratified_y,
                 ),
             }
 
