@@ -11,19 +11,22 @@ def load_resuts(working_path, hamlet_modes, abscissa_label, ordinate_label):
     results = {}
     for hamlet_mode in hamlet_modes:
         for run_idx in range(1, 5 if "ika" in hamlet_mode else 2):
-            with open(
-                os.path.join(
-                    working_path,
-                    f"{hamlet_mode}_automl_output_{run_idx}.json",
-                )
-            ) as f:
-                results[f"{hamlet_mode}_{run_idx}"] = [
-                    (
-                        config[abscissa_label],
-                        config[ordinate_label],
+            try:
+                with open(
+                    os.path.join(
+                        working_path,
+                        f"{hamlet_mode}_automl_output_{run_idx}.json",
                     )
-                    for config in json.load(f)["best_config"]
-                ]
+                ) as f:
+                    results[f"{hamlet_mode}_{run_idx}"] = [
+                        (
+                            config[abscissa_label],
+                            config[ordinate_label],
+                        )
+                        for config in json.load(f)["best_config"]
+                    ]
+            except:
+                print(f"{hamlet_mode} does not have the {run_idx}th iteration")
     return results
 
 
@@ -33,6 +36,7 @@ def plot_results(working_path, results, hamlet_modes, abscissa_label, ordinate_l
     ind = HV(ref_point=np.array([1, 1]))
 
     fig, ax = plt.subplots(2, 2, sharex=True, sharey=True)
+    handles, labels = [], []
     for idx_ax, hamlet_mode in enumerate(hamlet_modes):
         id_x = int(idx_ax / 2)
         id_y = int(idx_ax % 2)
@@ -101,7 +105,9 @@ def plot_results(working_path, results, hamlet_modes, abscissa_label, ordinate_l
             ax[id_x, id_y].set_ylabel(ordinate_label)
         # ax[id_x, id_y].legend()
 
-    handles, labels = plt.gca().get_legend_handles_labels()
+        temp_handles, temp_labels = ax[id_x, id_y].get_legend_handles_labels()
+        handles += temp_handles
+        labels += temp_labels
     by_label = dict(zip(labels, handles))
     lgd = fig.legend(
         by_label.values(),
@@ -125,8 +131,8 @@ def plot_results(working_path, results, hamlet_modes, abscissa_label, ordinate_l
 def main():
 
     hamlet_modes = ["baseline", "pkb", "ika", "pkb_ika"]
-    version = "1_0_11"
-    abscissa_label = "demographic_parity"
+    version = "1_0_12_eo"
+    abscissa_label = "equalized_odds"
     ordinate_label = "balanced_accuracy"
     working_path = os.path.join(
         "/",
