@@ -389,8 +389,6 @@ class Prototype:
 
             Buffer().attach_timer(900)
 
-            # TODO
-            # Potrebbe valere la pena fare la stratificazione sulla feature sensibile
             skf = StratifiedKFold(n_splits=5)
             sensistive_feature = _get_indices_from_mask(self.sensitive_indicator, True)
             stratified_y = np.array(

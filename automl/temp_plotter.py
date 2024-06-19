@@ -131,7 +131,7 @@ def plot_results(working_path, results, hamlet_modes, abscissa_label, ordinate_l
 def main():
 
     hamlet_modes = ["baseline", "pkb", "ika", "pkb_ika"]
-    version = "1_0_12_eo"
+    version = "1_0_16_eo_44162"
     abscissa_label = "equalized_odds"
     ordinate_label = "balanced_accuracy"
     working_path = os.path.join(

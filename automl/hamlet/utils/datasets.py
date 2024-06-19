@@ -34,7 +34,10 @@ def get_dataset_by_id(id):
 
 
 def load_dataset_from_openml(
-    id, input_path=os.path.join(Path(__file__).parent.parent.parent.resolve(), "resources", "datasets")
+    id,
+    input_path=os.path.join(
+        Path(__file__).parent.parent.parent.resolve(), "resources", "datasets"
+    ),
 ):
     dataset = openml.datasets.get_dataset(id)
     X, y, categorical_indicator, feature_names = dataset.get_data(
@@ -43,6 +46,10 @@ def load_dataset_from_openml(
     with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
         sensitive_indicators = json.load(f)
     sensitive_indicator = sensitive_indicators[str(id)]
+    if id == 179:
+        X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
+        X_temp[~np.isnan(X_temp).any(axis=1)].shape
+        X, y = X_temp[:, :-1], X_temp[:, -1].T
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
     # Xt[cat_features] = Xt[cat_features].fillna(-1)
@@ -53,7 +60,12 @@ def load_dataset_from_openml(
     return X, y, categorical_indicator, sensitive_indicator
 
 
-def load_from_csv(id, input_path=os.path.join(Path(__file__).parent.parent.parent.resolve(), "resources", "datasets")):
+def load_from_csv(
+    id,
+    input_path=os.path.join(
+        Path(__file__).parent.parent.parent.resolve(), "resources", "datasets"
+    ),
+):
     """Load a dataset given its id on OpenML from resources/datasets.
 
     Args:
