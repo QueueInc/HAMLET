@@ -48,7 +48,7 @@ def load_dataset_from_openml(
     sensitive_indicator = sensitive_indicators[str(id)]
     if id == 179:
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
-        X_temp[~np.isnan(X_temp).any(axis=1)].shape
+        X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]
         X, y = X_temp[:, :-1], X_temp[:, -1].T
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
