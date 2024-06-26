@@ -1,3 +1,4 @@
+import os
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -25,3 +26,11 @@ algorithms = [
     "LGBMClassifier",
     "CatBoostClassifier",
 ]
+
+
+def create_directory(result_path):
+
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+
+    return result_path
