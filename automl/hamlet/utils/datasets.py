@@ -46,7 +46,7 @@ def load_dataset_from_openml(
     with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
         sensitive_indicators = json.load(f)
     sensitive_indicator = sensitive_indicators[str(id)]
-    if id == 179:
+    if id == "179":
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
         X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]
         X, y = X_temp[:, :-1], X_temp[:, -1].T
