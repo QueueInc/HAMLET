@@ -88,31 +88,31 @@ def merge_results(
     # if mode == "ika" and dataset == "40499":
     #     print(results["evaluated_rewards"])
 
-    if len(results["evaluated_rewards"]) > 0:
-        # I calculate the index of the best config among the evaluaed rewards
-        best_index = max(
-            range(len(results["evaluated_rewards"])),
-            key=lambda index: float(
-                results["evaluated_rewards"][index]["balanced_accuracy"]
-            ),
-        )
+    # if len(results["evaluated_rewards"]) > 0:
+    #     # I calculate the index of the best config among the evaluaed rewards
+    #     best_index = max(
+    #         range(len(results["evaluated_rewards"])),
+    #         key=lambda index: float(
+    #             results["evaluated_rewards"][index]["balanced_accuracy"]
+    #         ),
+    #     )
 
-        # if mode == "ika" and dataset == "40499":
-        #     print(results["evaluated_rewards"][best_index])
+    #     # if mode == "ika" and dataset == "40499":
+    #     #     print(results["evaluated_rewards"][best_index])
 
-        # I put tat config as the best one
-        results["best_config"] = results["evaluated_rewards"][best_index].copy()
-        results["best_config"]["config"] = results["points_to_evaluate"][best_index]
-        results["best_config"]["time"] = (
-            reduce(
-                lambda x, y: x + (y["total_time"] if "total_time" in y else 0),
-                results["evaluated_rewards"][:best_index],
-                0,
-            )
-            / 60
-        )
-    else:
-        results["best_config"] = {}
+    #     # I put tat config as the best one
+    #     results["best_config"] = results["evaluated_rewards"][best_index].copy()
+    #     results["best_config"]["config"] = results["points_to_evaluate"][best_index]
+    #     results["best_config"]["time"] = (
+    #         reduce(
+    #             lambda x, y: x + (y["total_time"] if "total_time" in y else 0),
+    #             results["evaluated_rewards"][:best_index],
+    #             0,
+    #         )
+    #         / 60
+    #     )
+    # else:
+    #     results["best_config"] = {}
 
     # print(f"{mode} {dataset}: {results['best_config']}")
     return results
