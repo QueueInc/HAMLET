@@ -14,6 +14,8 @@ def merge_results(
     def common_elements(list1, list2):
         return [element for element in list1 if element in list2]
 
+    current_json["evaluated_rewards"].reverse()
+    current_json["points_to_evaluate"].reverse()
     if current_iteration == 1:
         # Add iteration and conf number in evaluated_rewards (useful to plot marker in accuracy_time)
         for idx, reward in enumerate(current_json["evaluated_rewards"]):
