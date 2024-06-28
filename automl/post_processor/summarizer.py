@@ -66,20 +66,22 @@ def merge_results(
     if current_iteration < tot_iterations:
         return results
 
-    if mode != "pkb_ika" and mode != "ika":
-        cut_off_index = next(
-            (
-                index
-                for index, elem in enumerate(results["evaluated_rewards"])
-                if (elem["absolute_time"] if "absolute_time" in elem else float("-inf"))
-                - results["start_time"]
-                >= threshold
-            ),
-            len(results["evaluated_rewards"]) - 1,
-        )
+    # TODO
+    # Check if it is worth it to put it back
+    # if mode != "pkb_ika" and mode != "ika":
+    #     cut_off_index = next(
+    #         (
+    #             index
+    #             for index, elem in enumerate(results["evaluated_rewards"])
+    #             if (elem["absolute_time"] if "absolute_time" in elem else float("-inf"))
+    #             - results["start_time"]
+    #             >= threshold
+    #         ),
+    #         len(results["evaluated_rewards"]) - 1,
+    #     )
 
-        results["evaluated_rewards"] = results["evaluated_rewards"][:cut_off_index]
-        results["points_to_evaluate"] = results["points_to_evaluate"][:cut_off_index]
+    #     results["evaluated_rewards"] = results["evaluated_rewards"][:cut_off_index]
+    #     results["points_to_evaluate"] = results["points_to_evaluate"][:cut_off_index]
 
     # if mode == "ika" and dataset == "40499":
     #     print(results["evaluated_rewards"])
