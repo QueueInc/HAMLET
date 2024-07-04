@@ -57,7 +57,7 @@ def load_dataset_from_openml(
     # Xt[cat_features] = Xt[cat_features].replace("-1", np.nan)
     # Xt = Xt.to_numpy()
     # return Xt, y, categorical_indicator
-    return X, y, categorical_indicator, sensitive_indicator
+    return X, y, categorical_indicator, sensitive_indicator, feature_names
 
 
 def load_from_csv(

@@ -13,8 +13,8 @@ def run(args):
     np.random.seed(args.seed)
     metrics = [args.fair_metric, args.metric]
 
-    X, y, categorical_indicator, sensitive_indicator = load_dataset_from_openml(
-        args.dataset
+    X, y, categorical_indicator, sensitive_indicator, feature_names = (
+        load_dataset_from_openml(args.dataset)
     )
 
     loader = Loader(args.input_path)
@@ -34,6 +34,7 @@ def run(args):
         y,
         categorical_indicator,
         sensitive_indicator,
+        feature_names,
         args.fair_metric,
         args.metric,
         args.mode,

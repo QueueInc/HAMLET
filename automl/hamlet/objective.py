@@ -55,6 +55,7 @@ from catboost import CatBoostClassifier
 
 from hamlet.buffer import Buffer, TimeException
 from hamlet.utils.flaml_to_smac import transform_configuration, transform_result
+from hamlet.transformers.lfr_wrapper import LFR_wrapper
 
 
 def _get_prototype(config):
@@ -72,9 +73,9 @@ def _check_coherence(prototype, config):
     if (
         prototype.index("mitigation") > prototype.index("features")
         and config["features"]["type"] == "PCA"
-        and config["mitigation"]["type"] == "CorrelationRemover"
+        and config["mitigation"]["type"] in ["CorrelationRemover", "LFR_wrapper"]
     ):
-        raise Exception("PCA before CorrelationRemover")
+        raise Exception(f"""PCA before {config["mitigation"]["type"]}""")
 
     # if (
     #     config["discretization"]["type"] != "FunctionTransformer"
@@ -89,7 +90,7 @@ def _get_indices_from_mask(mask, detect):
     return [i for i, x in enumerate(mask) if x == detect]
 
 
-def _prepare_indexes(categorical_indicator, sensitive_indicator):
+def _prepare_indexes(categorical_indicator, sensitive_indicator, feature_names):
 
     num_features = _get_indices_from_mask(categorical_indicator, False)
     cat_features = _get_indices_from_mask(categorical_indicator, True)
@@ -107,6 +108,7 @@ def _prepare_indexes(categorical_indicator, sensitive_indicator):
             for elem in _get_indices_from_mask(sensitive_indicator, True)
             if elem in cat_features
         ],
+        "feature_names": feature_names,
     }
 
 
@@ -127,6 +129,14 @@ def _prepare_parameters(config, step, indexes):
         operator_parameters["sensitive_feature_ids"] = (
             indexes["sen_num_features"] + indexes["sen_cat_features"]
         )
+
+    if config[step]["type"] == "LFR_wrapper":
+        operator_parameters["prot_attr"] = [
+            feature
+            for idx, feature in enumerate(indexes["feature_names"])
+            if idx in (indexes["sen_num_features"] + indexes["sen_cat_features"])
+        ]
+        operator_parameters["feature_names"] = indexes["feature_names"]
 
     return operator_parameters
 
@@ -167,12 +177,16 @@ def _prepare_operator(config, step, seed, indexes, operator_parameters):
 
 def _adjust_indexes(step, config, indexes, p_pipeline):
 
-    num_features = indexes["num_features"]
-    cat_features = indexes["cat_features"]
-    sen_num_features = indexes["sen_num_features"]
-    sen_cat_features = indexes["sen_cat_features"]
+    num_features = indexes["num_features"].copy()
+    cat_features = indexes["cat_features"].copy()
+    sen_num_features = indexes["sen_num_features"].copy()
+    sen_cat_features = indexes["sen_cat_features"].copy()
+    feature_names = indexes["feature_names"].copy()
 
     if step == "discretization":
+        feature_names = [feature_names[feature] for feature in num_features] + [
+            feature_names[feature] for feature in cat_features
+        ]
         sen_cat_features = [
             num_features.index(feature) for feature in sen_num_features
         ] + [
@@ -183,6 +197,9 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         cat_features = list(range(len(cat_features + num_features)))
         num_features = []
     elif step in ["encoding", "normalization"]:
+        feature_names = [feature_names[feature] for feature in num_features] + [
+            feature_names[feature] for feature in cat_features
+        ]
         sen_num_features = [num_features.index(feature) for feature in sen_num_features]
         sen_cat_features = [
             cat_features.index(feature) + len(num_features)
@@ -194,6 +211,10 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         )
     elif step == "features":
         if config[step]["type"] == "PCA":
+            feature_names = [
+                f"pca_{feature}"
+                for feature in list(range(config[step]["n_components"]))
+            ]
             num_features = list(range(config[step]["n_components"]))
             cat_features = []
             sen_num_features = []
@@ -202,6 +223,7 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
             # selector = Pipeline(pipeline)
             # selector.fit_transform(X, y)
             selected_features = list(p_pipeline()[-1].get_support(indices=True))
+            feature_names = [feature_names[feature] for feature in selected_features]
             num_features = [
                 selected_features.index(feature)
                 for feature in num_features
@@ -238,6 +260,7 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         "cat_features": cat_features,
         "sen_num_features": sen_num_features,
         "sen_cat_features": sen_cat_features,
+        "feature_names": feature_names,
     }
 
 
@@ -276,6 +299,7 @@ class Prototype:
     y = None
     categorical_indicator = None
     sensitive_indicator = None
+    feature_names = None
     fair_metric = None
     metric = None
     mode = None
@@ -286,6 +310,7 @@ class Prototype:
         y,
         categorical_indicator,
         sensitive_indicator,
+        feature_names,
         fair_metric,
         metric,
         mode,
@@ -294,6 +319,7 @@ class Prototype:
         self.y = y
         self.categorical_indicator = categorical_indicator
         self.sensitive_indicator = sensitive_indicator
+        self.feature_names = feature_names
         self.fair_metric = fair_metric
         self.metric = metric
         self.mode = mode
@@ -303,7 +329,9 @@ class Prototype:
 
         prototype = _get_prototype(config)
         _check_coherence(prototype, config)
-        indexes = _prepare_indexes(self.categorical_indicator, self.sensitive_indicator)
+        indexes = _prepare_indexes(
+            self.categorical_indicator, self.sensitive_indicator, self.feature_names
+        )
 
         pipeline = []
         for step in prototype:
