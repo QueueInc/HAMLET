@@ -31,6 +31,7 @@ val dictionary = mapOf(
     "smote" to "SMOTE",
     "near_miss" to "NearMiss",
     "corr_remover" to "CorrelationRemover",
+    "lfr" to "LFR_wrapper",
 )
 
 fun Term.toSklearnClass() = dictionary[this.toString()] ?: this.toString()

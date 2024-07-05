@@ -245,6 +245,11 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
                 if feature in selected_features
             ]
     elif step == "mitigation":
+        feature_names = [
+            feature
+            for idx, feature in enumerate(feature_names)
+            if idx not in [sen_num_features + sen_cat_features]
+        ]
         num_features = list(
             range(
                 len(cat_features + num_features)
