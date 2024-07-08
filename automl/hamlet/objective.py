@@ -248,7 +248,7 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
         feature_names = [
             feature
             for idx, feature in enumerate(feature_names)
-            if idx not in [sen_num_features + sen_cat_features]
+            if idx not in (sen_num_features + sen_cat_features)
         ]
         num_features = list(
             range(
