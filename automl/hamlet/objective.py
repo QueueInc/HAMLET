@@ -269,13 +269,55 @@ def _adjust_indexes(step, config, indexes, p_pipeline):
     }
 
 
+def _custom_metric(metric):
+
+    from fairlearn.metrics import (
+        selection_rate,
+        true_positive_rate,
+        false_positive_rate,
+        MetricFrame,
+    )
+
+    def _equalized_odds(y_true, y_pred, sensitive_features, sample_weight=None):
+        sel_rate = MetricFrame(
+            selection_rate,
+            y_true,
+            y_pred,
+            sensitive_features=sensitive_features,
+            sample_params={"sample_weight": sample_weight},
+        )
+
+        min_g = sel_rate.group_min()
+        max_g = sel_rate.group_max()
+
+        return 1 if max_g == 0 else min_g / max_g
+
+    def _demographic_parity(y_true, y_pred, sensitive_features, sample_weight=None):
+        fns = {"tpr": true_positive_rate, "fpr": false_positive_rate}
+        sw_dict = {"sample_weight": sample_weight}
+        sp = {"tpr": sw_dict, "fpr": sw_dict}
+        sel_rate = MetricFrame(
+            fns, y_true, y_pred, sensitive_features=sensitive_features, sample_params=sp
+        )
+
+        min_g = sel_rate.group_min()
+        max_g = sel_rate.group_max()
+
+        return min(result=[1 if b == 0 else a / b for a, b in zip(min_g, max_g)])
+
+    return {
+        "equalized_odds": _equalized_odds(),
+        "demographic_parity": _demographic_parity(),
+    }[metric]
+
+
 def _compute_fair_metric(
     fair_metric, X, y, sensitive_indicator, scores, skf, stratified_y
 ):
 
     # metrics_module = __import__("metrics")
     metrics_module = globals()["metrics"]
-    performance_metric = getattr(metrics_module, f"{fair_metric}_ratio")
+    performance_metric = getattr(metrics_module, f"{fair_metric}_difference")
     # performance_scorer = make_scorer(performance_metric)
 
     fair_scores = []
@@ -288,7 +330,8 @@ def _compute_fair_metric(
 
         # forse fare .reshape(-1, 1) in caso di intersectionality
         fair_scores += [
-            performance_metric(
+            1
+            - performance_metric(
                 y_true=np.array(y.copy()[test_indeces]),
                 y_pred=np.array(scores["estimator"][fold].predict(x_original)),
                 sensitive_features=[str(elem) for elem in x_sensitive.reshape(-1)],
