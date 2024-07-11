@@ -305,9 +305,24 @@ def _custom_metric(metric):
 
         return min(result=[1 if b == 0 else a / b for a, b in zip(min_g, max_g)])
 
+    def _equal_opportunity(y_true, y_pred, sensitive_features, sample_weight=None):
+        sel_rate = MetricFrame(
+            metrics=true_positive_rate,
+            y_true=y_true,
+            y_pred=y_pred,
+            sensitive_features=sensitive_features,
+            sample_params={"sample_weight": sample_weight},
+        )
+
+        min_g = sel_rate.group_min()
+        max_g = sel_rate.group_max()
+
+        return 1 if max_g == 0 else min_g / max_g
+
     return {
         "equalized_odds": _equalized_odds(),
         "demographic_parity": _demographic_parity(),
+        "equal_opportunity": _equal_opportunity(),
     }[metric]
 
 
