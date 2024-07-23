@@ -333,7 +333,9 @@ def _compute_fair_metric(
 
     # metrics_module = __import__("metrics")
     metrics_module = globals()["metrics"]
-    performance_metric = getattr(metrics_module, f"{fair_metric}_difference")
+    metric_name = fair_metric
+    performance_metric = getattr(metrics_module, metric_name)
+    adjuster = lambda x: (1 - x) if "difference" in metric_name else x
     # performance_scorer = make_scorer(performance_metric)
 
     fair_scores = []
@@ -348,11 +350,12 @@ def _compute_fair_metric(
             x_sensitive if len(sensitive_mask) > 1 else x_sensitive.reshape(-1)
         )
         fair_scores += [
-            1
-            - performance_metric(
-                y_true=np.array(y.copy()[test_indeces]),
-                y_pred=np.array(scores["estimator"][fold].predict(x_original)),
-                sensitive_features=[str(elem) for elem in x_sensitive],
+            adjuster(
+                performance_metric(
+                    y_true=np.array(y.copy()[test_indeces]),
+                    y_pred=np.array(scores["estimator"][fold].predict(x_original)),
+                    sensitive_features=x_sensitive,
+                )
             )
         ]
 
