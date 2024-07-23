@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import KBinsDiscretizer
 
 
 def get_dataset_by_name(name):
@@ -50,6 +51,11 @@ def load_dataset_from_openml(
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
         X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]
         X, y = X_temp[:, :-1], X_temp[:, -1].T
+    if id == "31":
+        est = KBinsDiscretizer(
+            n_bins=5, encode="ordinal", strategy="kmeans"
+        )  # strategy{"uniform", "quantile", "kmeans"}
+        X[:, 12] = est.fit_transform(X[:, 12].reshape(-1, 1)).ravel()
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
     # Xt[cat_features] = Xt[cat_features].fillna(-1)
