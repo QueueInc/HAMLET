@@ -1,3 +1,4 @@
+import copy
 import time
 import numpy as np
 
@@ -339,17 +340,19 @@ def _compute_fair_metric(
     for fold, (train_indeces, test_indeces) in enumerate(skf.split(X, stratified_y)):
         # test_indeces = scores["indices"]["test"][fold]
         x_original = X.copy()[test_indeces, :]
-        x_sensitive = x_original[
-            :, [i for i, x in enumerate(sensitive_indicator) if x == True]
-        ]
+        sensitive_mask = [i for i, x in enumerate(sensitive_indicator) if x == True]
+        x_sensitive = x_original[:, sensitive_mask]
 
         # forse fare .reshape(-1, 1) in caso di intersectionality
+        x_sensitive = (
+            x_sensitive if len(sensitive_mask) > 1 else x_sensitive.reshape(-1)
+        )
         fair_scores += [
             1
             - performance_metric(
                 y_true=np.array(y.copy()[test_indeces]),
                 y_pred=np.array(scores["estimator"][fold].predict(x_original)),
-                sensitive_features=[str(elem) for elem in x_sensitive.reshape(-1)],
+                sensitive_features=[str(elem) for elem in x_sensitive],
             )
         ]
 
@@ -482,12 +485,15 @@ class Prototype:
 
             skf = StratifiedKFold(n_splits=5)
             sensistive_feature = _get_indices_from_mask(self.sensitive_indicator, True)
+            sensitive_X = copy.deepcopy(self.X[:, sensistive_feature])
+            if len(sensistive_feature) == 1:
+                sensitive_X = sensitive_X.reshape(-1, 1)
             stratified_y = np.array(
                 [
                     "".join([str(e) for e in elem])
                     for elem in np.concatenate(
                         [
-                            self.X[:, sensistive_feature].reshape(-1, 1),
+                            sensitive_X,
                             self.y.reshape(-1, 1),
                         ],
                         axis=1,
