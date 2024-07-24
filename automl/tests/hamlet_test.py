@@ -21,9 +21,9 @@ class TestHamlet(unittest.TestCase):
         args.batch_size = 25
         args.time_budget = 60
 
-        # best, _ = run(args)
+        best, _ = run(args)
 
-        # self.assertGreater(len(best), 0)
+        self.assertGreater(len(best), 0)
 
     def test_equalized_odds(self):
 
