@@ -14,6 +14,7 @@ private var path: String = ""
 private var dataset: String = ""
 private var metric: String = ""
 private var fairnessMetric: String = ""
+private var sensitiveFeatures: String = ""
 private var mode: String = ""
 private var batchSize: Int = 0
 private var timeBudget: Int = 0
@@ -29,13 +30,14 @@ object Starter {
         dataset = args[1]
         metric = args[2]
         fairnessMetric = args[3]
-        mode = args[4]
-        batchSize = args[5].toInt()
-        timeBudget = args[6].toInt()
-        seed = args[7].toInt()
-        debugMode = args[8].toBoolean()
-        volume = if (args[9] != "None") args[9] else null
-        theory = if (args.size == 11) File(args[10]).readText() else ""
+        sensitiveFeatures = args[4]
+        mode = args[5]
+        batchSize = args[6].toInt()
+        timeBudget = args[7].toInt()
+        seed = args[8].toInt()
+        debugMode = args[9].toBoolean()
+        volume = if (args[10] != "None") args[10] else null
+        theory = if (args.size == 12) File(args[11]).readText() else ""
 
         if (theory == "") {
             Application.launch(HAMLET::class.java)
@@ -49,7 +51,7 @@ object Starter {
 
 fun consoleHamlet() {
     Controller(debugMode, FileSystemManager(path, volume)).also { controller ->
-        controller.init(dataset, metric, fairnessMetric, mode, batchSize, timeBudget, seed)
+        controller.init(dataset, metric, fairnessMetric, sensitiveFeatures, mode, batchSize, timeBudget, seed)
         controller.generateGraph(theory, true) {}
         controller.launchAutoML(true) {}
         controller.stop()
@@ -63,7 +65,7 @@ class HAMLET : Application() {
     override fun start(stage: Stage) {
         try {
 
-            controller.init(dataset, metric, fairnessMetric, mode, batchSize, timeBudget, seed)
+            controller.init(dataset, metric, fairnessMetric, sensitiveFeatures, mode, batchSize, timeBudget, seed)
             val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
                 controller.generateGraph(kb, false, updateAction)
             }

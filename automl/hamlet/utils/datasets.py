@@ -36,6 +36,7 @@ def get_dataset_by_id(id):
 
 def load_dataset_from_openml(
     id,
+    sensitive_features,
     input_path=os.path.join(
         Path(__file__).parent.parent.parent.resolve(), "resources", "datasets"
     ),
@@ -44,9 +45,11 @@ def load_dataset_from_openml(
     X, y, categorical_indicator, feature_names = dataset.get_data(
         dataset_format="array", target=dataset.default_target_attribute
     )
-    with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
-        sensitive_indicators = json.load(f)
-    sensitive_indicator = sensitive_indicators[str(id)]
+    # with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
+    #     sensitive_indicators = json.load(f)
+    # sensitive_indicator = sensitive_indicators[str(id)]
+    sensitive_indicator = [True if x in [int(y) for y in sensitive_features.split("_")] else False for x in range(len(categorical_indicator))]
+
     if id == "179":
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
         X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]

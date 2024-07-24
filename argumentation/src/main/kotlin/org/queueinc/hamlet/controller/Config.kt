@@ -5,6 +5,7 @@ data class Config(
     val dataset: String,
     val metric: String,
     val fairnessMetric: String,
+    val sensitiveFeatures: String,
     val mode: String,
     val batchSize: Int,
     val timeBudget: Int,

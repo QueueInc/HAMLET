@@ -12,6 +12,7 @@ class TestHamlet(unittest.TestCase):
         args = MagicMock()
         args.seed = 42
         args.fair_metric = "demographic_parity_difference"
+        args.sensitive_features = "8_12"
         args.metric = "balanced_accuracy"
         args.input_path = "automl/resources/automl_input_1.json"
         args.output_path = "automl/resources/automl_output_1.json"
@@ -29,6 +30,7 @@ class TestHamlet(unittest.TestCase):
         args = MagicMock()
         args.seed = 42
         args.fair_metric = "equalized_odds_ratio"
+        args.sensitive_features = "8_12"
         args.metric = "balanced_accuracy"
         args.input_path = "automl/resources/automl_input_1.json"
         args.output_path = "automl/resources/automl_output_1.json"

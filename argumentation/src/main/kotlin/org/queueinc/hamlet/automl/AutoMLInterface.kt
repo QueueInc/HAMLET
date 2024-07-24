@@ -76,6 +76,7 @@ fun execAutoML(workspacePath: String, config: Config) {
                 "--dataset", config.dataset,
                 "--metric", config.metric,
                 "--fair_metric", config.fairnessMetric,
+                "--sensitive_features", config.sensitiveFeatures,
                 "--mode", config.mode,
                 "--batch_size", config.batchSize.toString(),
                 "--time_budget", config.timeBudget.toString(),

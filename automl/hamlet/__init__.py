@@ -14,7 +14,7 @@ def run(args):
     metrics = [args.fair_metric, args.metric]
 
     X, y, categorical_indicator, sensitive_indicator, feature_names = (
-        load_dataset_from_openml(args.dataset)
+        load_dataset_from_openml(args.dataset, args.sensitive_features)
     )
 
     loader = Loader(args.input_path)
