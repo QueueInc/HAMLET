@@ -33,8 +33,9 @@ from sklearn.preprocessing import (
 from imblearn.under_sampling import NearMiss
 from imblearn.over_sampling import SMOTE
 
-# from imblearn.pipeline import Pipeline
-from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline
+
+# from sklearn.pipeline import Pipeline
 
 ## Mitigation operators
 from fairlearn.preprocessing import CorrelationRemover
