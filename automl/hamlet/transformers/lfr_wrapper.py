@@ -32,6 +32,10 @@ class LFR_wrapper(BaseEstimator, TransformerMixin):
 
     def _prepare_dataset(self, X, y=None):
         df = pd.DataFrame(X, columns=self.feature_names)
+
+        if len(self.prot_attr) == 0:
+            raise Exception("No sensitive features to mitigate")
+
         if len(self.prot_attr) > 1:
             df["mixin"] = df[self.prot_attr[0]].astype(str) + df[
                 self.prot_attr[1]

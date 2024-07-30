@@ -48,7 +48,10 @@ def load_dataset_from_openml(
     # with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
     #     sensitive_indicators = json.load(f)
     # sensitive_indicator = sensitive_indicators[str(id)]
-    sensitive_indicator = [True if x in [int(y) for y in sensitive_features.split("_")] else False for x in range(len(categorical_indicator))]
+    sensitive_indicator = [
+        True if x in [int(y) for y in sensitive_features.split("_")] else False
+        for x in range(len(categorical_indicator))
+    ]
 
     if id == "179":
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
@@ -59,6 +62,7 @@ def load_dataset_from_openml(
             n_bins=5, encode="ordinal", strategy="kmeans"
         )  # strategy{"uniform", "quantile", "kmeans"}
         X[:, 12] = est.fit_transform(X[:, 12].reshape(-1, 1)).ravel()
+        categorical_indicator[12] = True
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
     # Xt[cat_features] = Xt[cat_features].fillna(-1)
