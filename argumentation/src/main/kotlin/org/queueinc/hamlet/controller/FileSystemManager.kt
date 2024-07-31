@@ -78,7 +78,7 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
                     "space_generation_time":${(System.currentTimeMillis() / 1000) - start},
                     "space":$space,
                     "template_constraints":$templates,
-                    "instance_constraints":$instances,
+                    "instance_constraints":[],
                     "points_to_evaluate":$pointsToEvaluate,
                     "evaluated_rewards":$evaluatedRewards
                }""".trimIndent()

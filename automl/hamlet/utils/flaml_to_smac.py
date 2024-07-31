@@ -17,6 +17,7 @@ from flaml.tune.space import complete_config
 
 ##################### SMAC TO FLAML
 
+
 def transform_configuration(config):
     transformed = {}
 
@@ -76,6 +77,7 @@ def transform_result(result, metric, fair_metric, mode):
 
 ##################### FLAML TO SMAC
 
+
 def get_space(knowledge):
 
     flaml_space = _get_flaml_space(input_space=knowledge["space"])
@@ -94,14 +96,15 @@ def get_space(knowledge):
         for config in flaml_instance_constraints
     ]
 
-    points_to_evaluate = [
-        complete_config(config, flaml_space, cfo._ls)[0]
-        for config in flaml_points_to_evaluate
-    ]
+    # points_to_evaluate = [
+    #     complete_config(config, flaml_space, cfo._ls)[0]
+    #     for config in flaml_points_to_evaluate
+    # ]
 
     space = _space_to_configspace(knowledge["space"])
 
-    return space, instance_constraints, points_to_evaluate
+    return space, instance_constraints, flaml_points_to_evaluate
+
 
 def flatten_configuration(config):
     flattened = {}
@@ -149,6 +152,7 @@ def _get_flaml_space(input_space):
             space[key] = value
     return space
 
+
 def _create_hyperparameter(name, definition):
     if "choice" in definition and all(
         not isinstance(i, dict) for i in definition["choice"]
@@ -166,7 +170,9 @@ def _create_hyperparameter(name, definition):
         raise ValueError(f"Unknown hyperparameter definition: {definition}")
 
 
-def _add_hyperparameters(cs, name_prefix, params, conditions, parent_name=None, parent_value=None):
+def _add_hyperparameters(
+    cs, name_prefix, params, conditions, parent_name=None, parent_value=None
+):
     for key, value in params.items():
         full_name = f"{name_prefix}.{key}" if name_prefix else key
         if isinstance(value, dict) and "type" in value:
@@ -206,10 +212,9 @@ def _add_hyperparameters(cs, name_prefix, params, conditions, parent_name=None, 
             hp = _create_hyperparameter(full_name, value)
             cs.add_hyperparameter(hp)
             if parent_name:
-                condition = EqualsCondition(
-                    hp, cs[parent_name], parent_value
-                )
+                condition = EqualsCondition(hp, cs[parent_name], parent_value)
                 conditions.append(condition)
+
 
 def _space_to_configspace(space):
     cs = ConfigurationSpace()
@@ -241,9 +246,7 @@ def _space_to_configspace(space):
                             parent_value=choice_type,
                         )
         else:
-            raise ValueError(
-                f"Top-level key {top_level_key} must have a 'choice' key"
-            )
+            raise ValueError(f"Top-level key {top_level_key} must have a 'choice' key")
 
     cs.add_conditions(conditions)
     return cs

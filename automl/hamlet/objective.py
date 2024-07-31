@@ -373,6 +373,7 @@ class Prototype:
     fair_metric = None
     metric = None
     mode = None
+    buffer = None
 
     def __init__(
         self,
@@ -393,6 +394,7 @@ class Prototype:
         self.fair_metric = fair_metric
         self.metric = metric
         self.mode = mode
+        self.buffer = Buffer()
 
     # We define the pipeline to evaluate
     def _instantiate_pipeline(self, seed, config):
@@ -440,7 +442,7 @@ class Prototype:
             result[m] = np.mean(r)
             if np.isnan(result[m]):
                 result[m] = float("-inf")
-                Buffer().printflush(f"The result for {config} was NaN")
+                self.buffer.printflush(f"The result for {config} was NaN")
                 return True
             return False
 
@@ -450,8 +452,8 @@ class Prototype:
             result["status"] = status
             _set_time(result, scores, start_time)
             if add_to_buffer:
-                Buffer().add_evaluation(config=config, result=result)
-            Buffer().printflush(f"{status}\n{config}\n{result}")
+                self.buffer.add_evaluation(config=config, result=result)
+                self.buffer.printflush(f"{status}\n{config}\n{result}")
             return transform_result(result, self.metric, self.fair_metric, self.mode)
 
         config = transform_configuration(smac_config)
@@ -468,13 +470,13 @@ class Prototype:
 
         start_time = time.time()
 
-        already_evaluated, reward = Buffer().check_points_to_evaluate()
+        already_evaluated, reward = self.buffer.check_points_to_evaluate()
         if already_evaluated:
             return _return_res(
                 config, reward, start_time, "already_evaluated", add_to_buffer=False
             )
 
-        if Buffer().check_template_constraints(config):
+        if self.buffer.check_template_constraints(config):
             return _return_res(config, result, start_time, "previous_constraint")
 
         try:
@@ -485,7 +487,7 @@ class Prototype:
                 config,
             )
 
-            Buffer().attach_timer(900)
+            self.buffer.attach_timer(900)
 
             skf = StratifiedKFold(n_splits=5)
             sensistive_feature = _get_indices_from_mask(self.sensitive_indicator, True)
@@ -516,7 +518,7 @@ class Prototype:
                 verbose=0,
             )
 
-            Buffer().detach_timer()
+            self.buffer.detach_timer()
 
             res = {
                 f"{self.metric}": scores["test_" + self.metric],
@@ -542,9 +544,9 @@ class Prototype:
             result["status"] = "success"
 
         except TimeException:
-            Buffer().printflush("Timeout")
+            self.buffer.printflush("Timeout")
         except Exception as e:
-            Buffer().detach_timer()
-            Buffer().printflush(f"Something went wrong:\n{e}")
+            self.buffer.detach_timer()
+            self.buffer.printflush(f"Something went wrong:\n{e}")
 
         return _return_res(config, result, start_time, result["status"], scores=scores)
