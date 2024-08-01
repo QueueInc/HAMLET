@@ -9,6 +9,9 @@ from ConfigSpace import (
     UniformFloatHyperparameter,
     EqualsCondition,
     Configuration,
+    ForbiddenEqualsClause,
+    ForbiddenInClause,
+    ForbiddenAndConjunction,
 )
 
 from flaml import tune
@@ -101,7 +104,7 @@ def get_space(knowledge):
     #     for config in flaml_points_to_evaluate
     # ]
 
-    space = _space_to_configspace(knowledge["space"])
+    space = _space_to_configspace(knowledge["space"], knowledge["template_constraints"])
 
     return space, instance_constraints, flaml_points_to_evaluate
 
@@ -216,7 +219,58 @@ def _add_hyperparameters(
                 conditions.append(condition)
 
 
-def _space_to_configspace(space):
+def _convert_constraints_to_forbidden_clauses(cs, constraints):
+    forbidden_clauses = []
+
+    for constraint in constraints:
+        clause_elements = []
+        for comp_name, conditions in constraint.items():
+            for key, value in conditions.items():
+                hp_space = cs[comp_name].choices
+                if key == "type":
+                    cond_value = value
+                else:
+                    cond_value = {key: value}
+                if "eq" in cond_value:
+                    clause_elements.append(
+                        ForbiddenEqualsClause(cs[comp_name], cond_value["eq"])
+                    )
+                elif "neq" in cond_value:
+                    remaining_values = [
+                        val for val in hp_space if val != cond_value["neq"]
+                    ]
+                    if len(remaining_values) == 1:
+                        clause_elements.append(
+                            ForbiddenEqualsClause(cs[comp_name], remaining_values[0])
+                        )
+                    else:
+                        clause_elements.append(
+                            ForbiddenInClause(cs[comp_name], remaining_values)
+                        )
+                elif "in" in cond_value:
+                    clause_elements.append(
+                        ForbiddenInClause(cs[comp_name], cond_value["in"])
+                    )
+                elif "nin" in cond_value:
+                    remaining_values = [
+                        val for val in hp_space if val not in cond_value["nin"]
+                    ]
+                    if len(remaining_values) == 1:
+                        clause_elements.append(
+                            ForbiddenEqualsClause(cs[comp_name], remaining_values[0])
+                        )
+                    else:
+                        clause_elements.append(
+                            ForbiddenInClause(cs[comp_name], remaining_values)
+                        )
+
+        if clause_elements:
+            forbidden_clauses.append(ForbiddenAndConjunction(*clause_elements))
+
+    return forbidden_clauses
+
+
+def _space_to_configspace(space, constraints):
     cs = ConfigurationSpace()
     conditions = []
 
@@ -249,4 +303,16 @@ def _space_to_configspace(space):
             raise ValueError(f"Top-level key {top_level_key} must have a 'choice' key")
 
     cs.add_conditions(conditions)
+
+    # Add forbidden clauses based on constraints
+    forbidden_clauses = _convert_constraints_to_forbidden_clauses(cs, constraints)
+    for clause in forbidden_clauses:
+        try:
+            print("Trying to add:", clause)
+            cs.add_forbidden_clause(clause)
+            print("Added successfully:", clause)
+        except Exception as e:
+            print("Failed to add:", clause)
+            print("Reason:", e)
+
     return cs
