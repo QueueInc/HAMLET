@@ -49,13 +49,20 @@ class Buffer:
         new_points_to_evaluate = []
         new_evaluated_rewards = []
         for i, point_to_evaluate in enumerate(points_to_evaluate):
-            if self.check_template_constraints(point_to_evaluate):
-                for metric in metrics:
-                    evaluated_rewards[i][metric] = float("-inf")
-                evaluated_rewards[i]["status"] = "previous_constraint"
-                new_points_to_evaluate.append(point_to_evaluate)
-                new_evaluated_rewards.append(evaluated_rewards[i])
-            elif evaluated_rewards[i]["status"] != "previous_constraint":
+            # if self.check_template_constraints(point_to_evaluate):
+            #     for metric in metrics:
+            #         evaluated_rewards[i][metric] = float("-inf")
+            #     evaluated_rewards[i]["status"] = "previous_constraint"
+            #     new_points_to_evaluate.append(point_to_evaluate)
+            #     new_evaluated_rewards.append(evaluated_rewards[i])
+            # elif evaluated_rewards[i]["status"] != "previous_constraint":
+            #     for metric in metrics:
+            #         evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
+            #     new_points_to_evaluate.append(point_to_evaluate)
+            #     new_evaluated_rewards.append(evaluated_rewards[i])
+            if evaluated_rewards[i]["status"] != "previous_constraint" and not (
+                self.check_template_constraints(point_to_evaluate)
+            ):
                 for metric in metrics:
                     evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
                 new_points_to_evaluate.append(point_to_evaluate)

@@ -11,7 +11,7 @@ from hamlet.buffer import Buffer
 from hamlet.miner import Miner
 
 from hamlet.utils.json_to_csv import json_to_csv
-from hamlet.utils.flaml_to_smac import transform_configuration
+from hamlet.utils.flaml_to_smac import flatten_configuration, transform_configuration
 
 
 def optimize(args, prototype, loader, initial_design_configs, metrics):
@@ -45,10 +45,15 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
 
         return best_config
 
+    _configs, _ = Buffer()._filter_previous_results(
+        loader.get_points_to_evaluate(),
+        loader.get_evaluated_rewards(),
+        metrics,
+    )
     previous_evaluated_points = [
         Configuration(configuration_space=loader.get_space(), values=elem)
         for elem in (
-            loader.get_points_to_evaluate(is_smac=True)
+            [flatten_configuration(config) for config in _configs]
             + loader.get_instance_constraints(is_smac=True)
         )
     ]
