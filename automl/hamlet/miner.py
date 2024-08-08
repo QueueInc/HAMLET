@@ -9,14 +9,14 @@ from hamlet.utils import commons
 
 
 class Miner:
-    
+
     def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode):
         self._automl_output = [
             (config, reward[metric])
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
             if reward["status"] != "previous_constraint"
         ]
-        self._min_automl_outputs = 50
+        self._min_automl_outputs = 100
         self._metric = metric
         self._mode = mode
         # Pay attention, in this version we assume the metric varies between 0 and 1
@@ -70,12 +70,16 @@ class Miner:
         rules = []
 
         metric_thresholds = np.arange(
-            (metric_stat["max"] - metric_stat["step"])
-            if mode == "mandatory"
-            else (metric_stat["min"] + metric_stat["step"]),
-            (metric_stat["suff"] - metric_stat["step"])
-            if mode == "mandatory"
-            else ((metric_stat["max"] - metric_stat["suff"]) + metric_stat["step"]),
+            (
+                (metric_stat["max"] - metric_stat["step"])
+                if mode == "mandatory"
+                else (metric_stat["min"] + metric_stat["step"])
+            ),
+            (
+                (metric_stat["suff"] - metric_stat["step"])
+                if mode == "mandatory"
+                else ((metric_stat["max"] - metric_stat["suff"]) + metric_stat["step"])
+            ),
             -metric_stat["step"] if mode == "mandatory" else metric_stat["step"],
         )
         support_thresholds = np.arange(
@@ -193,8 +197,8 @@ class Miner:
 
     def get_rules(self):
         rules = []
-        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
-        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.5}
+        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
+        support_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
         rules += self._get_order_rules(
             metric_stat=metric_stat, support_stat=support_stat
         )
@@ -202,7 +206,7 @@ class Miner:
             "min": 0,
             "max": 1,
             "step": 0.1,
-            "mandatory_suff": 0.6,
+            "mandatory_suff": 0.8,
             "forbidden_suff": 0.8,
         }
         mandatory_rules = self._get_presence_rules(
