@@ -25,7 +25,7 @@ object SpaceTranslator {
 
     @JvmStatic
     private fun translateSpace(space: Term) =
-        prolog {
+        arg2pScope {
             space.castToList().toList().joinToString(",\n") { step ->
                 Unificator.default.mgu(step, tupleOf(X, "choice", Z)).let { unifier ->
                     unifier[Z]!!.castToList().toList().map { operator ->
@@ -83,7 +83,7 @@ object SpaceTranslator {
         }
 
         val transform = { target: Term, comparator: String, type: Boolean ->
-            prolog {
+            arg2pScope {
                 target.castToList().toList().map { template ->
                     Unificator.default.mgu(template, tupleOf(A, B, C)).let { unifier ->
                         unifier[A]!!.castToList().toList().mapIndexed { i, step ->
@@ -116,7 +116,7 @@ object SpaceTranslator {
 
     @JvmStatic
     private fun translateInstances(instances: Term) =
-        prolog {
+        arg2pScope {
             instances.castToList().toList().map { instance ->
                 instance.castToList().castToList().toList().joinToString(",\n") { step ->
                     if (Unificator.default.match(step, tupleOf("prototype", `_`))) {

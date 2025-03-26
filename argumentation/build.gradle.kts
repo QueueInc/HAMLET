@@ -4,9 +4,9 @@ import java.util.Properties
 
 plugins {
     application
-    kotlin("jvm") version "1.6.21"
-    id("org.openjfx.javafxplugin") version "0.0.10"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "1.9.25"
+    id("org.openjfx.javafxplugin") version "0.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "org.queueinc"
@@ -21,13 +21,11 @@ dependencies {
     implementation(kotlin("stdlib"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-    implementation("it.unibo.tuprolog.argumentation:arg2p-jvm:0.6.8")
-    implementation("it.unibo.tuprolog:solve-classic-jvm:0.20.4")
-    implementation("it.unibo.tuprolog:parser-theory-jvm:0.20.4")
+    implementation("it.unibo.tuprolog.argumentation:arg2p-jvm:0.10.2")
 
-    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:win")
-    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:linux")
-    runtimeOnly("org.openjfx:javafx-graphics:18.0.1:mac")
+    runtimeOnly("org.openjfx:javafx-graphics:19.0.2.1:win")
+    runtimeOnly("org.openjfx:javafx-graphics:19.0.2.1:linux")
+    runtimeOnly("org.openjfx:javafx-graphics:19.0.2.1:mac")
 
     implementation("com.google.code.gson:gson:2.9.0")
 
@@ -42,19 +40,21 @@ dependencies {
 }
 
 javafx {
-    version = "16"
+    version = "21"
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.swing")
 }
 
-val entryPoint = "org.queueinc.hamlet.Main"
-
 application {
-    mainClassName = entryPoint
+    mainClass = "org.queueinc.hamlet.Main"
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
 }
 
@@ -63,7 +63,7 @@ tasks.getByName<Test>("test") {
 }
 
 
-val generatedVersionDir = "$buildDir/generated-version"
+val generatedVersionDir = "${layout.buildDirectory}/generated-version"
 
 sourceSets {
     main {

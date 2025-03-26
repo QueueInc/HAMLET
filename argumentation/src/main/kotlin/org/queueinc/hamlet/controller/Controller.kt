@@ -1,18 +1,15 @@
 package org.queueinc.hamlet.controller
 
-import it.unibo.tuprolog.argumentation.core.Arg2pSolver
+import it.unibo.tuprolog.argumentation.core.Arg2pSolverFactory
 import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.libs.basic.FlagsBuilder
 import it.unibo.tuprolog.core.Clause
 import it.unibo.tuprolog.core.Struct
 import it.unibo.tuprolog.core.parsing.parse
-import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
 import it.unibo.tuprolog.solve.SolveOptions
 import it.unibo.tuprolog.solve.TimeDuration
-import it.unibo.tuprolog.solve.classic.ClassicSolverFactory
 import it.unibo.tuprolog.theory.Theory
-import it.unibo.tuprolog.theory.parsing.parse
 import org.queueinc.hamlet.argumentation.SpaceGenerator
 import org.queueinc.hamlet.argumentation.SpaceMining
 import org.queueinc.hamlet.automl.*
@@ -21,7 +18,6 @@ import kotlin.random.Random
 
 class Controller(private val debugMode: Boolean, private val dataManager: FileSystemManager) {
 
-    private val arg2p = Arg2pSolver.default(staticLibs = listOf(SpaceGenerator), dynamicLibs = listOf(SpaceMining))
     private var lastSolver : MutableSolver? = null
     private var theory = ""
 
@@ -60,9 +56,14 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
     fun graphData() : MutableSolver? =
         dataManager.loadGraphData(config.copy())?.let { graph ->
             theory = dataManager.loadKnowledgeBase(config.copy()) ?: ""
-            ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
-                otherLibraries = arg2p.to2pLibraries(),
-                staticKb = Theory.parse(theory, arg2p.operators())
+            Arg2pSolverFactory.default(
+                staticLibs = listOf(SpaceGenerator),
+                dynamicLibs = listOf(SpaceMining),
+                settings = FlagsBuilder(
+                    argumentLabellingMode = "grounded_hash",
+                    graphExtensions = emptyList()
+                ).create(),
+                theory = theory
             ).also {
                 lastSolver = it
                 arg2pScope {
@@ -76,24 +77,22 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         this.theory = theory
         val start = System.currentTimeMillis() / 1000
         val creationRules = SpaceGenerator.createGeneratorRules(theory)
-        println(creationRules)
-        val solver = ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
-            otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
+        val solver = Arg2pSolverFactory.default(
+            staticLibs = listOf(SpaceGenerator),
+            dynamicLibs = listOf(SpaceMining),
+            settings = FlagsBuilder(
                 argumentLabellingMode = "grounded_hash",
-                graphExtensions = emptyList()).create().content()),
-            staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators()),
-        ).let { solver ->
-            prolog {
+                graphExtensions = emptyList()
+            ).create(),
+            theory = theory + "\n" + creationRules
+        ).also { solver ->
+            arg2pScope {
                 solver.solve("preparePipelines"(X)).map {
                     it.substitution[X]
                 }.map {
                     val a = it?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
-                    ClassicSolverFactory.mutableSolverWithDefaultBuiltins(
-                        otherLibraries = arg2p.to2pLibraries().plus(FlagsBuilder(
-                            argumentLabellingMode = "grounded_hash", graphExtensions = emptyList()
-                        ).create().content()),
-                        staticKb = Theory.parse(theory + "\n" + creationRules, arg2p.operators()).plus(Theory.of(a)),
-                    )
+                    solver.appendStaticKb(Theory.of(a))
+                    println(solver.staticKb.toString(asPrologText = true))
                 }.first()
             }
         }

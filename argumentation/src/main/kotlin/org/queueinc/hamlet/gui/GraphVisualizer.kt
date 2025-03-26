@@ -11,12 +11,13 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller
 import edu.uci.ics.jung.visualization.renderers.Renderer
+import it.unibo.tuprolog.argumentation.core.dsl.arg2pScope
 import it.unibo.tuprolog.argumentation.core.mining.graph
 import it.unibo.tuprolog.argumentation.core.model.Attack
 import it.unibo.tuprolog.argumentation.core.model.LabelledArgument
 import it.unibo.tuprolog.dsl.prolog
 import it.unibo.tuprolog.solve.MutableSolver
-import it.unibo.tuprolog.solve.classic.classic
+import it.unibo.tuprolog.solve.classic.ClassicSolverFactory
 import javafx.embed.swing.SwingNode
 import java.awt.BorderLayout
 import java.awt.Color
@@ -102,10 +103,10 @@ internal class GraphVisualizer {
             swingNode.content = frame.splitPane
             frame.update()
             return GraphNode(swingNode) { model ->
-                frame.mutableSolver = MutableSolver.classic(
+                frame.mutableSolver = ClassicSolverFactory.mutableSolverOf(
                     libraries = model.libraries
                 )
-                frame.selectedContext = prolog {
+                frame.selectedContext = arg2pScope {
                     frame.mutableSolver!!.solve("context_active"(X))
                         .map { it.substitution[X]!!.asNumeric()!!.intValue.toInt() }
                         .first()

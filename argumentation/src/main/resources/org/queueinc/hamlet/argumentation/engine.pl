@@ -5,8 +5,26 @@
 pipeline([], Z) :- operator(classification, Z).
 
 preparePipelines(Res) :-
-	findall(Num :=> pipeline(X, Y), (pipeline(X, Y), rand_int(0, 1000000, Num)), Res).
+    once(constraints(CS)),
+	findall(Num :=> pipeline(X, Y), (pipeline(X, Y), once(check_potential_conflict(CS, X, Y)), rand_int(0, 1000000, Num)), Res).
 
+check_potential_conflict([C|_], X, Y) :-
+    expanded_conflict(C, [pipeline(X, Y)]).
+check_potential_conflict([_|T], X, Y) :-
+    check_potential_conflict(T, X, Y).
+
+expanded_conflict(HeadA, HeadB) :-
+    conflict(HeadA, HeadB).
+expanded_conflict(HeadA, HeadB) :-
+    conflict(HeadA, HeadB, Guard),
+    (callable(Guard) -> call(Guard); Guard).
+
+constraints(XS) :-
+    context_active(OC),
+    context_branch(OC, _),
+    buildLabelSetsSilent,
+    findall(X, context_check(clause(conc(X), argument(_))), XS),
+    context_checkout(OC).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MANDATORY & FORBIDDEN CONSTRAINT
