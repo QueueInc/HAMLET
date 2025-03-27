@@ -87,13 +87,18 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
             theory = theory + "\n" + creationRules
         ).also { solver ->
             arg2pScope {
-                solver.solve("preparePipelines"(X)).map {
-                    it.substitution[X]
-                }.map {
-                    val a = it?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
-                    solver.appendStaticKb(Theory.of(a))
-                    println(solver.staticKb.toString(asPrologText = true))
+                solver.solve("prepare_sensitive_groups"(Y)).map { it ->
+                    val b = it.substitution[Y] ?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
+                    solver.appendStaticKb(Theory.of(b))
+                    println("Sensitive groups ready!")
                 }.first()
+                solver.solve("prepare_theory"(X)).map {
+                    val a = it.substitution[X] ?.castToList()?.toList()?.map { x -> Clause.of(x.castToStruct()) } ?: emptyList()
+                    solver.appendStaticKb(Theory.of(a))
+                    println("Theory ready!")
+                }.first()
+                println("Theory:")
+                println(solver.staticKb.toString(asPrologText = true))
             }
         }
 
