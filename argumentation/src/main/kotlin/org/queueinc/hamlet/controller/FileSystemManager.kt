@@ -73,15 +73,17 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
         val start = System.currentTimeMillis() / 1000
         val (space, templates, instances) = SpaceTranslator.mineData(solver)
         val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints(config.copy(iteration = config.iteration - 1))
-        val input = """{
-                    "graph_generation_time":$generationTime,
-                    "space_generation_time":${(System.currentTimeMillis() / 1000) - start},
-                    "space":$space,
-                    "template_constraints":$templates,
-                    "instance_constraints":[],
-                    "points_to_evaluate":$pointsToEvaluate,
-                    "evaluated_rewards":$evaluatedRewards
-               }""".trimIndent()
+        val input = """
+            {
+                "graph_generation_time":$generationTime,
+                "space_generation_time":${(System.currentTimeMillis() / 1000) - start},
+                "space":$space,
+                "template_constraints":$templates,
+                "instance_constraints":[],
+                "points_to_evaluate":$pointsToEvaluate,
+                "evaluated_rewards":$evaluatedRewards
+            }
+            """.trimIndent()
 
         File("${workspacePath}/automl/input/automl_input_${config.iteration}.json").createAndWrite(input)
     }

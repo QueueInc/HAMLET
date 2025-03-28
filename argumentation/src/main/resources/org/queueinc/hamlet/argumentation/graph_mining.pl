@@ -52,6 +52,15 @@ concat([H|T], HTT) :-
 % DATA LAYER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+get_out_und_argument_by_conclusion(Conc) :-
+    get_und_argument_by_conclusion(Conc).
+get_out_und_argument_by_conclusion(Conc) :-
+    get_out_argument_by_conclusion(Conc).
+
+
+get_und_argument_by_conclusion(Conc) :-
+    context_check(und([_, _, [Conc], _, _])).
+
 
 get_in_argument_by_conclusion(Conc) :-
     context_check(in([_, _, [Conc], _, _])).
@@ -177,33 +186,76 @@ map_space([(Z, X, Y)|T], [(Z, X, [(function_transformer)|Y])|TT]) :- map_space(T
 % CONSTRAINTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+map_to(_, [], []).
+map_to(M, [_|T], [M|R]) :- map_to(M, T, R).
 
 fetch_mandatory(Mandatory) :-
-    findall((S, O, A), (
+    findall((S, R, O, A), (
         get_in_argument_by_conclusion(mandatory(S, A)),
         A \= classification,
-        fetch_operators(S, O)
+        fetch_operators(S, O),
+        map_to(nin, S, R)
     ), Mandatory).
 
 
 fetch_forbidden(Forbidden) :-
-    findall((S, O, A), (
+    findall((S, R, O, A), (
         get_in_argument_by_conclusion(forbidden(S, A)),
         A \= classification,
-        fetch_operators(S, O)
+        fetch_operators(S, O),
+        map_to(in, S, R)
     ), Forbidden).
 
 
 fetch_mandatory_order(Mandatory) :-
     fetch_prototypes(Prototypes),
-    findall(([prototype|S], [Ps], A), (
+    findall(([prototype|S], [nin|R], [Ps|OPS], A), (
         get_in_argument_by_conclusion(mandatory_order(S, A)),
         A \= classification,
         findall(P, (
             member(P, Prototypes),
             match_prototype(P, S)
-        ), Ps)
+        ), Ps),
+        map_to(neq, S, R),
+        map_to(function_transformer, S, OPS)
     ), Mandatory).
+
+
+fetch_forbidden_instances(Instances) :-
+    fetch_prototypes(Prototypes),
+    findall(([prototype|FS], [in|R], [Ps|FO], A), (
+        discriminate(instance(O, A), _),
+        A \= classification,
+        build_pipeline(O, S),
+        findall(P, (
+            member(P, Prototypes),
+            match_prototype(P, S)
+        ), Ps),
+        findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
+        map_to(function_transformer, NS, NO),
+        utils::append_fast(S, NS, FS),
+        utils::append_fast(O, NO, FO),
+        map_to(eq, FS, R)
+    ), Instances).
+
+fetch_forbidden_pipelines(Pipelines) :-
+    fetch_prototypes(Prototypes),
+    findall(([prototype|FS], [in|FR], [Ps|FO], A), (
+        discriminate(pipeline(S, A), _),
+        A \= classification,
+        fetch_operators(S, O),
+        findall(P, (
+            member(P, Prototypes),
+            match_prototype(P, S)
+        ), Ps),
+        findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
+        map_to(function_transformer, NS, NO),
+        utils::append_fast(S, NS, FS),
+        utils::append_fast(O, NO, FO),
+        map_to(eq, NS, NR),
+        map_to(in, S, R),
+        utils::append_fast(R, NR, FR)
+    ), Pipelines).
 
 
 match_prototype(_, []) :- !.

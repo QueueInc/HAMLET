@@ -63,7 +63,7 @@ tasks.getByName<Test>("test") {
 }
 
 
-val generatedVersionDir = "${layout.buildDirectory}/generated-version"
+val generatedVersionDir = "${layout.buildDirectory.get().asFile.name}/generated-version"
 
 sourceSets {
     main {
