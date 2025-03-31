@@ -33,7 +33,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
     fun init(dataset: String, metric: String, fairnessMetric: String, sensitiveFeatures: String, mode: String, batchSize: Int, timeBudget: Int, seed: Int) {
         // stopAutoML()
-        runAutoML(dataManager.workspacePath, dataManager.volume, debugMode)
+        // runAutoML(dataManager.workspacePath, dataManager.volume, debugMode)
 
         config = dataManager.loadConfig().let {
             if (it == null || it.dataset != dataset) {
@@ -46,7 +46,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
     }
 
     fun stop() {
-        stopAutoML()
+        // stopAutoML()
     }
 
     fun knowledgeBase() : String? = dataManager.loadKnowledgeBase(config.copy())
@@ -130,7 +130,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
 
                 println("Input created for iteration ${nextIteration()}")
 
-                execAutoML(dataManager.workspacePath, nextIteration())
+                execAutoML(dataManager.workspacePath, nextIteration(), debugMode)
 
                 if (dataManager.existsAutoMLData(nextIteration())) {
                     updateIteration()
