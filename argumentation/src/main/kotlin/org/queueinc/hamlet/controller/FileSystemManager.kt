@@ -71,7 +71,7 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
 
     fun saveAutoMLData(config: Config, generationTime: Long, solver: MutableSolver) {
         val start = System.currentTimeMillis() / 1000
-        val (space, templates, instances) = SpaceTranslator.mineData(solver)
+        val (space, templates, instances, features) = SpaceTranslator.mineData(solver)
         val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints(config.copy(iteration = config.iteration - 1))
         val input = """
             {
@@ -79,9 +79,10 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
                 "space_generation_time":${(System.currentTimeMillis() / 1000) - start},
                 "space":$space,
                 "template_constraints":$templates,
-                "instance_constraints":[],
+                "instance_constraints":$instances,
                 "points_to_evaluate":$pointsToEvaluate,
-                "evaluated_rewards":$evaluatedRewards
+                "evaluated_rewards":$evaluatedRewards,
+                "sensitive_features":$features
             }
             """.trimIndent()
 

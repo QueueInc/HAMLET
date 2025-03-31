@@ -134,6 +134,15 @@ object SpaceTranslator {
                 .map { translateTemplates(listOf(X, Y, Z, T, A).map { v -> it.substitution[v]!! }) }
                 .first()
 
+            println("Exporting Sensitive Features")
+
+            val sensitiveFeatures = solver.solve(
+                ("miner" call "fetch_sensitive_features"(X)),
+                SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                .filter { it.isYes }
+                .map { it.substitution[X]!!.castToList().toList().map { t -> "\"$t\"" }.toString() }
+                .first()
+
 //            println("Exporting Instances")
 
 //            val instances = solver.solve("miner" call "fetch_instance_base_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
@@ -144,7 +153,7 @@ object SpaceTranslator {
 //                }
 //                .first()
 
-            arrayOf(space, templates, "")
+            arrayOf(space, templates, "[]", sensitiveFeatures)
         }
 }
 
