@@ -73,7 +73,9 @@ def _get_prototype(config):
 def _check_coherence(prototype, config):
 
     if (
-        prototype.index("mitigation") > prototype.index("features")
+        "mitigation" in prototype
+        and "features" in prototype
+        and prototype.index("mitigation") > prototype.index("features")
         and config["features"]["type"] == "PCA"
         and config["mitigation"]["type"] in ["CorrelationRemover", "LFR_wrapper"]
     ):
@@ -356,6 +358,7 @@ def _compute_fair_metric(
                     y_true=np.array(y.copy()[test_indeces]),
                     y_pred=np.array(scores["estimator"][fold].predict(x_original)),
                     sensitive_features=x_sensitive,
+                    # sensitive_features=np.char.add(x_sensitive[:, 0].astype(str), x_sensitive[:, 1].astype(str))
                 )
             )
         ]
@@ -369,6 +372,7 @@ class Prototype:
     y = None
     categorical_indicator = None
     sensitive_indicator = None
+    encoding_mappings = None
     feature_names = None
     fair_metric = None
     metric = None
@@ -381,6 +385,7 @@ class Prototype:
         y,
         categorical_indicator,
         sensitive_indicator,
+        encoding_mappings,
         feature_names,
         fair_metric,
         metric,
@@ -390,6 +395,7 @@ class Prototype:
         self.y = y
         self.categorical_indicator = categorical_indicator
         self.sensitive_indicator = sensitive_indicator
+        self.encoding_mappings = encoding_mappings
         self.feature_names = feature_names
         self.fair_metric = fair_metric
         self.metric = metric

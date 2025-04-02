@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import KBinsDiscretizer
+from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
 
 
 def get_dataset_by_name(name):
@@ -34,6 +34,60 @@ def get_dataset_by_id(id):
     return load_dataset_from_openml(id)
 
 
+def preprocess_features(df, sensitive_features):
+    """
+    Discretizes non-categorical sensitive features and applies ordinal encoding to categorical features.
+
+    Parameters:
+    - df: pd.DataFrame
+        The input DataFrame containing the data.
+    - sensitive_features: list of str
+        List of column names to be checked and discretized if non-categorical.
+
+    Returns:
+    - df_transformed: pd.DataFrame
+        DataFrame with transformed features.
+    - feature_mappings: dict
+        Dictionary containing mappings for discretized and encoded features.
+    """
+    df_transformed = df.copy()
+
+    categorical_features = df.select_dtypes(
+        include=["object", "category"]
+    ).columns.tolist()
+    numerical_sensitive_features = [
+        col
+        for col in df.select_dtypes(exclude=["object", "category"]).columns.tolist()
+        if col in sensitive_features
+    ]
+
+    # Encode all categorical features
+    encoder = OrdinalEncoder()
+    df_transformed[categorical_features] = encoder.fit_transform(
+        df_transformed[categorical_features]
+    )
+    encoding_mappings = {
+        feature: dict(zip(range(len(encoder.categories_[i])), encoder.categories_[i]))
+        for i, feature in enumerate(categorical_features)
+        if feature in sensitive_features
+    }
+
+    # Discretize non-categorical sensitive features
+    for feature in numerical_sensitive_features:
+        discretizer = KBinsDiscretizer(n_bins=5, encode="ordinal", strategy="kmeans")
+        df_transformed[feature] = discretizer.fit_transform(
+            df_transformed[[feature]]
+        ).astype(int)
+        bin_edges = discretizer.bin_edges_[0]
+        bin_labels = [
+            f"{bin_edges[i]:.2f} - {bin_edges[i+1]:.2f}"
+            for i in range(len(bin_edges) - 1)
+        ]
+        encoding_mappings[feature] = dict(zip(range(len(bin_labels)), bin_labels))
+
+    return df_transformed, encoding_mappings
+
+
 def load_dataset_from_openml(
     id,
     sensitive_features,
@@ -42,27 +96,41 @@ def load_dataset_from_openml(
     ),
 ):
     dataset = openml.datasets.get_dataset(id)
-    X, y, categorical_indicator, feature_names = dataset.get_data(
-        dataset_format="array", target=dataset.default_target_attribute
+    df, _, categorical_indicator, feature_names = dataset.get_data(
+        dataset_format="dataframe",
+        # target=dataset.default_target_attribute
     )
+
+    # Encode categorical and discretize numerical while storing the mapping
+    df_transformed, encoding_mappings = preprocess_features(df, sensitive_features)
+
+    # Get old data structure
+    X = df_transformed.drop(
+        labels=dataset.default_target_attribute, axis="columns"
+    ).to_numpy()
+    y = df_transformed[dataset.default_target_attribute].to_numpy()
+    categorical_indicator.pop(feature_names.index(dataset.default_target_attribute))
+    feature_names = [
+        col for col in feature_names if col != dataset.default_target_attribute
+    ]
+    sensitive_indicator = [feature in sensitive_features for feature in feature_names]
+    encoding_mappings = {
+        feature_names.index(key): value for key, value in encoding_mappings.items()
+    }
+
     # with open(os.path.join(input_path, "sensitive_indicators.json")) as f:
     #     sensitive_indicators = json.load(f)
     # sensitive_indicator = sensitive_indicators[str(id)]
-    sensitive_indicator = [
-        True if x in [int(y) for y in sensitive_features.split("_")] else False
-        for x in range(len(categorical_indicator))
-    ]
+
+    # sensitive_indicator = [
+    #     True if x in [int(y) for y in sensitive_features.split("_")] else False
+    #     for x in range(len(categorical_indicator))
+    # ]
 
     if id == "179":
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
         X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]
         X, y = X_temp[:, :-1], X_temp[:, -1].T
-    if id == "31":
-        est = KBinsDiscretizer(
-            n_bins=5, encode="ordinal", strategy="kmeans"
-        )  # strategy{"uniform", "quantile", "kmeans"}
-        X[:, 12] = est.fit_transform(X[:, 12].reshape(-1, 1)).ravel()
-        categorical_indicator[12] = True
     # cat_features = [i for i, x in enumerate(categorical_indicator) if x == True]
     # Xt = pd.DataFrame(X)
     # Xt[cat_features] = Xt[cat_features].fillna(-1)
@@ -70,7 +138,14 @@ def load_dataset_from_openml(
     # Xt[cat_features] = Xt[cat_features].replace("-1", np.nan)
     # Xt = Xt.to_numpy()
     # return Xt, y, categorical_indicator
-    return X, y, categorical_indicator, sensitive_indicator, feature_names
+    return (
+        X,
+        y,
+        categorical_indicator,
+        sensitive_indicator,
+        feature_names,
+        encoding_mappings,
+    )
 
 
 def load_from_csv(

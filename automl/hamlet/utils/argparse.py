@@ -29,14 +29,14 @@ def parse_args():
         required=True,
         help="fair metric to optimize",
     )
-    parser.add_argument(
-        "-sensitive_features",
-        "--sensitive_features",
-        nargs="?",
-        type=str,
-        required=True,
-        help="sensitive features",
-    )
+    # parser.add_argument(
+    #     "-sensitive_features",
+    #     "--sensitive_features",
+    #     nargs="?",
+    #     type=str,
+    #     required=True,
+    #     help="sensitive features",
+    # )
     parser.add_argument(
         "-mode",
         "--mode",

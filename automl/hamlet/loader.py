@@ -15,28 +15,29 @@ class Loader:
 
         if not path:
             raise Exception("No knowledge path provided")
-        
+
         knowledge = self._load(path=path)
+
+        self._sensitive_features = knowledge["sensitive_features"]
+
         self._graph_generation_time = knowledge["graph_generation_time"]
         self._space_generation_time = knowledge["space_generation_time"]
 
         for constraint in knowledge["template_constraints"]:
-            self._template_constraints.append(
-                self._get_template_constraint(constraint)
-            )
+            self._template_constraints.append(self._get_template_constraint(constraint))
 
         self._evaluated_rewards = self._get_evaluated_rewards(
             input_evaluated_rewards=knowledge["evaluated_rewards"]
         )
 
-        self._space, self._instance_constraints, self._points_to_evaluate = get_space(knowledge)
-        
-            
+        self._space, self._instance_constraints, self._points_to_evaluate = get_space(
+            knowledge
+        )
+
     def _load(self, path):
         with open(path) as f:
             data = json.load(f)
         return data
-
 
     def _check(self, step, value_constraint, target_value):
         if "neq" in value_constraint:
@@ -100,6 +101,9 @@ class Loader:
     def get_space(self):
         return self._space
 
+    def get_sensitive_features(self):
+        return self._sensitive_features
+
     def get_graph_generation_time(self):
         return self._graph_generation_time
 
@@ -112,8 +116,7 @@ class Loader:
     def get_instance_constraints(self, is_smac=False):
         if is_smac:
             return [
-                flatten_configuration(config)
-                for config in self._instance_constraints
+                flatten_configuration(config) for config in self._instance_constraints
             ]
         else:
             return self._instance_constraints
@@ -121,8 +124,7 @@ class Loader:
     def get_points_to_evaluate(self, is_smac=False):
         if is_smac:
             return [
-                flatten_configuration(config)
-                for config in self._points_to_evaluate
+                flatten_configuration(config) for config in self._points_to_evaluate
             ]
         else:
             return self._points_to_evaluate

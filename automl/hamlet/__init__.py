@@ -13,15 +13,23 @@ def run(args):
     np.random.seed(args.seed)
     metrics = [args.fair_metric, args.metric]
 
-    X, y, categorical_indicator, sensitive_indicator, feature_names = (
-        load_dataset_from_openml(args.dataset, args.sensitive_features)
-    )
-
     loader = Loader(args.input_path)
+
+    (
+        X,
+        y,
+        categorical_indicator,
+        sensitive_indicator,
+        feature_names,
+        encoding_mappings,
+    ) = load_dataset_from_openml(args.dataset, loader.get_sensitive_features())
+
     initial_design_configs = 5 if len(loader.get_points_to_evaluate()) == 0 else 0
 
     buffer = Buffer(
-        metrics=metrics, loader=loader, initial_design_configs=initial_design_configs
+        metrics=metrics,
+        loader=loader,
+        initial_design_configs=initial_design_configs,
     )
 
     buffer.attach_handler()
@@ -34,6 +42,7 @@ def run(args):
         y,
         categorical_indicator,
         sensitive_indicator,
+        encoding_mappings,
         feature_names,
         args.fair_metric,
         args.metric,
