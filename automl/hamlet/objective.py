@@ -2,7 +2,16 @@ import copy
 import time
 import numpy as np
 
+from collections import defaultdict
+
 from fairlearn import metrics
+from fairlearn.metrics._base_metrics import (
+    false_positive_rate,
+    selection_rate,
+    true_positive_rate,
+)
+from fairlearn.metrics._metric_frame import MetricFrame
+
 from sklearn.model_selection import cross_validate, StratifiedKFold
 
 ## Base operators
@@ -342,28 +351,83 @@ def _compute_fair_metric(
     # performance_scorer = make_scorer(performance_metric)
 
     fair_scores = []
+    fair_scores_by_group = []
     for fold, (train_indeces, test_indeces) in enumerate(skf.split(X, stratified_y)):
         # test_indeces = scores["indices"]["test"][fold]
         x_original = X.copy()[test_indeces, :]
         sensitive_mask = [i for i, x in enumerate(sensitive_indicator) if x == True]
         x_sensitive = x_original[:, sensitive_mask]
 
-        # forse fare .reshape(-1, 1) in caso di intersectionality
         x_sensitive = (
             x_sensitive if len(sensitive_mask) > 1 else x_sensitive.reshape(-1)
         )
-        fair_scores += [
-            adjuster(
-                performance_metric(
-                    y_true=np.array(y.copy()[test_indeces]),
-                    y_pred=np.array(scores["estimator"][fold].predict(x_original)),
-                    sensitive_features=x_sensitive,
-                    # sensitive_features=np.char.add(x_sensitive[:, 0].astype(str), x_sensitive[:, 1].astype(str))
-                )
-            )
+
+        # fair_scores += [
+        #     adjuster(
+        #         performance_metric(
+        #             y_true=np.array(y.copy()[test_indeces]),
+        #             y_pred=np.array(scores["estimator"][fold].predict(x_original)),
+        #             sensitive_features=x_sensitive,
+        #         )
+        #     )
+        # ]
+
+        y_true = np.array(y.copy()[test_indeces])
+        y_pred = np.array(scores["estimator"][fold].predict(x_original))
+
+        if metric_name.startswith("equalized_odds"):
+            fns = {"tpr": true_positive_rate, "fpr": false_positive_rate}
+        else:
+            fns = selection_rate
+
+        mf = MetricFrame(
+            metrics=fns,
+            y_true=y_true,
+            y_pred=y_pred,
+            sensitive_features=x_sensitive,
+        )
+
+        method = "between_groups"  # or overall
+        agg = "worst_case"  # or mean
+
+        if metric_name.endswith("_ratio"):
+            # ALTERNATIVA: utilizzare mf.overall
+            ratios_by_group = mf.by_group / mf.by_group.max()
+            if metric_name.startswith("equalized_odds"):
+                if agg == "worst_case":
+                    fair_score = min(mf.ratio(method=method))
+                    fair_score_by_group = ratios_by_group.min(axis=1)
+                else:
+                    fair_score = mf.ratio(method=method).mean()
+                    fair_score_by_group = ratios_by_group.mean(axis=1)
+            else:
+                fair_score = mf.ratio(method=method)
+                fair_score_by_group = ratios_by_group
+        else:
+            # ALTERNATIVA: utilizzare mf.overall
+            diffs_by_group = mf.by_group.max() - mf.by_group
+            if metric_name.startswith("equalized_odds"):
+                if agg == "worst_case":
+                    fair_score = max(mf.difference(method=method))
+                    fair_score_by_group = diffs_by_group.max(axis=1)
+                else:
+                    fair_score = mf.difference(method=method).mean()
+                    fair_score_by_group = diffs_by_group.mean(axis=1)
+            else:
+                fair_score = mf.difference(method=method)
+                fair_score_by_group = diffs_by_group
+
+        fair_scores += [adjuster(fair_score)]
+
+        fair_score_by_group = fair_score_by_group.to_dict()
+        fair_scores_by_group += [
+            {key: adjuster(value) for key, value in fair_score_by_group.items()}
         ]
 
-    return fair_scores
+    merged = defaultdict(list)
+    [merged[k].append(v) for d in fair_scores_by_group for k, v in d.items()]
+
+    return fair_scores, dict(merged)
 
 
 class Prototype:
@@ -525,24 +589,26 @@ class Prototype:
             )
 
             self.buffer.detach_timer()
+            fair_scores, fair_scores_by_group = _compute_fair_metric(
+                self.fair_metric,
+                self.X.copy(),
+                self.y.copy(),
+                self.sensitive_indicator,
+                scores,
+                skf,
+                stratified_y,
+            )
 
             res = {
                 f"{self.metric}": scores["test_" + self.metric],
-                f"{self.fair_metric}": _compute_fair_metric(
-                    self.fair_metric,
-                    self.X.copy(),
-                    self.y.copy(),
-                    self.sensitive_indicator,
-                    scores,
-                    skf,
-                    stratified_y,
-                ),
+                f"{self.fair_metric}": fair_scores,
             }
 
             for current_metric in [self.fair_metric, self.metric]:
                 result[f"flatten_{current_metric}"] = "_".join(
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
+            # result["by_group"] = fair_scores_by_group
 
             if any([_res(m, r) for m, r in res.items()]):
                 raise Exception(f"The result for {config} was NaN")
