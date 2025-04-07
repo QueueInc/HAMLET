@@ -56,13 +56,22 @@ def run(args):
     Buffer().printflush("AutoML: optimization done.")
 
     end_time = time.time()
-    rules = mine_results(args, buffer, metrics)
+    rules = mine_results(args, buffer, metrics, encoding_mappings)
 
     Buffer().printflush("AutoML: miner done.")
 
     mining_time = time.time()
     dump_results(
-        args, loader, buffer, best_config, rules, start_time, end_time, mining_time
+        args,
+        loader,
+        buffer,
+        best_config,
+        rules,
+        start_time,
+        end_time,
+        mining_time,
+        encoding_mappings,
+        metrics,
     )
 
     Buffer().printflush("AutoML: export done.")

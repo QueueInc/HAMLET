@@ -419,9 +419,17 @@ def _compute_fair_metric(
 
         fair_scores += [adjuster(fair_score)]
 
+        # for lev in range(len(fair_score_by_group.index.levels)):
+        #     fair_score_by_group.index.levels[lev] = fair_score_by_group.index.levels[
+        #         lev
+        #     ].astype(int)
+
         fair_score_by_group = fair_score_by_group.to_dict()
         fair_scores_by_group += [
-            {key: adjuster(value) for key, value in fair_score_by_group.items()}
+            {
+                key: adjuster(round(value, 2))
+                for key, value in fair_score_by_group.items()
+            }
         ]
 
     merged = defaultdict(list)
@@ -608,7 +616,7 @@ class Prototype:
                 result[f"flatten_{current_metric}"] = "_".join(
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
-            # result["by_group"] = fair_scores_by_group
+            result["by_group"] = fair_scores_by_group
 
             if any([_res(m, r) for m, r in res.items()]):
                 raise Exception(f"The result for {config} was NaN")

@@ -1,6 +1,7 @@
 import json
 import time
 import sys
+import re
 
 from ConfigSpace import Configuration
 
@@ -100,7 +101,7 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
     return incumbents, incumbents_costs, _best_configs(incumbents, incumbents_costs)
 
 
-def mine_results(args, buffer, metrics):
+def mine_results(args, buffer, metrics, encoding_mappings):
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miners = {
         m: Miner(
@@ -108,6 +109,7 @@ def mine_results(args, buffer, metrics):
             evaluated_rewards=evaluated_rewards,
             metric=m,
             mode=args.mode,
+            encoding_mappings=encoding_mappings,
         )
         for m in metrics
     }
@@ -115,12 +117,41 @@ def mine_results(args, buffer, metrics):
 
 
 def dump_results(
-    args, loader, buffer, best_config, rules, start_time, end_time, mining_time
+    args,
+    loader,
+    buffer,
+    best_config,
+    rules,
+    start_time,
+    end_time,
+    mining_time,
+    encoding_mappings,
+    metrics,
 ):
 
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     graph_generation_time = loader.get_graph_generation_time()
     space_generation_time = loader.get_space_generation_time()
+
+    support_mapping = [
+        encoding_mappings[sens_feat] for sens_feat in sorted(encoding_mappings)
+    ]
+
+    for reward in evaluated_rewards:
+        reward["by_group"] = {
+            "_".join(
+                [
+                    support_mapping[sens_feat][int(sens_group)]
+                    for sens_feat, sens_group in enumerate(key)
+                ]
+            ): "_".join([str(v) for v in value])
+            for key, value in reward["by_group"].items()
+        }
+        for metric in metrics:
+            if reward[metric] == float("-inf"):
+                reward[metric] = "-inf"
+            elif reward[metric] == float("inf"):
+                reward[metric] = "inf"
 
     automl_output = {
         "start_time": start_time,
@@ -131,10 +162,13 @@ def dump_results(
         "best_config": best_config,
         "rules": rules,
         "points_to_evaluate": points_to_evaluate,
-        "evaluated_rewards": [
-            json.loads(str(reward).replace("'", '"').replace("-inf", '"-inf"'))
-            for reward in evaluated_rewards
-        ],
+        "evaluated_rewards": evaluated_rewards,
+        # [
+        #     json.loads(str(reward).replace("'", '"').replace("-inf", '"-inf"')).replace(
+        #         "'", '"'
+        #     )
+        #     for reward in evaluated_rewards
+        # ],
     }
 
     with open(args.output_path, "w") as outfile:
