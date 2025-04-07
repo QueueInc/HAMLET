@@ -235,10 +235,10 @@ fetch_forbidden_instances(Instances) :-
             member(P, Prototypes),
             match_prototype(P, S)
         ), Ps),
-        findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
-        map_to(function_transformer, NS, NO),
-        utils::append_fast(S, NS, FS),
-        utils::append_fast(O, NO, FO),
+        % findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
+        % map_to(function_transformer, NS, NO),
+        utils::append_fast(S, [], FS),
+        utils::append_fast(O, [], FO),
         map_to(eq, FS, R)
     ), Instances).
 
@@ -252,13 +252,13 @@ fetch_forbidden_pipelines(Pipelines) :-
             member(P, Prototypes),
             match_prototype(P, S)
         ), Ps),
-        findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
-        map_to(function_transformer, NS, NO),
-        utils::append_fast(S, NS, FS),
-        utils::append_fast(O, NO, FO),
-        map_to(eq, NS, NR),
+        % findall(S1, (step(S1), S1 \= classification, \+ member(S1, S)), NS),
+        % map_to(function_transformer, NS, NO),
+        utils::append_fast(S, [], FS),
+        utils::append_fast(O, [], FO),
+        % map_to(eq, NS, NR),
         map_to(in, S, R),
-        utils::append_fast(R, NR, FR)
+        utils::append_fast(R, [], FR)
     ), Pipelines).
 
 

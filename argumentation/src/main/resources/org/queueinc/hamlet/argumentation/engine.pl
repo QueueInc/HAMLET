@@ -20,10 +20,9 @@ cartesian_product([H|T], [X|R]) :-
     member(X, H),
     cartesian_product(T, R).
 
-% To check
-conflict([sensitive_group(X)], [instance(Y, Z)], once(discriminate_check(instance(Y, Z), X))).
-conflict([sensitive_group(X)], [pipeline(Y, Z)], once(discriminate_check(pipeline(Y, Z), X))).
-
+% Exact Check
+% conflict([sensitive_group(X)], [instance(Y, Z)], once(discriminate_check_order(instance(Y, Z), X))).
+conflict([sensitive_group(X)], [pipeline(Y, Z)], discriminate_check_order(pipeline(Y, Z), X)).
 
 discriminate_check(pipeline(Y, Z), X) :-
     permutations(X, PX),
@@ -32,12 +31,36 @@ discriminate_check(instance(Y, Z), X) :-
     permutations(X, PX),
     discriminate(instance(Y, Z), PX).
 
+
+discriminate_check_order(instance(Y, Z), X) :-
+    permutations(X, PX),
+    discriminate(instance(PY, Z), PX),
+    same_order(PY, Y).
+discriminate_check_order(pipeline(Y, Z), X) :-
+    permutations(X, PX),
+    discriminate(pipeline(PY, Z), PX),
+    check_order(PY, Y).
+
+check_order(PY, Y) :-
+    var(Y), !,
+    matching_prototypes(PY, [], Y).
+check_order(PY, Y) :- same_order(PY, Y).
+
+matching_prototypes([], X, X).
+matching_prototypes([H|T], I, X) :- append(I, [H], II), matching_prototypes(T, II, X).
+matching_prototypes(L, I, X) :- step(S), S \= classification, \+ member(S, I), append(I, [S], II), matching_prototypes(L, II, X).
+
+
 permutations([], []).
 permutations(H, [X|O]) :-
     member(X, H),
     utils::subtract(H, [X], R),
     permutations(R, O).
 
+
+same_order([], _).
+same_order([Y|T], [Y|PT]) :- same_order(T, PT).
+same_order([Y|T], [_|PT]) :- same_order([Y|T], PT).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PIPELINE GENERATION
@@ -54,7 +77,8 @@ prepare_theory(Res) :-
 prepare_pipelines(CS, Res) :-
 	findall(Num :=> pipeline(X, Y), (
 	    pipeline(X, Y),
-	    once(check_potential_conflict(CS, pipeline(X, Y))),
+	    % once(check_potential_conflict(CS, pipeline(X, Y))),
+	    check_potential_conflict(CS, pipeline(X, Y)),
 	    rand_int(0, 1000000, Num)
     ), Res).
 
