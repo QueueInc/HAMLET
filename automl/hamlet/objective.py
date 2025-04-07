@@ -427,7 +427,7 @@ def _compute_fair_metric(
         fair_score_by_group = fair_score_by_group.to_dict()
         fair_scores_by_group += [
             {
-                key: adjuster(round(value, 2))
+                key: adjuster(value)
                 for key, value in fair_score_by_group.items()
             }
         ]
@@ -467,7 +467,9 @@ class Prototype:
         self.y = y
         self.categorical_indicator = categorical_indicator
         self.sensitive_indicator = sensitive_indicator
-        self.encoding_mappings = encoding_mappings
+        self.encoding_mappings = [
+            encoding_mappings[sens_feat] for sens_feat in sorted(encoding_mappings)
+        ]
         self.feature_names = feature_names
         self.fair_metric = fair_metric
         self.metric = metric
@@ -616,7 +618,15 @@ class Prototype:
                 result[f"flatten_{current_metric}"] = "_".join(
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
-            result["by_group"] = fair_scores_by_group
+            result["by_group"] = {
+                "_".join(
+                    [
+                        self.encoding_mappings[sens_feat][int(sens_group)]
+                        for sens_feat, sens_group in enumerate(key)
+                    ]
+                ): round(np.mean(value), 2)
+                for key, value in fair_scores_by_group.items()
+            }
 
             if any([_res(m, r) for m, r in res.items()]):
                 raise Exception(f"The result for {config} was NaN")
