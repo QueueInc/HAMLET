@@ -11,9 +11,15 @@ from hamlet.engine import optimize, mine_results, dump_results
 def run(args):
 
     np.random.seed(args.seed)
-    metrics = [args.fair_metric, args.metric]
-
     loader = Loader(args.input_path)
+
+    settings = loader.get_settings()
+
+    settings["input_path"] = args.input_path
+    settings["output_path"] = args.output_path
+    settings["seed"] = args.seed
+    
+    metrics = [settings["fair_metric"], settings["metric"]]
 
     (
         X,
@@ -22,7 +28,7 @@ def run(args):
         sensitive_indicator,
         feature_names,
         encoding_mappings,
-    ) = load_dataset_from_openml(args.dataset, loader.get_sensitive_features())
+    ) = load_dataset_from_openml(settings["dataset"], settings["sensitive_features"])
 
     initial_design_configs = 5 if len(loader.get_points_to_evaluate()) == 0 else 0
 
@@ -44,25 +50,25 @@ def run(args):
         sensitive_indicator,
         encoding_mappings,
         feature_names,
-        args.fair_metric,
-        args.metric,
-        args.mode,
+        settings["fair_metric"],
+        settings["metric"],
+        settings["mode"],
     )
 
     _, _, best_config = optimize(
-        args, prototype, loader, initial_design_configs, metrics
+        settings, prototype, loader, initial_design_configs, metrics
     )
 
     Buffer().printflush("AutoML: optimization done.")
 
     end_time = time.time()
-    rules = mine_results(args, buffer, metrics)
+    rules = mine_results(settings, buffer, metrics)
 
     Buffer().printflush("AutoML: miner done.")
 
     mining_time = time.time()
     dump_results(
-        args,
+        settings,
         loader,
         buffer,
         best_config,

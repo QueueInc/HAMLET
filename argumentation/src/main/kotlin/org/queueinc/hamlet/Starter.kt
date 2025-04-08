@@ -11,33 +11,33 @@ import java.io.File
 import kotlin.system.exitProcess
 
 private var path: String = ""
-private var dataset: String = ""
-private var metric: String = ""
-private var fairnessMetric: String = ""
-private var sensitiveFeatures: String = ""
+// private var dataset: String = ""
+// private var metric: String = ""
+// private var fairnessMetric: String = ""
+// private var sensitiveFeatures: String = ""
 private var mode: String = ""
 private var batchSize: Int = 0
 private var timeBudget: Int = 0
 private var seed: Int = 0
 private var debugMode: Boolean = true
 private var theory: String = ""
-private var volume: String? = null
+// private var volume: String? = null
 
 object Starter {
     @JvmStatic
     fun main(args: Array<String>) {
         path = args[0]
-        dataset = args[1]
-        metric = args[2]
-        fairnessMetric = args[3]
-        sensitiveFeatures = args[4]
-        mode = args[5]
-        batchSize = args[6].toInt()
-        timeBudget = args[7].toInt()
-        seed = args[8].toInt()
-        debugMode = args[9].toBoolean()
-        volume = if (args[10] != "None") args[10] else null
-        theory = if (args.size == 12) File(args[11]).readText() else ""
+        // dataset = args[1]
+        // metric = args[2]
+        // fairnessMetric = args[3]
+        // sensitiveFeatures = args[4]
+        mode = args[1]
+        batchSize = args[2].toInt()
+        timeBudget = args[3].toInt()
+        seed = args[4].toInt()
+        debugMode = args[5].toBoolean()
+        // volume = if (args[10] != "None") args[10] else null
+        theory = if (args.size == 7) File(args[6]).readText() else ""
 
         if (theory == "") {
             Application.launch(HAMLET::class.java)
@@ -50,8 +50,8 @@ object Starter {
 
 
 fun consoleHamlet() {
-    Controller(debugMode, FileSystemManager(path, volume)).also { controller ->
-        controller.init(dataset, metric, fairnessMetric, sensitiveFeatures, mode, batchSize, timeBudget, seed)
+    Controller(debugMode, FileSystemManager(path)).also { controller ->
+        controller.init(mode, batchSize, timeBudget, seed)
         controller.generateGraph(theory, true) {}
         controller.launchAutoML(true) {}
         controller.stop()
@@ -60,12 +60,12 @@ fun consoleHamlet() {
 
 class HAMLET : Application() {
 
-    private val controller = Controller(debugMode, FileSystemManager(path, volume))
+    private val controller = Controller(debugMode, FileSystemManager(path))
 
     override fun start(stage: Stage) {
         try {
 
-            controller.init(dataset, metric, fairnessMetric, sensitiveFeatures, mode, batchSize, timeBudget, seed)
+            controller.init(mode, batchSize, timeBudget, seed)
             val computeAction : (String, (MutableSolver) -> Unit) -> Unit = { kb, updateAction ->
                 controller.generateGraph(kb, false, updateAction)
             }

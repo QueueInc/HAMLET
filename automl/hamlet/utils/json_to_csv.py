@@ -13,7 +13,7 @@ def flattenjson(b, delim):
     return val
 
 
-def json_to_csv(automl_output, args):
+def json_to_csv(automl_output, settings):
     to_export = automl_output["points_to_evaluate"]
     for i in range(len(to_export)):
         to_export[i]["eval"] = automl_output["evaluated_rewards"][i]
@@ -23,7 +23,7 @@ def json_to_csv(automl_output, args):
     columns = list(set(columns))
     columns.sort(reverse=True)
 
-    with open(args.output_path.replace("json", "csv"), "w") as out_file:
+    with open(settings["output_path"].replace("json", "csv"), "w") as out_file:
         csv_w = csv.writer(out_file)
         csv_w.writerow(columns)
 

@@ -5,30 +5,30 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description="HAMLET")
 
-    parser.add_argument(
-        "-dataset",
-        "--dataset",
-        nargs="?",
-        type=str,
-        required=True,
-        help="dataset to analise",
-    )
-    parser.add_argument(
-        "-metric",
-        "--metric",
-        nargs="?",
-        type=str,
-        required=True,
-        help="metric to optimize",
-    )
-    parser.add_argument(
-        "-fair_metric",
-        "--fair_metric",
-        nargs="?",
-        type=str,
-        required=True,
-        help="fair metric to optimize",
-    )
+    # parser.add_argument(
+    #     "-dataset",
+    #     "--dataset",
+    #     nargs="?",
+    #     type=str,
+    #     required=True,
+    #     help="dataset to analise",
+    # )
+    # parser.add_argument(
+    #     "-metric",
+    #     "--metric",
+    #     nargs="?",
+    #     type=str,
+    #     required=True,
+    #     help="metric to optimize",
+    # )
+    # parser.add_argument(
+    #     "-fair_metric",
+    #     "--fair_metric",
+    #     nargs="?",
+    #     type=str,
+    #     required=True,
+    #     help="fair metric to optimize",
+    # )
     # parser.add_argument(
     #     "-sensitive_features",
     #     "--sensitive_features",
@@ -37,30 +37,30 @@ def parse_args():
     #     required=True,
     #     help="sensitive features",
     # )
-    parser.add_argument(
-        "-mode",
-        "--mode",
-        nargs="?",
-        type=str,
-        required=True,
-        help="either minimize or maximize the metric (min or max)",
-    )
-    parser.add_argument(
-        "-batch_size",
-        "--batch_size",
-        nargs="?",
-        type=int,
-        required=True,
-        help="num iterations to visit",
-    )
-    parser.add_argument(
-        "-time_budget",
-        "--time_budget",
-        nargs="?",
-        type=int,
-        required=True,
-        help="time budget in seconds",
-    )
+    # parser.add_argument(
+    #     "-mode",
+    #     "--mode",
+    #     nargs="?",
+    #     type=str,
+    #     required=True,
+    #     help="either minimize or maximize the metric (min or max)",
+    # )
+    # parser.add_argument(
+    #     "-batch_size",
+    #     "--batch_size",
+    #     nargs="?",
+    #     type=int,
+    #     required=True,
+    #     help="num iterations to visit",
+    # )
+    # parser.add_argument(
+    #     "-time_budget",
+    #     "--time_budget",
+    #     nargs="?",
+    #     type=int,
+    #     required=True,
+    #     help="time budget in seconds",
+    # )
     parser.add_argument(
         "-input_path",
         "--input_path",

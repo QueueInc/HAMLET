@@ -47,19 +47,12 @@ fun execAutoML(workspacePath: String, config: Config, debug: Boolean) {
     val removeVolume = arrayOf("docker", "volume", "remove", "dummy_volume")
     val exec  =
         arrayOf("docker", "run", "--rm", "--volume", "dummy_volume:/test", image, "python", "automl/main.py",
-                "--dataset", config.dataset,
-                "--metric", config.metric,
-                "--fair_metric", config.fairnessMetric,
-                "--sensitive_features", config.sensitiveFeatures,
-                "--mode", config.mode,
-                "--batch_size", config.batchSize.toString(),
-                "--time_budget", config.timeBudget.toString(),
                 "--seed", config.seed.toString(),
                 "--input_path", "/test/automl_input_${config.iteration}.json",
                 "--output_path", "/test/automl_output_${config.iteration}.json")
 
     if (debug) {
-        val build = arrayOf("docker", "build", "-t", "automl-container", ".")
+        val build = arrayOf("docker", "build", "-t", "automl-image", "../")
         getOutputFromProgram(build)
     }
 

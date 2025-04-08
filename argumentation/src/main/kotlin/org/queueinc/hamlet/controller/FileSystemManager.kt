@@ -8,7 +8,7 @@ import org.queueinc.hamlet.createAndWrite
 import java.io.File
 
 
-class FileSystemManager(val workspacePath: String, val volume: String?) {
+class FileSystemManager(val workspacePath: String) {
 
     fun cleanWorkspace() {
         File("$workspacePath/argumentation").deleteRecursively()
@@ -71,7 +71,7 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
 
     fun saveAutoMLData(config: Config, generationTime: Long, solver: MutableSolver) {
         val start = System.currentTimeMillis() / 1000
-        val (space, templates, instances, features) = SpaceTranslator.mineData(solver)
+        val (space, templates, instances) = SpaceTranslator.mineData(solver)
         val (pointsToEvaluate, evaluatedRewards) = loadAutoMLPoints(config.copy(iteration = config.iteration - 1))
         val input = """
             {
@@ -82,7 +82,13 @@ class FileSystemManager(val workspacePath: String, val volume: String?) {
                 "instance_constraints":$instances,
                 "points_to_evaluate":$pointsToEvaluate,
                 "evaluated_rewards":$evaluatedRewards,
-                "sensitive_features":$features
+                "sensitive_features":${config.sensitiveFeatures.map { "\"$it\"" }},
+                "dataset":"${config.dataset}",
+                "metric":"${config.metric}",
+                "fair_metric":"${config.fairnessMetric}",
+                "mode":"${config.mode}",
+                "batch_size":${config.batchSize},
+                "time_budget":${config.timeBudget}
             }
             """.trimIndent()
 

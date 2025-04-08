@@ -17,7 +17,7 @@ from hamlet.utils.json_to_csv import json_to_csv
 from hamlet.utils.flaml_to_smac import flatten_configuration, transform_configuration
 
 
-def optimize(args, prototype, loader, initial_design_configs, metrics):
+def optimize(settings, prototype, loader, initial_design_configs, metrics):
 
     def _best_configs(incumbents, incumbents_costs):
         best_config = []
@@ -33,11 +33,11 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
                                 == float("inf")
                                 else (1 - incumbents_costs[idx_incumbent][idx_metric])
                             )
-                            if args.mode == "max"
+                            if settings["mode"] == "max"
                             else incumbents_costs[idx_incumbent][idx_metric]
                         )
                         for idx_metric, key in enumerate(
-                            [args.fair_metric, args.metric]
+                            [settings["fair_metric"], settings["metric"]]
                         )
                     },
                 }
@@ -63,8 +63,8 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
 
     # SMAC vuole che specifichiamo i trials, quindi non possiamo mettere -1, va bene maxsize?
     n_trials = (
-        (args.batch_size + len(previous_evaluated_points) + initial_design_configs)
-        if args.batch_size > 0
+        (settings["batch_size"] + len(previous_evaluated_points) + initial_design_configs)
+        if settings["batch_size"] > 0
         else sys.maxsize
     )
 
@@ -72,9 +72,9 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
     scenario = Scenario(
         loader.get_space(),
         objectives=metrics,
-        walltime_limit=args.time_budget,
+        walltime_limit=settings["time_budget"],
         n_trials=n_trials,
-        seed=args.seed,
+        seed=settings["seed"],
         n_workers=1,
         # trial_walltime_limit=900
     )
@@ -103,14 +103,14 @@ def optimize(args, prototype, loader, initial_design_configs, metrics):
     return incumbents, incumbents_costs, _best_configs(incumbents, incumbents_costs)
 
 
-def mine_results(args, buffer, metrics):
+def mine_results(settings, buffer, metrics):
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miners = {
         m: Miner(
             points_to_evaluate=points_to_evaluate,
             evaluated_rewards=evaluated_rewards,
             metric=m,
-            mode=args.mode,
+            mode=settings["mode"],
         )
         for m in metrics + ["by_group"]
     }
@@ -118,7 +118,7 @@ def mine_results(args, buffer, metrics):
 
 
 def dump_results(
-    args,
+    settings,
     loader,
     buffer,
     best_config,
@@ -178,7 +178,7 @@ def dump_results(
         # ],
     }
 
-    with open(args.output_path, "w") as outfile:
+    with open(settings["output_path"], "w") as outfile:
         json.dump(automl_output, outfile)
 
-    json_to_csv(automl_output=automl_output.copy(), args=args)
+    json_to_csv(automl_output=automl_output.copy(), settings=settings)

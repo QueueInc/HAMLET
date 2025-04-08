@@ -10,6 +10,7 @@ class Loader:
     _instance_constraints = []
     _points_to_evaluate = []
     _evaluated_rewards = []
+    _settings = {}
 
     def __init__(self, path=None):
 
@@ -18,7 +19,9 @@ class Loader:
 
         knowledge = self._load(path=path)
 
-        self._sensitive_features = knowledge["sensitive_features"]
+        self._settings = {
+            x : knowledge[x] for x in ["sensitive_features", "metric", "fair_metric", "dataset", "mode", "batch_size", "time_budget"]
+        }
 
         self._graph_generation_time = knowledge["graph_generation_time"]
         self._space_generation_time = knowledge["space_generation_time"]
@@ -101,9 +104,6 @@ class Loader:
     def get_space(self):
         return self._space
 
-    def get_sensitive_features(self):
-        return self._sensitive_features
-
     def get_graph_generation_time(self):
         return self._graph_generation_time
 
@@ -131,3 +131,7 @@ class Loader:
 
     def get_evaluated_rewards(self):
         return self._evaluated_rewards
+
+    def get_settings(self):
+        return self._settings
+

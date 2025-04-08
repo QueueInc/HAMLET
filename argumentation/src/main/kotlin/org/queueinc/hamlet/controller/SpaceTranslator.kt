@@ -134,15 +134,6 @@ object SpaceTranslator {
                 .map { translateTemplates(listOf(X, Y, Z, T, A).map { v -> it.substitution[v]!! }) }
                 .first()
 
-            println("Exporting Sensitive Features")
-
-            val sensitiveFeatures = solver.solve(
-                ("miner" call "fetch_sensitive_features"(X)),
-                SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
-                .filter { it.isYes }
-                .map { it.substitution[X]!!.castToList().toList().map { t -> "\"$t\"" }.toString() }
-                .first()
-
 //            println("Exporting Instances")
 
 //            val instances = solver.solve("miner" call "fetch_instance_base_components"(X, Y), SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
@@ -153,8 +144,29 @@ object SpaceTranslator {
 //                }
 //                .first()
 
-            arrayOf(space, templates, "[]", sensitiveFeatures)
+            arrayOf(space, templates, "[]")
         }
+
+    @JvmStatic
+    fun mineConfig(config: Config, solver: MutableSolver) : Config =
+        arg2pScope {
+            println("Exporting Config")
+
+            val sensitiveFeatures = solver.solve(
+                ("miner" call "fetch_sensitive_features"(X)),
+                SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
+                .filter { it.isYes }
+                .map { it.substitution[X]!!.castToList().toList().map { it.toString() } }
+                .first()
+
+            config.copy(
+                dataset = solver.solve("dataset"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
+                fairnessMetric = solver.solve("fairness_metric"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
+                metric = solver.solve("metric"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
+                sensitiveFeatures = sensitiveFeatures,
+            )
+        }
+
 }
 
 //    @JvmStatic

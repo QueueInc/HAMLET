@@ -31,17 +31,17 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         dataManager.saveConfig(config)
     }
 
-    fun init(dataset: String, metric: String, fairnessMetric: String, sensitiveFeatures: String, mode: String, batchSize: Int, timeBudget: Int, seed: Int) {
+    fun init(mode: String, batchSize: Int, timeBudget: Int, seed: Int) {
         // stopAutoML()
         // runAutoML(dataManager.workspacePath, dataManager.volume, debugMode)
-
         config = dataManager.loadConfig().let {
-            if (it == null || it.dataset != dataset) {
-                dataManager.cleanWorkspace()
-                dataManager.initWorkspace()
-                Config(0, dataset, metric, fairnessMetric, sensitiveFeatures, mode, batchSize, timeBudget, seed)
-            }
-            else it.copy(metric = metric, fairnessMetric = fairnessMetric, sensitiveFeatures = sensitiveFeatures, mode = mode, batchSize = batchSize, timeBudget = timeBudget, seed = seed)
+            if (it == null) Config(0, null, null, null, emptyList(), mode, batchSize, timeBudget, seed)
+            // {
+            //    dataManager.cleanWorkspace()
+            //    dataManager.initWorkspace()
+            //    Config(0, null, null, null, emptyList(), mode, batchSize, timeBudget, seed)
+            // }
+            else it.copy(mode = mode, batchSize = batchSize, timeBudget = timeBudget, seed = seed)
         }
     }
 
@@ -73,7 +73,6 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         }
 
     fun generateGraph(theory: String, blocking: Boolean, update: (MutableSolver) -> Unit) {
-
         this.theory = theory
         val start = System.currentTimeMillis() / 1000
         val creationRules = SpaceGenerator.createGeneratorRules(theory)
@@ -121,6 +120,20 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
         lastSolver?.also { solver ->
             Thread {
 
+                println("Checking Config")
+                config = SpaceTranslator.mineConfig(config.copy(), solver).also {
+                    if (it.dataset != config.dataset) {
+                        dataManager.cleanWorkspace()
+                        dataManager.initWorkspace()
+                        it.iteration = 0
+                    }
+                }
+
+                if (config.dataset == null || config.metric == null || config.fairnessMetric == null || config.sensitiveFeatures.isEmpty()) {
+                    println("Missing Optimization Data")
+                    return@Thread
+                }
+
                 println("Saving Graph")
                 dataManager.saveKnowledgeBase(nextIteration(), this.theory)
                 dataManager.saveGraphData(nextIteration(), dumpGraphData() ?: "")
@@ -137,7 +150,7 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                     val res = dataManager.loadAutoMLData(config.copy())!!
                     dataManager.saveGeneratedRules(config.copy(),
                         res.inferredRules.distinctBy { it.theoryRepresentation }
-                            .joinToString("\n") { "cc${Random.nextLong(0, Long.MAX_VALUE)} :=> ${it.theoryRepresentation}. % ${it.source}" }
+                            .joinToString("\n") { it.theory }
                     )
                     update(res)
                 } else {

@@ -11,9 +11,12 @@ from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
 
 def get_dataset_by_name(name):
     loader = {
+        "adult": 179,
         "blood": 1464,
         "breast-t": 1465,  # this is breast-tissue, not breast cancer
         "breast-w": 15,
+        "compass": 44162,
+        "credit-g": 31,
         "diabetes": 37,
         "ecoli": 40671,
         "iris": 61,
@@ -24,7 +27,7 @@ def get_dataset_by_name(name):
         "wine": 187,
     }
     if name in loader:
-        return load_dataset_from_openml(loader[name])
+        return loader[name]
     else:
         raise Exception("There is no such a dataset in the loader")
 
@@ -89,12 +92,13 @@ def preprocess_features(df, sensitive_features):
 
 
 def load_dataset_from_openml(
-    id,
+    name,
     sensitive_features,
     input_path=os.path.join(
         Path(__file__).parent.parent.parent.resolve(), "resources", "datasets"
     ),
 ):
+    id = get_dataset_by_name(name)
     dataset = openml.datasets.get_dataset(id)
     df, _, categorical_indicator, feature_names = dataset.get_data(
         dataset_format="dataframe",
@@ -127,7 +131,7 @@ def load_dataset_from_openml(
     #     for x in range(len(categorical_indicator))
     # ]
 
-    if id == "179":
+    if id == 179:
         X_temp = np.concatenate([X, y.reshape(-1, 1)], axis=1)
         X_temp = X_temp[~np.isnan(X_temp).any(axis=1)]
         X, y = X_temp[:, :-1], X_temp[:, -1].T
