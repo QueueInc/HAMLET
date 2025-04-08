@@ -1,10 +1,160 @@
 {
-    "graph_generation_time":6,
-    "space_generation_time":0,
-    "sensitive_features":["sex", "race"],
-    "space":{"prototype":{"choice":["mitigation_rebalancing_classification","rebalancing_mitigation_classification"]},"mitigation":{"choice":[{"type":"FunctionTransformer"},{"type":"CorrelationRemover"},{"type":"LFR_wrapper"}]},"rebalancing":{"choice":[{"type":"FunctionTransformer"},{"type":"NearMiss"},{"type":"SMOTE"}]},"classification":{"choice":[{"type":"KNeighborsClassifier"},{"type":"RandomForestClassifier"}]}},
-    "template_constraints":[{"mitigation":{"type":{"nin":["CorrelationRemover","LFR_wrapper"]}},"classification":{"type":{"eq":"KNeighborsClassifier"}}},{"rebalancing":{"type":{"in":["NearMiss","SMOTE"]}},"classification":{"type":{"eq":"RandomForestClassifier"}}},{"prototype":{"nin":["rebalancing_mitigation_classification"]},"rebalancing":{"type":{"neq":"FunctionTransformer"}},"mitigation":{"type":{"neq":"FunctionTransformer"}},"classification":{"type":{"eq":"RandomForestClassifier"}}},{"prototype":{"in":["mitigation_rebalancing_classification","rebalancing_mitigation_classification"]},"rebalancing":{"type":{"eq":"NearMiss"}},"mitigation":{"type":{"eq":"FunctionTransformer"}},"classification":{"type":{"eq":"RandomForestClassifier"}}},{"prototype":{"in":["mitigation_rebalancing_classification"]},"mitigation":{"type":{"in":["CorrelationRemover","LFR_wrapper"]}},"rebalancing":{"type":{"in":["NearMiss","SMOTE"]}},"classification":{"type":{"eq":"KNeighborsClassifier"}}}],
-    "instance_constraints":[],
-    "points_to_evaluate":[],
-    "evaluated_rewards":[]
+    "graph_generation_time": 6,
+    "space_generation_time": 0,
+    "sensitive_features": [
+        "sex",
+        "race"
+    ],
+    "space": {
+        "prototype": {
+            "choice": [
+                "mitigation_rebalancing_classification",
+                "rebalancing_mitigation_classification"
+            ]
+        },
+        "mitigation": {
+            "choice": [
+                {
+                    "type": "FunctionTransformer"
+                },
+                {
+                    "type": "CorrelationRemover"
+                },
+                {
+                    "type": "LFR_wrapper"
+                }
+            ]
+        },
+        "rebalancing": {
+            "choice": [
+                {
+                    "type": "FunctionTransformer"
+                },
+                {
+                    "type": "NearMiss"
+                },
+                {
+                    "type": "SMOTE"
+                }
+            ]
+        },
+        "classification": {
+            "choice": [
+                {
+                    "type": "KNeighborsClassifier"
+                },
+                {
+                    "type": "RandomForestClassifier"
+                }
+            ]
+        }
+    },
+    "template_constraints": [
+        {
+            "mitigation": {
+                "type": {
+                    "nin": [
+                        "CorrelationRemover",
+                        "LFR_wrapper"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "KNeighborsClassifier"
+                }
+            }
+        },
+        {
+            "rebalancing": {
+                "type": {
+                    "in": [
+                        "NearMiss",
+                        "SMOTE"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "RandomForestClassifier"
+                }
+            }
+        },
+        {
+            "prototype": {
+                "nin": [
+                    "rebalancing_mitigation_classification"
+                ]
+            },
+            "rebalancing": {
+                "type": {
+                    "neq": "FunctionTransformer"
+                }
+            },
+            "mitigation": {
+                "type": {
+                    "neq": "FunctionTransformer"
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "RandomForestClassifier"
+                }
+            }
+        },
+        {
+            "prototype": {
+                "in": [
+                    "mitigation_rebalancing_classification",
+                    "rebalancing_mitigation_classification"
+                ]
+            },
+            "rebalancing": {
+                "type": {
+                    "eq": "NearMiss"
+                }
+            },
+            "mitigation": {
+                "type": {
+                    "eq": "FunctionTransformer"
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "RandomForestClassifier"
+                }
+            }
+        },
+        {
+            "prototype": {
+                "in": [
+                    "mitigation_rebalancing_classification"
+                ]
+            },
+            "mitigation": {
+                "type": {
+                    "in": [
+                        "CorrelationRemover",
+                        "LFR_wrapper"
+                    ]
+                }
+            },
+            "rebalancing": {
+                "type": {
+                    "in": [
+                        "NearMiss",
+                        "SMOTE"
+                    ]
+                }
+            },
+            "classification": {
+                "type": {
+                    "eq": "KNeighborsClassifier"
+                }
+            }
+        }
+    ],
+    "instance_constraints": [],
+    "points_to_evaluate": [],
+    "evaluated_rewards": []
 }

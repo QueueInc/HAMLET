@@ -160,7 +160,9 @@ class Miner:
                     mined_rules = [
                         {
                             "source": self._metric,
-                            "type": f"{mode}_order",
+                            "type": (
+                                f"{mode}_order" if group == "None" else "discriminate"
+                            ),
                             "rule": rule[:-1],
                             "support": round(rule[-1] / len(prototypes), 2),
                             "occurrences": rule[-1],
@@ -173,9 +175,12 @@ class Miner:
                     mined_rules = [
                         mined_rule
                         for mined_rule in mined_rules
-                        if (mined_rule["rule"] not in [rule["rule"] for rule in rules])
-                        and (len(mined_rule["rule"]) == 3)
-                        and (mined_rule["rule"][2] in commons.algorithms)
+                        if (
+                            (mined_rule["rule"], mined_rule["group"])
+                            not in [(rule["rule"], rule["group"]) for rule in rules]
+                        )
+                        and len(mined_rule["rule"]) <= 3
+                        and mined_rule["rule"][-1] in commons.algorithms
                     ]
                     current_rules += mined_rules
         return current_rules
@@ -188,32 +193,20 @@ class Miner:
             metric_stat, support_stat, mode
         )
 
+        groups = self._automl_output[0][1].keys() if by_group else ["None"]
+
         for metric_threshold in metric_thresholds:
             for support_threshold in support_thresholds:
                 for algorithm in commons.algorithms:
-                    if by_group:
-                        for group in self._automl_output[0][1].keys():
-                            prototypes = [
-                                self._clean_prototype(config, classification_flag=True)
-                                for config, reward in self._automl_output
-                                if self._is_reward_eligible(
-                                    reward[group], metric_threshold, mode
-                                )
-                            ]
-                            rules += self._mine_order_rules(
-                                prototypes,
-                                metric_threshold,
-                                support_threshold,
-                                algorithm,
-                                mode,
-                                rules,
-                                group,
-                            )
-                    else:
+                    for group in groups:
                         prototypes = [
                             self._clean_prototype(config, classification_flag=True)
                             for config, reward in self._automl_output
-                            if self._is_reward_eligible(reward, metric_threshold, mode)
+                            if self._is_reward_eligible(
+                                reward[group] if by_group else reward,
+                                metric_threshold,
+                                mode,
+                            )
                         ]
                         rules += self._mine_order_rules(
                             prototypes,
@@ -222,17 +215,27 @@ class Miner:
                             algorithm,
                             mode,
                             rules,
-                            "None",
+                            group,
                         )
-        if by_group:
-            return rules
-        else:
-            return [
-                new_rule
-                for new_rule in rules
-                if [new_rule["rule"][1], new_rule["rule"][0], new_rule["rule"][2]]
-                not in [rule["rule"] for rule in rules]
+        filtered_rules = (
+            []
+            if mode == "mandatory" and by_group
+            else [rule for rule in rules if len(rule["rule"]) < 3]
+        )
+        for group in groups:
+            group_rules = [
+                rule
+                for rule in rules
+                if rule["group"] == group
+                if len(rule["rule"]) == 3
             ]
+            filtered_rules += [
+                new_rule
+                for new_rule in group_rules
+                if [new_rule["rule"][1], new_rule["rule"][0], new_rule["rule"][2]]
+                not in [rule["rule"] for rule in group_rules]
+            ]
+        return filtered_rules
 
     def get_rules(self):
         rules = []

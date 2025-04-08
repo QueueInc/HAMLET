@@ -426,10 +426,7 @@ def _compute_fair_metric(
 
         fair_score_by_group = fair_score_by_group.to_dict()
         fair_scores_by_group += [
-            {
-                key: adjuster(value)
-                for key, value in fair_score_by_group.items()
-            }
+            {key: adjuster(value) for key, value in fair_score_by_group.items()}
         ]
 
     merged = defaultdict(list)
@@ -618,13 +615,14 @@ class Prototype:
                 result[f"flatten_{current_metric}"] = "_".join(
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
+            drop_nan = lambda x: float("-inf") if np.isnan(x) else x
             result["by_group"] = {
                 "_".join(
                     [
                         self.encoding_mappings[sens_feat][int(sens_group)]
                         for sens_feat, sens_group in enumerate(key)
                     ]
-                ): round(np.mean(value), 2)
+                ): drop_nan(round(np.mean(value), 2))
                 for key, value in fair_scores_by_group.items()
             }
 
