@@ -159,7 +159,7 @@
     "evaluated_rewards": [],
     "dataset":"adult",
     "metric":"balanced_accuracy",
-    "fair_metric":"equalized_odds",
+    "fair_metric":"equalized_odds_ratio",
     "mode":"max",
     "batch_size":125,
     "time_budget":120

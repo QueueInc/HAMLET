@@ -109,7 +109,7 @@ def load_dataset_from_openml(
         default_target_attribute = dataset.default_target_attribute
     except:
         df, categorical_indicator = load_from_csv(id)
-        feature_names = df.columns
+        feature_names = list(df.columns)
         default_target_attribute = feature_names[-1]
 
     # Encode categorical and discretize numerical while storing the mapping

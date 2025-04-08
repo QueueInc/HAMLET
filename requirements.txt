@@ -9,7 +9,7 @@ imbalanced-learn
 xgboost
 lightgbm
 catboost
-aif360
+aif360[LFR]
 fairlearn
 smac
 shutup
