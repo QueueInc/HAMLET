@@ -99,11 +99,16 @@ def load_dataset_from_openml(
     ),
 ):
     id = get_dataset_by_name(name)
-    dataset = openml.datasets.get_dataset(id)
-    df, _, categorical_indicator, feature_names = dataset.get_data(
-        dataset_format="dataframe",
-        # target=dataset.default_target_attribute
-    )
+
+    try:
+        dataset = openml.datasets.get_dataset(id)
+        df, _, categorical_indicator, feature_names = dataset.get_data(
+            dataset_format="dataframe",
+            # target=dataset.default_target_attribute
+        )
+    except:
+        df, categorical_indicator = load_from_csv(id)
+        feature_names = df.columns
 
     # Encode categorical and discretize numerical while storing the mapping
     df_transformed, encoding_mappings = preprocess_features(df, sensitive_features)
@@ -160,6 +165,9 @@ def load_from_csv(
 ):
     """Load a dataset given its id on OpenML from resources/datasets.
 
+    All datasets in the folder are already encoded with an OrdinalEncoder fro mscikit-learn except datasets 31, 179, and 44162.
+    Those datasets are also the only ones that have features names in the csv.
+
     Args:
         id: id of the dataset.
 
@@ -175,5 +183,25 @@ def load_from_csv(
     with open(os.path.join(input_path, "categorical_indicators.json")) as f:
         categorical_indicators = json.load(f)
     categorical_indicator = categorical_indicators[str(id)]
+    return df, categorical_indicator
+
+
+def load_from_csv_to_numpy(
+    id,
+    input_path=os.path.join(
+        Path(__file__).parent.parent.parent.resolve(), "resources", "datasets"
+    ),
+):
+    """Load a dataset given its id on OpenML from resources/datasets.
+
+    Args:
+        id: id of the dataset.
+
+    Returns:
+        numpy.array: data items (X) of the dataset.
+        numpy.array: target (y) of the dataset.
+        list: mask that indicates categorical features.
+    """
+    df, categorical_indicator = load_from_csv(id, input_path=input_path)
     X, y = df.iloc[:, :-1].to_numpy(), df.iloc[:, -1].to_numpy()
     return X, y, categorical_indicator
