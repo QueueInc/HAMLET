@@ -106,22 +106,20 @@ def load_dataset_from_openml(
             dataset_format="dataframe",
             # target=dataset.default_target_attribute
         )
+        default_target_attribute = dataset.default_target_attribute
     except:
         df, categorical_indicator = load_from_csv(id)
         feature_names = df.columns
+        default_target_attribute = feature_names[-1]
 
     # Encode categorical and discretize numerical while storing the mapping
     df_transformed, encoding_mappings = preprocess_features(df, sensitive_features)
 
     # Get old data structure
-    X = df_transformed.drop(
-        labels=dataset.default_target_attribute, axis="columns"
-    ).to_numpy()
-    y = df_transformed[dataset.default_target_attribute].to_numpy()
-    categorical_indicator.pop(feature_names.index(dataset.default_target_attribute))
-    feature_names = [
-        col for col in feature_names if col != dataset.default_target_attribute
-    ]
+    X = df_transformed.drop(labels=default_target_attribute, axis="columns").to_numpy()
+    y = df_transformed[default_target_attribute].to_numpy()
+    categorical_indicator.pop(feature_names.index(default_target_attribute))
+    feature_names = [col for col in feature_names if col != default_target_attribute]
     sensitive_indicator = [feature in sensitive_features for feature in feature_names]
     encoding_mappings = {
         feature_names.index(key): value for key, value in encoding_mappings.items()
