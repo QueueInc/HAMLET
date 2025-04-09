@@ -30,7 +30,7 @@ class LFR_wrapper(BaseEstimator, TransformerMixin):
             prot_attr=prot_attr if len(prot_attr) == 1 else "mixin", **kwargs
         )
 
-    def _prepare_dataset(self, X, y=None):
+    def _prepare_dataset(self, X, y=None, fit=False):
         df = pd.DataFrame(X, columns=self.feature_names)
 
         if len(self.prot_attr) == 0:
@@ -42,8 +42,14 @@ class LFR_wrapper(BaseEstimator, TransformerMixin):
             ].astype(str)
             df = df.drop(columns=self.prot_attr)
 
-            self.enc = OrdinalEncoder()
-            df["mixin"] = self.enc.fit_transform(df["mixin"].to_numpy().reshape(-1, 1))
+            mixin_numpy = df["mixin"].to_numpy().reshape(-1, 1)
+            if fit:
+                self.enc = OrdinalEncoder(
+                    handle_unknown="use_encoded_value", unknown_value=-1
+                )
+                self.enc.fit(mixin_numpy)
+
+            df["mixin"] = self.enc.transform(mixin_numpy)
             df = df.set_index("mixin")
         else:
             df = df.set_index(self.prot_attr)
@@ -57,16 +63,16 @@ class LFR_wrapper(BaseEstimator, TransformerMixin):
         return df_X, df_y
 
     def fit(self, X, y):
-        df_X, df_y = self._prepare_dataset(X, y)
+        df_X, df_y = self._prepare_dataset(X, y, fit=True)
         self.lfr.fit(df_X, df_y)
         return self
 
     def transform(self, X):
-        df_X, _ = self._prepare_dataset(X, None)
+        df_X, _ = self._prepare_dataset(X)
         transformed_df = self.lfr.transform(df_X)
         return transformed_df.values
 
     def fit_transform(self, X, y=None):
-        df_X, df_y = self._prepare_dataset(X, y)
+        df_X, df_y = self._prepare_dataset(X, y, fit=True)
         transformed_df = self.lfr.fit_transform(df_X, df_y)
         return transformed_df.values
