@@ -218,9 +218,9 @@ class Miner:
                             group,
                         )
         filtered_rules = (
-            []
-            if mode == "mandatory" and by_group
-            else [rule for rule in rules if len(rule["rule"]) < 3]
+            [rule for rule in rules if len(rule["rule"]) < 3]
+            if mode == "forbidden" and by_group
+            else []
         )
         for group in groups:
             group_rules = [
