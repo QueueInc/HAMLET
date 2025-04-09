@@ -65,6 +65,8 @@ class Buffer:
             ):
                 for metric in metrics:
                     evaluated_rewards[i][metric] = float(evaluated_rewards[i][metric])
+                for group, value in evaluated_rewards[i]["by_group"].items():
+                    evaluated_rewards[i]["by_group"][group] = float(value)
                 new_points_to_evaluate.append(point_to_evaluate)
                 new_evaluated_rewards.append(evaluated_rewards[i])
         # if (len(new_points_to_evaluate) != len(points_to_evaluate)) or (
