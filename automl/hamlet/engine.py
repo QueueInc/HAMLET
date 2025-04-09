@@ -63,7 +63,11 @@ def optimize(settings, prototype, loader, initial_design_configs, metrics):
 
     # SMAC vuole che specifichiamo i trials, quindi non possiamo mettere -1, va bene maxsize?
     n_trials = (
-        (settings["batch_size"] + len(previous_evaluated_points) + initial_design_configs)
+        (
+            settings["batch_size"]
+            + len(previous_evaluated_points)
+            + initial_design_configs
+        )
         if settings["batch_size"] > 0
         else sys.maxsize
     )
@@ -134,6 +138,12 @@ def dump_results(
     graph_generation_time = loader.get_graph_generation_time()
     space_generation_time = loader.get_space_generation_time()
 
+    stringify_invalid = lambda x: (
+        "nan"
+        if np.isnan(x)
+        else ("-inf" if x == float("-inf") else ("inf" if x == float("inf") else x))
+    )
+
     # TO ADD IF WE KEEP by_group WITH THE RAW FINE-GRAINED VALUES OF EACH FOLD
     # support_mapping = [
     #     encoding_mappings[sens_feat] for sens_feat in sorted(encoding_mappings)
@@ -151,13 +161,9 @@ def dump_results(
         #     for key, value in reward["by_group"].items()
         # }
         for metric in metrics:
-            if reward[metric] == float("-inf"):
-                reward[metric] = "-inf"
-            elif reward[metric] == float("inf"):
-                reward[metric] = "inf"
+            reward[metric] = stringify_invalid(reward[metric])
         reward["by_group"] = {
-            key: "nan" if np.isnan(value) else value
-            for key, value in reward["by_group"].items()
+            key: stringify_invalid(value) for key, value in reward["by_group"].items()
         }
 
     automl_output = {
