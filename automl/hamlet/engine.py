@@ -116,7 +116,7 @@ def mine_results(settings, buffer, metrics):
             metric=m,
             mode=settings["mode"],
         )
-        for m in metrics + ["by_group"]
+        for m in metrics
     }
     return [elem for miner in miners.values() for elem in miner.get_rules()]
 
