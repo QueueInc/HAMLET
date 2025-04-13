@@ -7,6 +7,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.*
 import java.util.stream.Stream
+import kotlin.random.Random
 
 fun getOutputFromProgram(program: Array<String>) {
     val proc = Runtime.getRuntime().exec(program)
@@ -40,16 +41,18 @@ fun execAutoML(workspacePath: String, config: Config, debug: Boolean) {
     val image = if (debug) "automl-image" else "ghcr.io/queueinc/automl-container:$version"
 
     val copy = { source: String, destination: String, target: String ->
-        arrayOf("docker", "run", "-v", "$source:/source", "-v", "$destination:/dest", "-w", "/source", "alpine", "cp", "-r", target, "/dest")
+        arrayOf("docker", "run", "--rm", "-v", "$source:/source", "-v", "$destination:/dest", "alpine", "cp", "-r", "/source/$target", "/dest/$target")
     }
 
-    val createVolume = arrayOf("docker", "volume", "create", "dummy_volume")
-    val removeVolume = arrayOf("docker", "volume", "remove", "dummy_volume")
+    val r = Random.nextInt(0, Int.MAX_VALUE)
+
+    val createVolume = arrayOf("docker", "volume", "create", "dummy_volume_$r")
+    val removeVolume = arrayOf("docker", "volume", "remove", "dummy_volume_$r")
     val exec  =
-        arrayOf("docker", "run", "--rm", "--volume", "dummy_volume:/test", image, "python", "automl/main.py",
+        arrayOf("docker", "run", "--rm", "--volume", "dummy_volume_$r:/data", image, "python", "automl/main.py",
                 "--seed", config.seed.toString(),
-                "--input_path", "/test/automl_input_${config.iteration}.json",
-                "--output_path", "/test/automl_output_${config.iteration}.json")
+                "--input_path", "/data/automl_input_${config.iteration}.json",
+                "--output_path", "/data/automl_output_${config.iteration}.json")
 
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-image", "../")
@@ -57,10 +60,10 @@ fun execAutoML(workspacePath: String, config: Config, debug: Boolean) {
     }
 
     getOutputFromProgram(createVolume)
-    getOutputFromProgram(copy("$workspacePath/automl/input/", "dummy_volume", "automl_input_${config.iteration}.json"))
+    getOutputFromProgram(copy("$workspacePath/automl/input/", "dummy_volume_$r", "automl_input_${config.iteration}.json"))
     getOutputFromProgram(exec)
-    getOutputFromProgram(copy("dummy_volume", "$workspacePath/automl/output/", "automl_output_${config.iteration}.json"))
-    getOutputFromProgram(copy("dummy_volume", "$workspacePath/automl/output/", "automl_output_${config.iteration}.csv"))
+    getOutputFromProgram(copy("dummy_volume_$r", "$workspacePath/automl/output/", "automl_output_${config.iteration}.json"))
+    getOutputFromProgram(copy("dummy_volume_$r", "$workspacePath/automl/output/", "automl_output_${config.iteration}.csv"))
     getOutputFromProgram(removeVolume)
 
     println("AutoML execution ended")
