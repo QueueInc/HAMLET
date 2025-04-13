@@ -42,42 +42,30 @@ fun execAutoML(workspacePath: String, config: Config, debug: Boolean) {
 
     val image = if (debug) "automl-image" else "ghcr.io/queueinc/automl-container:$version"
 
+    val create =
+        arrayOf("docker", "container", "create", "--name", "hamlet_$r", image, "python", "automl/main.py",
+            "--seed", config.seed.toString(),
+            "--input_path", "/home/automl_input_${config.iteration}.json",
+            "--output_path", "/home/automl_output_${config.iteration}.json")
+
     val copy = { source: String, destination: String ->
-        listOf(
-            arrayOf("docker", "container", "create", "--name", "dummy_$r", "-v", "dummy_volume_$r:/data", "tianon/true"),
-            arrayOf("docker", "cp", source, destination),
-            arrayOf("docker", "rm", "dummy_$r")
-            //arrayOf("docker", "run", "--rm", "-v", "$source:/source", "-v", "$destination:/dest", "alpine", "cp", "-r", "/source/$target", "/dest/$target")
-        )
+        arrayOf("docker", "cp", source, destination)
     }
 
-
-    //val createVolume = arrayOf("docker", "volume", "create", "dummy_volume_$r")
-    //val removeVolume = arrayOf("docker", "volume", "remove", "dummy_volume_$r")
     val exec  =
-        arrayOf("docker", "run", "--rm",
-                //"--volume", "dummy_volume_$r:/data",
-                "--volume", "$workspacePath/automl/input:/input",
-                "--volume", "$workspacePath/automl/output:/output",
-                image, "python", "automl/main.py",
-                "--seed", config.seed.toString(),
-                "--input_path", "/input/automl_input_${config.iteration}.json",
-                "--output_path", "/output/automl_output_${config.iteration}.json")
+        arrayOf("docker", "start", "hamlet_$r", "-a")
 
     if (debug) {
         val build = arrayOf("docker", "build", "-t", "automl-image", "../")
         getOutputFromProgram(build)
     }
 
-    //getOutputFromProgram(createVolume)
-    //copy("$workspacePath/automl/input/automl_input_${config.iteration}.json", "dummy_volume_$r:/data/automl_input_${config.iteration}.json")
-    //    .forEach{getOutputFromProgram(it)}
+    getOutputFromProgram(create)
+    getOutputFromProgram(copy("$workspacePath/automl/input/automl_input_${config.iteration}.json", "hamlet_$r:/home/automl_input_${config.iteration}.json"))
     getOutputFromProgram(exec)
-    //copy("dummy_volume_$r:/data/automl_output_${config.iteration}.json", "$workspacePath/automl/output/")
-    //    .forEach{getOutputFromProgram(it)}
-    //copy("dummy_volume_$r:/data/automl_output_${config.iteration}.csv", "$workspacePath/automl/output/")
-    //    .forEach{getOutputFromProgram(it)}
-    //getOutputFromProgram(removeVolume)
+    getOutputFromProgram(copy("hamlet_$r:/home/automl_output_${config.iteration}.json", "$workspacePath/automl/output/automl_output_${config.iteration}.json"))
+    getOutputFromProgram(copy("hamlet_$r:/home/automl_output_${config.iteration}.csv", "$workspacePath/automl/output/automl_output_${config.iteration}.csv"))
+    getOutputFromProgram(arrayOf("docker", "rm", "hamlet_$r"))
 
     println("AutoML execution ended")
 }

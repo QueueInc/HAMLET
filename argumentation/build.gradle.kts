@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.queueinc"
-version = "1.1.3-fairness-rev"
+version = "1.1.4-fairness-rev"
 
 repositories {
     mavenCentral()
