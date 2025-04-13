@@ -152,17 +152,21 @@ object SpaceTranslator {
         arg2pScope {
             println("Exporting Config")
 
+            val clean = { input: Term? ->
+                input.toString().replace("'", "")
+            }
+
             val sensitiveFeatures = solver.solve(
                 ("miner" call "fetch_sensitive_features"(X)),
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
                 .filter { it.isYes }
-                .map { it.substitution[X]!!.castToList().toList().map { it.toString() } }
+                .map { it.substitution[X]!!.castToList().toList().map { clean(it) } }
                 .first()
 
             config.copy(
-                dataset = solver.solve("dataset"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
-                fairnessMetric = solver.solve("fairness_metric"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
-                metric = solver.solve("metric"(X)).filter { it.isYes }.map { it.substitution[X].toString() }.firstOrNull(),
+                dataset = solver.solve("dataset"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
+                fairnessMetric = solver.solve("fairness_metric"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
+                metric = solver.solve("metric"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
                 sensitiveFeatures = sensitiveFeatures,
             )
         }
