@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 from collections import defaultdict
+from itertools import product
 
 from fairlearn import metrics
 from fairlearn.metrics._base_metrics import (
@@ -76,7 +77,9 @@ def _get_prototype(config):
         raise NameError("No prototype specified")
     else:
         ml_pipeline = ml_pipeline.split("_")
-    return ml_pipeline
+    return [
+        step for step in ml_pipeline if config[step]["type"] != "FunctionTransformer"
+    ]
 
 
 def _check_coherence(prototype, config):
@@ -538,6 +541,10 @@ class Prototype:
         result = {
             f"{self.fair_metric}": float("-inf"),
             f"{self.metric}": float("-inf"),
+            "by_group": {
+                "_".join(key): float("-inf")
+                for key in product(*[enc.values() for enc in self.encoding_mappings])
+            },
             "status": "fail",
             "total_time": 0,
             "fit_time": 0,
@@ -626,10 +633,10 @@ class Prototype:
                     ]
                 )
             )
-            result["by_group"] = {
-                stringify_key(key): drop_nan(round(np.mean(value), 2))
-                for key, value in fair_scores_by_group.items()
-            }
+            for key, value in fair_scores_by_group.items():
+                result["by_group"][stringify_key(key)] = drop_nan(
+                    round(np.mean(value), 2)
+                )
 
             if any([_res(m, r) for m, r in res.items()]):
                 raise Exception(f"The result for {config} was NaN")
