@@ -27,9 +27,14 @@ from hamlet.objective import (
 class TestPipelineFunctions(unittest.TestCase):
 
     def test_get_prototype_valid(self):
-        config = {"prototype": "step1_step2_step3"}
+        config = {
+            "prototype": "step1_step2_step3",
+            "step1": {"type": "Something"},
+            "step2": {"type": "FunctionTransformer"},
+            "step3": {"type": "Something"},
+        }
         result = _get_prototype(config)
-        self.assertEqual(result, ["step1", "step2", "step3"])
+        self.assertEqual(result, ["step1", "step3"])
 
     def test_get_prototype_no_prototype(self):
         config = {"prototype": None}
