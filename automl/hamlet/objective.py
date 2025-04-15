@@ -616,13 +616,18 @@ class Prototype:
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
             drop_nan = lambda x: float("-inf") if np.isnan(x) else x
-            result["by_group"] = {
-                "_".join(
+            stringify_key = lambda x: (
+                self.encoding_mappings[0][int(x)]
+                if type(x) != tuple
+                else "_".join(
                     [
                         self.encoding_mappings[sens_feat][int(sens_group)]
-                        for sens_feat, sens_group in enumerate(key)
+                        for sens_feat, sens_group in enumerate(x)
                     ]
-                ): drop_nan(round(np.mean(value), 2))
+                )
+            )
+            result["by_group"] = {
+                stringify_key(key): drop_nan(round(np.mean(value), 2))
                 for key, value in fair_scores_by_group.items()
             }
 
