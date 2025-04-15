@@ -113,6 +113,15 @@ def load_dataset_from_openml(
         feature_names = list(df.columns)
         default_target_attribute = feature_names[-1]
 
+    if id == 31:
+        # Split the 'personal_status' into two new columns
+        df[["sex", "personal_status"]] = df["personal_status"].str.split(
+            " ", expand=True
+        )
+        df = df[["sex"] + feature_names]
+        feature_names = list(df.columns)
+        categorical_indicator = [True] + categorical_indicator
+
     if default_target_attribute in feature_names and len(feature_names) == len(
         categorical_indicator
     ):
