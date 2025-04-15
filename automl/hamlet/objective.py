@@ -1,6 +1,7 @@
 import copy
 import time
 import numpy as np
+import traceback
 
 from collections import defaultdict
 from itertools import product
@@ -647,6 +648,7 @@ class Prototype:
             self.buffer.printflush("Timeout")
         except Exception as e:
             self.buffer.detach_timer()
-            self.buffer.printflush(f"Something went wrong:\n{e}")
+            self.buffer.printflush("\nSomething went wrong")
+            self.buffer.printflush(traceback.format_exc())
 
         return _return_res(config, result, start_time, result["status"], scores=scores)
