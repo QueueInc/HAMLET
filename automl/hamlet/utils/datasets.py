@@ -37,7 +37,7 @@ def get_dataset_by_id(id):
     return load_dataset_from_openml(id)
 
 
-def preprocess_features(df, sensitive_features):
+def preprocess_features(df, sensitive_features, enc_categorical_features):
     """
     Discretizes non-categorical sensitive features and applies ordinal encoding to categorical features.
 
@@ -55,13 +55,14 @@ def preprocess_features(df, sensitive_features):
     """
     df_transformed = df.copy()
 
-    categorical_features = df.select_dtypes(
-        include=["object", "category"]
-    ).columns.tolist()
+    categorical_features = (
+        df.select_dtypes(include=["object", "category"]).columns.tolist()
+        + enc_categorical_features
+    )
     numerical_sensitive_features = [
         col
         for col in df.select_dtypes(exclude=["object", "category"]).columns.tolist()
-        if col in sensitive_features
+        if col in sensitive_features and col not in enc_categorical_features
     ]
 
     # Encode all categorical features
@@ -112,14 +113,27 @@ def load_dataset_from_openml(
         feature_names = list(df.columns)
         default_target_attribute = feature_names[-1]
 
+    if default_target_attribute in feature_names and len(feature_names) == len(
+        categorical_indicator
+    ):
+        categorical_indicator.pop(feature_names.index(default_target_attribute))
+    feature_names = [col for col in feature_names if col != default_target_attribute]
+
     # Encode categorical and discretize numerical while storing the mapping
-    df_transformed, encoding_mappings = preprocess_features(df, sensitive_features)
+    df_transformed, encoding_mappings = preprocess_features(
+        df,
+        sensitive_features,
+        [
+            feature
+            for idx, feature in enumerate(feature_names)
+            if categorical_indicator[idx]
+        ],
+    )
 
     # Get old data structure
     X = df_transformed.drop(labels=default_target_attribute, axis="columns").to_numpy()
     y = df_transformed[default_target_attribute].to_numpy()
-    categorical_indicator.pop(feature_names.index(default_target_attribute))
-    feature_names = [col for col in feature_names if col != default_target_attribute]
+
     sensitive_indicator = [feature in sensitive_features for feature in feature_names]
     encoding_mappings = {
         feature_names.index(key): value for key, value in encoding_mappings.items()
