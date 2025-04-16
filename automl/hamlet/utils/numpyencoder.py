@@ -11,13 +11,13 @@ class NumpyEncoder(json.JSONEncoder):
 
             return int(obj)
 
-        if isinstance(obj, (np.float_, np.float16, np.float32, np.float64)):
+        if isinstance(obj, (np.float16, np.float32, np.float64)):
             return float(obj)
         
-        if isinstance(obj, (np.complex_, np.complex64, np.complex128)):
+        if isinstance(obj, (np.complex64, np.complex128)):
             return {'real': obj.real, 'imag': obj.imag}
         
-        if isinstance(obj, (np.ndarray,)):
+        if isinstance(obj, (np.ndarray)):
             return obj.tolist()
     
         if isinstance(obj, (np.bool_)):
