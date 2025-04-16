@@ -16,6 +16,7 @@ from hamlet.miner import Miner
 from hamlet.utils.json_to_csv import json_to_csv
 from hamlet.utils.flaml_to_smac import flatten_configuration, transform_configuration
 
+from hamlet.utils.numpyencoder import NumpyEncoder
 
 def optimize(settings, prototype, loader, initial_design_configs, metrics):
 
@@ -185,6 +186,6 @@ def dump_results(
     }
 
     with open(settings["output_path"], "w") as outfile:
-        json.dump(automl_output, outfile)
+        json.dump(automl_output, outfile, cls=NumpyEncoder)
 
     json_to_csv(automl_output=automl_output.copy(), settings=settings)
