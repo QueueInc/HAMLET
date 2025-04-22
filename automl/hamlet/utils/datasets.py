@@ -122,6 +122,11 @@ def load_dataset_from_openml(
         feature_names = list(df.columns)
         categorical_indicator = [True] + categorical_indicator
 
+    group_percentages = df[sensitive_features].value_counts(normalize=True) * 100
+    groups_to_drop = group_percentages[group_percentages < 1].index
+    filtered_df = df[~df[sensitive_features].apply(tuple, axis=1).isin(groups_to_drop)]
+    df = filtered_df.reset_index(drop=True)
+
     if default_target_attribute in feature_names and len(feature_names) == len(
         categorical_indicator
     ):

@@ -1,6 +1,7 @@
 import copy
 import time
 import numpy as np
+import pandas as pd
 import traceback
 
 from collections import defaultdict
@@ -428,7 +429,7 @@ def _compute_fair_metric(
         #         lev
         #     ].astype(int)
 
-        fair_score_by_group = fair_score_by_group.to_dict()
+        fair_score_by_group = fair_score_by_group.dropna().to_dict()
         fair_scores_by_group += [
             {key: adjuster(value) for key, value in fair_score_by_group.items()}
         ]
@@ -539,12 +540,26 @@ class Prototype:
 
         config = transform_configuration(smac_config)
 
+        stringify_key = lambda x: (
+            self.encoding_mappings[0][int(x)]
+            if type(x) != tuple
+            else "_".join(
+                [
+                    self.encoding_mappings[sens_feat][int(sens_group)]
+                    for sens_feat, sens_group in enumerate(x)
+                ]
+            )
+        )
+
         result = {
             f"{self.fair_metric}": float("-inf"),
             f"{self.metric}": float("-inf"),
             "by_group": {
-                "_".join(key): float("-inf")
-                for key in product(*[enc.values() for enc in self.encoding_mappings])
+                stringify_key(tuple(group)): float("-inf")
+                for group in np.unique(
+                    self.X[:, _get_indices_from_mask(self.sensitive_indicator, True)],
+                    axis=0,
+                )
             },
             "status": "fail",
             "total_time": 0,
@@ -624,16 +639,7 @@ class Prototype:
                     [str(round(score, 2)) for score in res[current_metric]]
                 )
             drop_nan = lambda x: float("-inf") if np.isnan(x) else x
-            stringify_key = lambda x: (
-                self.encoding_mappings[0][int(x)]
-                if type(x) != tuple
-                else "_".join(
-                    [
-                        self.encoding_mappings[sens_feat][int(sens_group)]
-                        for sens_feat, sens_group in enumerate(x)
-                    ]
-                )
-            )
+
             for key, value in fair_scores_by_group.items():
                 result["by_group"][stringify_key(key)] = drop_nan(
                     round(np.mean(value), 2)
