@@ -16,7 +16,7 @@ class Miner:
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
             if reward["status"] != "previous_constraint"
         ]
-        self._min_automl_outputs = 100
+        self._min_automl_outputs = 50
         self._metric = metric
         self._mode = mode
         # Pay attention, in this version we assume the metric varies between 0 and 1
@@ -239,13 +239,13 @@ class Miner:
 
     def get_rules(self):
         rules = []
-        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.8}
+        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.6}
         support_stat = {
             "min": 0,
             "max": 1,
             "step": 0.1,
-            "mandatory_suff": 0.8,
-            "forbidden_suff": 0.8,
+            "mandatory_suff": 0.5,
+            "forbidden_suff": 0.5,
         }
         rules += self._get_order_rules(
             metric_stat=metric_stat,
