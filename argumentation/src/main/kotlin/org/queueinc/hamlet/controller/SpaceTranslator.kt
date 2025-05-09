@@ -156,6 +156,10 @@ object SpaceTranslator {
                 input.toString().replace("'", "")
             }
 
+            val number = { input: Term? ->
+                input.toString().toDouble()
+            }
+
             val sensitiveFeatures = solver.solve(
                 ("miner" call "fetch_sensitive_features"(X)),
                 SolveOptions.allLazilyWithTimeout(TimeDuration.MAX_VALUE))
@@ -165,9 +169,17 @@ object SpaceTranslator {
 
             config.copy(
                 dataset = solver.solve("dataset"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
-                fairnessMetric = solver.solve("fairness_metric"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
                 metric = solver.solve("metric"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
+                fairnessMetric = solver.solve("fairness_metric"(X)).filter { it.isYes }.map { clean(it.substitution[X]) }.firstOrNull(),
                 sensitiveFeatures = sensitiveFeatures,
+                performanceThresholds = solver.solve("performance_thresholds"(X,Y)).filter { it.isYes }
+                    .map { Pair(number(it.substitution[X]), number(it.substitution[Y])) }
+                    .firstOrNull() ?: config.performanceThresholds,
+                fairnessThresholds = solver.solve("fairness_thresholds"(X,Y)).filter { it.isYes }
+                    .map { Pair(number(it.substitution[X]), number(it.substitution[Y])) }
+                    .firstOrNull() ?: config.fairnessThresholds,
+                miningSupport = solver.solve("mining_support"(X)).filter { it.isYes }
+                    .map { number(it.substitution[X]) }.firstOrNull() ?: config.miningSupport,
             )
         }
 

@@ -88,7 +88,10 @@ class FileSystemManager(val workspacePath: String) {
                 "fair_metric":"${config.fairnessMetric}",
                 "mode":"${config.mode}",
                 "batch_size":${config.batchSize},
-                "time_budget":${config.timeBudget}
+                "time_budget":${config.timeBudget},
+                "fairness_thresholds": {"x":${config.fairnessThresholds.first}, "y":${config.fairnessThresholds.second}},
+                "performance_thresholds": {"x":${config.performanceThresholds.first}, "y":${config.performanceThresholds.second}},
+                "mining_support": ${config.miningSupport}
             }
             """.trimIndent()
 

@@ -10,7 +10,7 @@ from hamlet.utils import commons
 
 class Miner:
 
-    def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode):
+    def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode, support, thresholds):
         self._automl_output = [
             (config, reward[metric])
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
@@ -19,6 +19,8 @@ class Miner:
         self._min_automl_outputs = 50
         self._metric = metric
         self._mode = mode
+        self._support = support
+        self._thresholds = thresholds
         # Pay attention, in this version we assume the metric varies between 0 and 1
         # self.max_reward = max(temp_evaluated_rewards)
         # self.min_reward = min(temp_evaluated_rewards)

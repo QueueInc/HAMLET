@@ -108,7 +108,7 @@ def optimize(settings, prototype, loader, initial_design_configs, metrics):
     return incumbents, incumbents_costs, _best_configs(incumbents, incumbents_costs)
 
 
-def mine_results(settings, buffer, metrics):
+def mine_results(settings, buffer, metrics, support):
     points_to_evaluate, evaluated_rewards = buffer.get_evaluations()
     miners = {
         m: Miner(
@@ -116,8 +116,10 @@ def mine_results(settings, buffer, metrics):
             evaluated_rewards=evaluated_rewards,
             metric=m,
             mode=settings["mode"],
+            support=support,
+            thresholds=t
         )
-        for m in metrics
+        for m, t in metrics
     }
     return [elem for miner in miners.values() for elem in miner.get_rules()]
 

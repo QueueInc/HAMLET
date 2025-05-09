@@ -20,7 +20,7 @@ class Loader:
         knowledge = self._load(path=path)
 
         self._settings = {
-            x : knowledge[x] for x in ["sensitive_features", "metric", "fair_metric", "dataset", "mode", "batch_size", "time_budget"]
+            x : knowledge[x] for x in ["sensitive_features", "metric", "fair_metric", "dataset", "mode", "batch_size", "time_budget", "fairness_thresholds", "performance_thresholds", "mining_support"]
         }
 
         self._graph_generation_time = knowledge["graph_generation_time"]

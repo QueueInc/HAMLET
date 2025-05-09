@@ -63,7 +63,12 @@ def run(args):
 
     end_time = time.time()
 
-    rules = mine_results(settings, buffer, metrics + ["by_group"])
+    mining_config = {
+        settings["fair_metric"] : settings["fairness_thresholds"],
+        settings["by_group"] : settings["fairness_thresholds"],
+        settings["metric"] : settings["performance_thresholds"],
+    }
+    rules = mine_results(settings, buffer, mining_config, settings["mining_support"])
 
     Buffer().printflush("AutoML: miner done.")
 
