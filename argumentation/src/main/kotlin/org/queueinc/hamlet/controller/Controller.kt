@@ -61,7 +61,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
                 dynamicLibs = listOf(SpaceMining),
                 settings = FlagsBuilder(
                     argumentLabellingMode = "grounded_hash",
-                    graphExtensions = emptyList()
+                    graphExtensions = listOf("standardPref"),
+                    orderingPrinciple = "last",
+                    orderingComparator = "democrat"
                 ).create(),
                 theory = theory
             ).also {
@@ -80,8 +82,9 @@ class Controller(private val debugMode: Boolean, private val dataManager: FileSy
             staticLibs = listOf(SpaceGenerator),
             dynamicLibs = listOf(SpaceMining),
             settings = FlagsBuilder(
-                argumentLabellingMode = "grounded_hash",
-                graphExtensions = emptyList()
+                graphExtensions = listOf("standardPref"),
+                orderingPrinciple = "last",
+                orderingComparator = "democrat"
             ).create(),
             theory = theory + "\n" + creationRules
         ).also { solver ->

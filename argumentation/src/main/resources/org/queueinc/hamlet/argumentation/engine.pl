@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 prepare_sensitive_groups(Res) :-
-     findall(Num :=> sensitive_group(X), (
+     findall(Num : [] => sensitive_group(X), (
         sensitive_group(X),
         rand_int(0, 1000000, Num)
      ), Res).
@@ -75,10 +75,10 @@ prepare_theory(Res) :-
     utils::append_fast(IS, PS, Res).
 
 prepare_pipelines(CS, Res) :-
-	findall(Num :=> pipeline(X, Y), (
+	findall(Num : [] => pipeline(X, Y), (
 	    pipeline(X, Y),
-	    % once(check_potential_conflict(CS, pipeline(X, Y))),
-	    check_potential_conflict(CS, pipeline(X, Y)),
+	    once(check_potential_conflict(CS, pipeline(X, Y))),
+	    % check_potential_conflict(CS, pipeline(X, Y)),
 	    rand_int(0, 1000000, Num)
     ), Res).
 
@@ -127,8 +127,8 @@ constraints(XS) :-
 % MANDATORY & FORBIDDEN CONSTRAINT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cc0 : mandatory(X, classification), prolog(operator(classification, Y)) => mandatory(X, Y).
-cc1 : forbidden(X, classification), prolog(operator(classification, Y)) => forbidden(X, Y).
+cc0 : mandatory(X, classification), prolog(operator(classification, Y)) -> mandatory(X, Y).
+cc1 : forbidden(X, classification), prolog(operator(classification, Y)) -> forbidden(X, Y).
 
 conflict([forbidden(SF, Y)], [mandatory(SM, Y)], once(subset(SF, SM))).
 conflict([mandatory(SM, Y)], [forbidden(SF, Y)], once(subset(SF, SM))).
@@ -155,7 +155,7 @@ subset([H|T], Y) :- member(H, Y), subset(T, Y).
 % MANDATORY ORDER CONSTRAINT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cco0 : mandatory_order(X, classification), prolog(operator(classification, Y)) => mandatory_order(X, Y).
+cco0 : mandatory_order(X, classification), prolog(operator(classification, Y)) -> mandatory_order(X, Y).
 
 conflict([mandatory_order([A, C], Y)], [mandatory_order([C, A], Y)]).
 conflict([mandatory_order(Steps, Algorithm)], [pipeline(Steps2, Algorithm)], once(mandatory_order_conflict(Steps, Steps2))).

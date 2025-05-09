@@ -36,7 +36,7 @@ data class Rule(
         else "$type([${ steps.joinToString(",") }], ${algorithm})"
 
     val theory : String
-        get() = if (type == "discriminate") "$theoryRepresentation." else "cc${Random.nextLong(0, Long.MAX_VALUE)} :=> $theoryRepresentation. % $source"
+        get() = if (type == "discriminate") "$theoryRepresentation." else "cc${Random.nextLong(0, Long.MAX_VALUE)} : [] => $theoryRepresentation. % $source"
 
 }
 
