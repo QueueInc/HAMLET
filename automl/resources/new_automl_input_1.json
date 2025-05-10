@@ -162,5 +162,8 @@
     "fair_metric":"equalized_odds_ratio",
     "mode":"max",
     "batch_size":125,
-    "time_budget":120
+    "time_budget":120,
+    "fairness_thresholds": {"x":0.4, "y":0.6},
+    "performance_thresholds": {"x":0.4, "y":0.6},
+    "mining_support": 0.7
 }
