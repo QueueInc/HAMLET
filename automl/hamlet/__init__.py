@@ -18,7 +18,7 @@ def run(args):
     settings["input_path"] = args.input_path
     settings["output_path"] = args.output_path
     settings["seed"] = args.seed
-    
+
     metrics = [settings["fair_metric"], settings["metric"]]
 
     (
@@ -64,9 +64,9 @@ def run(args):
     end_time = time.time()
 
     mining_config = {
-        settings["fair_metric"] : settings["fairness_thresholds"],
-        settings["by_group"] : settings["fairness_thresholds"],
-        settings["metric"] : settings["performance_thresholds"],
+        settings["fair_metric"]: settings["fairness_thresholds"],
+        "by_group": settings["fairness_thresholds"],
+        settings["metric"]: settings["performance_thresholds"],
     }
     rules = mine_results(settings, buffer, mining_config, settings["mining_support"])
 

@@ -10,7 +10,9 @@ from hamlet.utils import commons
 
 class Miner:
 
-    def __init__(self, points_to_evaluate, evaluated_rewards, metric, mode, support, thresholds):
+    def __init__(
+        self, points_to_evaluate, evaluated_rewards, metric, mode, support, thresholds
+    ):
         self._automl_output = [
             (config, reward[metric])
             for config, reward in list(zip(points_to_evaluate, evaluated_rewards))
@@ -241,13 +243,13 @@ class Miner:
 
     def get_rules(self):
         rules = []
-        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": 0.7}
+        metric_stat = {"min": 0, "max": 1, "step": 0.1, "suff": self._thresholds["y"]}
         support_stat = {
             "min": 0,
             "max": 1,
             "step": 0.1,
-            "mandatory_suff": 0.7,
-            "forbidden_suff": 0.7,
+            "mandatory_suff": self._support,
+            "forbidden_suff": self._support,
         }
         rules += self._get_order_rules(
             metric_stat=metric_stat,

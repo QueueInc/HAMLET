@@ -18,6 +18,7 @@ from hamlet.utils.flaml_to_smac import flatten_configuration, transform_configur
 
 from hamlet.utils.numpyencoder import NumpyEncoder
 
+
 def optimize(settings, prototype, loader, initial_design_configs, metrics):
 
     def _best_configs(incumbents, incumbents_costs):
@@ -117,9 +118,9 @@ def mine_results(settings, buffer, metrics, support):
             metric=m,
             mode=settings["mode"],
             support=support,
-            thresholds=t
+            thresholds=t,
         )
-        for m, t in metrics
+        for m, t in metrics.items()
     }
     return [elem for miner in miners.values() for elem in miner.get_rules()]
 
